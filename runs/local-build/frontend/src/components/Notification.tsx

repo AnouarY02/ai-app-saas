@@ -1,0 +1,19 @@
+import React from 'react';
+
+interface NotificationProps {
+  message: string;
+  type?: 'error' | 'success' | 'info';
+  onClose?: () => void;
+}
+
+const Notification: React.FC<NotificationProps> = ({ message, type = 'info', onClose }) => (
+  <div className={`notification notification-${type}`}> 
+    <span>{message}</span>
+    {onClose && (
+      <button className="notification-close" onClick={onClose} aria-label="Close notification">&times;</button>
+    )}
+  </div>
+);
+
+export default Notification;
+
