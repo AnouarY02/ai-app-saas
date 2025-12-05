@@ -1,0 +1,12 @@
+// Date helpers for shared use
+
+export function toIsoString(date: Date | string): string {
+  return (date instanceof Date ? date : new Date(date)).toISOString();
+}
+
+export function isExpired(date: Date | string): boolean {
+  const now = Date.now();
+  const target = date instanceof Date ? date.getTime() : new Date(date).getTime();
+  return target < now;
+}
+
