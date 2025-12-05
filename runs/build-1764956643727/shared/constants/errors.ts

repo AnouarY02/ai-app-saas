@@ -1,0 +1,24 @@
+// Well-known error codes and messages
+
+export const ERROR_CODES = {
+  INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  USER_NOT_FOUND: 'USER_NOT_FOUND',
+  EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
+  INVALID_INPUT: 'INVALID_INPUT',
+  SESSION_EXPIRED: 'SESSION_EXPIRED',
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+} as const;
+
+export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES];
+
+export const ERROR_MESSAGES: Record<ErrorCode, string> = {
+  INVALID_CREDENTIALS: 'Invalid email or password.',
+  UNAUTHORIZED: 'You are not authorized to perform this action.',
+  USER_NOT_FOUND: 'User not found.',
+  EMAIL_ALREADY_EXISTS: 'A user with this email already exists.',
+  INVALID_INPUT: 'Invalid input data.',
+  SESSION_EXPIRED: 'Session has expired. Please login again.',
+  INTERNAL_ERROR: 'An unexpected error occurred.',
+};
+
