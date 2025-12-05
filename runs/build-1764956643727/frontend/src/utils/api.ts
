@@ -1,0 +1,50 @@
+import { UserProfile } from '../state/auth';
+
+const API_BASE = '/api';
+
+function getToken() {
+  return localStorage.getItem('token');
+}
+
+async function fetchApi<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
+    ...options.headers,
+  };
+  const res = await fetch(url, { ...options, headers });
+  if (!res.ok) {
+    let msg = 'Request failed';
+    try {
+      const err = await res.json();
+      msg = err.message || msg;
+    } catch {}
+    throw new Error(msg);
+  }
+  return res.json();
+}
+
+export async function loginApi(email: string, password: string): Promise<{ token: string; user: UserProfile }> {
+  return fetchApi(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function logoutApi(): Promise<{ success: boolean }> {
+  return fetchApi(`${API_BASE}/auth/logout`, {
+    method: 'POST',
+  });
+}
+
+export async function getMe(): Promise<UserProfile> {
+  return fetchApi(`${API_BASE}/auth/me`);
+}
+
+export async function updateProfile(data: { name?: string; email?: string; password?: string }): Promise<UserProfile> {
+  return fetchApi(`${API_BASE}/users/me`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
