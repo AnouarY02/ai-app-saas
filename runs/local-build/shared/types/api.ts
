@@ -1,0 +1,33 @@
+// Request DTOs
+export interface SignupRequest {
+  email: string;
+  password: string;
+  name?: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LogoutRequest {
+  token: string;
+}
+
+export interface UpdateProfileRequest {
+  name?: string;
+  password?: string;
+}
+
+// Response DTOs
+import type { User, UserProfile } from './domain';
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+export interface LogoutResponse {
+  success: boolean;
+}
+
