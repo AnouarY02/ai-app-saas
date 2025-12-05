@@ -1,0 +1,10 @@
+// User routes
+import { Router } from 'express';
+import { userController } from '../controllers/userController';
+import { requireAuth } from '../middleware/authMiddleware';
+
+export const userRouter = Router();
+
+userRouter.get('/me', requireAuth, userController.getProfile);
+userRouter.put('/me', requireAuth, userController.updateProfile);
+
