@@ -1,0 +1,15 @@
+// Shared authentication utilities
+import type { User } from '../types/domain';
+
+export function isValidPassword(password: string): boolean {
+  return typeof password === 'string' && password.length >= 6;
+}
+
+export function sanitizeUser(user: User): Omit<User, 'passwordHash'> {
+  // Remove sensitive fields before sending to client
+  // (should match UserProfile, but keeps extensibility)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { passwordHash, ...rest } = user;
+  return rest;
+}
+
