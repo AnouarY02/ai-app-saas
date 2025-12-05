@@ -1,0 +1,4 @@
+#!/bin/sh
+cp .env.example .env
+echo ".env file created from .env.example. Please edit it with your secrets."
+
