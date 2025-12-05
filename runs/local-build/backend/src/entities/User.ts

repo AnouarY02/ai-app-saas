@@ -1,0 +1,10 @@
+// User entity (in-memory for demo; replace with DB in prod)
+export interface User {
+  id: string;
+  email: string;
+  passwordHash: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
