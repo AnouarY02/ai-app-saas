@@ -1,0 +1,9 @@
+// Session entity (in-memory for demo; replace with DB in prod)
+export interface Session {
+  id: string;
+  userId: string;
+  token: string;
+  expiresAt: Date;
+  createdAt: Date;
+}
+
