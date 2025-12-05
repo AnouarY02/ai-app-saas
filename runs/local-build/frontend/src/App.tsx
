@@ -1,0 +1,53 @@
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+import AuthLayout from './layouts/AuthLayout';
+import DashboardPage from './routes/DashboardPage';
+import SettingsPage from './routes/SettingsPage';
+import LoginPage from './routes/LoginPage';
+import SignupPage from './routes/SignupPage';
+import LandingPage from './routes/LandingPage';
+import LogoutPage from './routes/LogoutPage';
+import NotFoundPage from './routes/NotFoundPage';
+import { useAuth } from './state/auth';
+
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return <div>Loading...</div>;
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+};
+
+const App: React.FC = () => {
+  return (
+    <Routes>
+      <Route element={<MainLayout />}>
+        <Route index element={<LandingPage />} />
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+      <Route element={<AuthLayout />}>
+        <Route path="login" element={<LoginPage />} />
+        <Route path="signup" element={<SignupPage />} />
+        <Route path="logout" element={<LogoutPage />} />
+      </Route>
+    </Routes>
+  );
+};
+
+export default App;
+
