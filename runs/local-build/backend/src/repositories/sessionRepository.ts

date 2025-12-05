@@ -1,0 +1,28 @@
+// In-memory session repository (replace with DB in production)
+import { Session } from '../entities/Session';
+
+const sessions: Session[] = [];
+
+export const sessionRepository = {
+  async create(session: Session): Promise<Session> {
+    sessions.push(session);
+    return session;
+  },
+  async findByToken(token: string): Promise<Session | undefined> {
+    return sessions.find(s => s.token === token && s.expiresAt > new Date());
+  },
+  async deleteByToken(token: string): Promise<boolean> {
+    const idx = sessions.findIndex(s => s.token === token);
+    if (idx === -1) return false;
+    sessions.splice(idx, 1);
+    return true;
+  },
+  async deleteByUserId(userId: string): Promise<void> {
+    for (let i = sessions.length - 1; i >= 0; i--) {
+      if (sessions[i].userId === userId) {
+        sessions.splice(i, 1);
+      }
+    }
+  },
+};
+
