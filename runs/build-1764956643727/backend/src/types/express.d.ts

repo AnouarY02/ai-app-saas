@@ -1,0 +1,10 @@
+// Express type augmentation for req.user
+import { User } from '../entities/User';
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+    }
+  }
+}
+
