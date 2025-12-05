@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded font-medium transition;
+}
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+.btn-outline {
+  @apply border border-blue-600 text-blue-600 bg-white hover:bg-blue-50;
+}
+.input {
+  @apply border rounded px-3 py-2 w-full;
+}
+.input-bordered {
+  @apply border-gray-300 focus:border-blue-600 focus:ring focus:ring-blue-100;
+}
+
