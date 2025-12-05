@@ -1,0 +1,11 @@
+// Auth routes
+import { Router } from 'express';
+import { authController } from '../controllers/authController';
+import { authMiddleware } from '../middleware/authMiddleware';
+
+export const authRoutes = Router();
+
+authRoutes.post('/login', authController.login);
+authRoutes.post('/logout', authMiddleware, authController.logout);
+authRoutes.get('/me', authMiddleware, authController.me);
+
