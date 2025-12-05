@@ -1,0 +1,29 @@
+import React from 'react';
+
+interface FormFieldProps {
+  label: string;
+  type?: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+  autoComplete?: string;
+}
+
+const FormField: React.FC<FormFieldProps> = ({ label, type = 'text', name, value, onChange, error, autoComplete }) => (
+  <div className="form-field">
+    <label htmlFor={name}>{label}</label>
+    <input
+      id={name}
+      name={name}
+      type={type}
+      value={value}
+      onChange={onChange}
+      autoComplete={autoComplete}
+    />
+    {error && <div className="form-error">{error}</div>}
+  </div>
+);
+
+export default FormField;
+
