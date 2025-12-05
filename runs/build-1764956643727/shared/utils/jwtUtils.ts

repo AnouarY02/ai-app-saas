@@ -1,0 +1,19 @@
+// JWT utilities for token creation/verification
+import jwt from 'jsonwebtoken';
+
+export interface JwtPayload {
+  userId: string;
+  email: string;
+  name: string;
+  iat?: number;
+  exp?: number;
+}
+
+export function signJwt(payload: JwtPayload, secret: string, expiresIn: string | number): string {
+  return jwt.sign(payload, secret, { expiresIn });
+}
+
+export function verifyJwt(token: string, secret: string): JwtPayload {
+  return jwt.verify(token, secret) as JwtPayload;
+}
+
