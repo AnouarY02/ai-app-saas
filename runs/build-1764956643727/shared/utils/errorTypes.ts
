@@ -1,0 +1,21 @@
+// Error normalization helpers
+import { ERROR_CODES, ERROR_MESSAGES, ErrorCode } from '../constants/errors';
+import type { ApiError } from '../types/api';
+
+export function makeApiError(code: ErrorCode, details?: unknown): ApiError {
+  return {
+    code,
+    message: ERROR_MESSAGES[code] || 'Unknown error',
+    details,
+  };
+}
+
+export function isApiError(obj: unknown): obj is ApiError {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'code' in obj &&
+    'message' in obj
+  );
+}
+
