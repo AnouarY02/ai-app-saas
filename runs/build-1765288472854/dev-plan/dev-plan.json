@@ -1,0 +1,844 @@
+{
+  "_raw": {
+    "headers": {
+      "host": "localhost:5678",
+      "user-agent": "curl/8.16.0",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "content-length": "640"
+    },
+    "params": {},
+    "query": {},
+    "body": {
+      "app": {
+        "name": "AI Task Manager",
+        "shortName": "ai-task-manager",
+        "type": "saas",
+        "description": "Een professionele SaaS-app voor takenbeheer met gebruikersrollen, dashboard en API.",
+        "targetUsers": [
+          "MKB-teams",
+          "projectteams"
+        ],
+        "coreFeatures": [
+          "Gebruikersaccounts en rollen",
+          "Taken aanmaken/bewerken/verwijderen",
+          "Deadlines, status en notificaties",
+          "Dashboard met overzichten",
+          "REST API voor integraties"
+        ]
+      },
+      "meta": {
+        "requestId": "build-manual-test-001",
+        "requestedBy": "Anouar",
+        "source": "curl-manual"
+      }
+    },
+    "webhookUrl": "http://localhost:5678/webhook/af/core/build",
+    "executionMode": "production"
+  },
+  "buildId": "build-1765288472854",
+  "appName": "AI Task Manager",
+  "appDescription": "",
+  "client": null,
+  "tier": "small",
+  "blueprintId": "default-blueprint",
+  "config": {},
+  "userInput": "",
+  "hasMeaningfulInput": false,
+  "description": "Een professionele SaaS-app voor takenbeheer met gebruikersrollen, dashboard en API.",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "Volledig server-side rendered waar mogelijk, client components alleen waar nodig. UI consistent met shadcn/ui."
+  },
+  "domains": [
+    {
+      "name": "User Management",
+      "description": "Beheer van gebruikersaccounts, authenticatie en rollen.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Een geregistreerde gebruiker van het platform.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke gebruikers-ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Volledige naam"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "E-mailadres (uniek)"
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "required": true,
+              "description": "Gehasht wachtwoord"
+            },
+            {
+              "name": "role",
+              "type": "'admin' | 'member'",
+              "required": true,
+              "description": "Gebruikersrol"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Aanmaakdatum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Task Management",
+      "description": "Beheer van taken, status, deadlines en toewijzing.",
+      "entities": [
+        {
+          "name": "Task",
+          "description": "Een taak die door een gebruiker/team wordt beheerd.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke taak-ID"
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "description": "Titel van de taak"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Omschrijving van de taak"
+            },
+            {
+              "name": "status",
+              "type": "'todo' | 'in_progress' | 'done'",
+              "required": true,
+              "description": "Status van de taak"
+            },
+            {
+              "name": "dueDate",
+              "type": "Date",
+              "required": false,
+              "description": "Deadline van de taak"
+            },
+            {
+              "name": "assignedTo",
+              "type": "string | null",
+              "required": false,
+              "description": "Gebruikers-ID van toegewezene"
+            },
+            {
+              "name": "createdBy",
+              "type": "string",
+              "required": true,
+              "description": "Gebruikers-ID van aanmaker"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Aanmaakdatum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "description": "Notificaties voor taakdeadlines en statuswijzigingen.",
+      "entities": [
+        {
+          "name": "Notification",
+          "description": "Notificatie gekoppeld aan een gebruiker en taak.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke notificatie-ID"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Gebruikers-ID ontvanger"
+            },
+            {
+              "name": "taskId",
+              "type": "string",
+              "required": true,
+              "description": "Gerelateerde taak-ID"
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "required": true,
+              "description": "Berichttekst"
+            },
+            {
+              "name": "read",
+              "type": "boolean",
+              "required": true,
+              "description": "Is de notificatie gelezen?"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Aanmaakdatum"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Landing/dashboard pagina na login",
+      "file": "app/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Login pagina voor gebruikersauthenticatie",
+      "file": "app/login/page.tsx",
+      "layout": null
+    },
+    {
+      "path": "/register",
+      "type": "page",
+      "description": "Registratiepagina voor nieuwe gebruikers",
+      "file": "app/register/page.tsx",
+      "layout": null
+    },
+    {
+      "path": "/tasks",
+      "type": "page",
+      "description": "Overzicht van alle taken",
+      "file": "app/tasks/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/tasks/[id]",
+      "type": "page",
+      "description": "Detailpagina voor een specifieke taak",
+      "file": "app/tasks/[id]/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/notifications",
+      "type": "page",
+      "description": "Overzicht van notificaties voor de gebruiker",
+      "file": "app/notifications/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/users",
+      "type": "page",
+      "description": "Beheer van gebruikers (alleen admin)",
+      "file": "app/users/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/profile",
+      "type": "page",
+      "description": "Profielpagina van de ingelogde gebruiker",
+      "file": "app/profile/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/",
+      "type": "layout",
+      "description": "Root layout",
+      "file": "app/layout.tsx",
+      "layout": null
+    },
+    {
+      "path": "/(dashboard)",
+      "type": "layout",
+      "description": "Dashboard layout met navigatie",
+      "file": "app/(dashboard)/layout.tsx",
+      "layout": null
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "app/api/auth/login/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Authenticatie: login endpoint"
+    },
+    {
+      "path": "app/api/auth/register/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Authenticatie: registratie endpoint"
+    },
+    {
+      "path": "app/api/auth/logout/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Authenticatie: logout endpoint"
+    },
+    {
+      "path": "app/api/tasks/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Taken ophalen en aanmaken"
+    },
+    {
+      "path": "app/api/tasks/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Taak ophalen, bijwerken of verwijderen"
+    },
+    {
+      "path": "app/api/notifications/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "description": "Notificaties ophalen voor ingelogde gebruiker"
+    },
+    {
+      "path": "app/api/notifications/[id]/route.ts",
+      "methods": [
+        "PATCH"
+      ],
+      "description": "Notificatie als gelezen markeren"
+    },
+    {
+      "path": "app/api/users/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "description": "Gebruikerslijst ophalen (alleen admin)"
+    },
+    {
+      "path": "app/api/users/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Gebruiker ophalen, bijwerken of verwijderen (alleen admin)"
+    }
+  ],
+  "components": [
+    {
+      "name": "TaskList",
+      "description": "Lijstweergave van taken met status en deadline",
+      "file": "components/tasks/task-list.tsx",
+      "usedOn": [
+        "/tasks",
+        "/"
+      ]
+    },
+    {
+      "name": "TaskForm",
+      "description": "Formulier voor aanmaken/bewerken van een taak",
+      "file": "components/tasks/task-form.tsx",
+      "usedOn": [
+        "/tasks",
+        "/tasks/[id]"
+      ]
+    },
+    {
+      "name": "TaskDetail",
+      "description": "Detailweergave van een taak",
+      "file": "components/tasks/task-detail.tsx",
+      "usedOn": [
+        "/tasks/[id]"
+      ]
+    },
+    {
+      "name": "NotificationList",
+      "description": "Lijst van notificaties voor de gebruiker",
+      "file": "components/notifications/notification-list.tsx",
+      "usedOn": [
+        "/notifications",
+        "/"
+      ]
+    },
+    {
+      "name": "UserList",
+      "description": "Overzicht van gebruikers (alleen admin)",
+      "file": "components/users/user-list.tsx",
+      "usedOn": [
+        "/users"
+      ]
+    },
+    {
+      "name": "UserProfile",
+      "description": "Profielinformatie van de gebruiker",
+      "file": "components/users/user-profile.tsx",
+      "usedOn": [
+        "/profile"
+      ]
+    },
+    {
+      "name": "DashboardStats",
+      "description": "Kleine statistieken/overzichten op dashboard",
+      "file": "components/dashboard/dashboard-stats.tsx",
+      "usedOn": [
+        "/"
+      ]
+    },
+    {
+      "name": "MainNav",
+      "description": "Hoofdnavigatie voor dashboard",
+      "file": "components/layout/main-nav.tsx",
+      "usedOn": [
+        "/",
+        "/tasks",
+        "/users",
+        "/notifications",
+        "/profile"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React state + server actions + context voor auth",
+    "notes": "Lokaal React state voor forms/lijsten, context voor gebruikersauthenticatie, server actions voor mutaties."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store (singleton pattern per entity)",
+    "notes": "Voor MVP: data wordt in-memory opgeslagen in server memory. Eenvoudig te vervangen door een database in een latere fase."
+  },
+  "repoMeta": {
+    "name": "ai-task-manager-small",
+    "description": "AI-Fabriek app: AI Task Manager",
+    "private": true
+  },
+  "plan": {
+    "appName": "AI Task Manager",
+    "description": "Een professionele SaaS-app voor takenbeheer met gebruikersrollen, dashboard en API.",
+    "stack": {
+      "framework": "Next.js 14 App Router",
+      "language": "TypeScript",
+      "styling": [
+        "Tailwind CSS",
+        "shadcn/ui"
+      ],
+      "api": [
+        "Next.js Route Handlers (app/api)"
+      ],
+      "notes": "Volledig server-side rendered waar mogelijk, client components alleen waar nodig. UI consistent met shadcn/ui."
+    },
+    "domains": [
+      {
+        "name": "User Management",
+        "description": "Beheer van gebruikersaccounts, authenticatie en rollen.",
+        "entities": [
+          {
+            "name": "User",
+            "description": "Een geregistreerde gebruiker van het platform.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke gebruikers-ID"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Volledige naam"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "required": true,
+                "description": "E-mailadres (uniek)"
+              },
+              {
+                "name": "passwordHash",
+                "type": "string",
+                "required": true,
+                "description": "Gehasht wachtwoord"
+              },
+              {
+                "name": "role",
+                "type": "'admin' | 'member'",
+                "required": true,
+                "description": "Gebruikersrol"
+              },
+              {
+                "name": "createdAt",
+                "type": "Date",
+                "required": true,
+                "description": "Aanmaakdatum"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Task Management",
+        "description": "Beheer van taken, status, deadlines en toewijzing.",
+        "entities": [
+          {
+            "name": "Task",
+            "description": "Een taak die door een gebruiker/team wordt beheerd.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke taak-ID"
+              },
+              {
+                "name": "title",
+                "type": "string",
+                "required": true,
+                "description": "Titel van de taak"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "required": false,
+                "description": "Omschrijving van de taak"
+              },
+              {
+                "name": "status",
+                "type": "'todo' | 'in_progress' | 'done'",
+                "required": true,
+                "description": "Status van de taak"
+              },
+              {
+                "name": "dueDate",
+                "type": "Date",
+                "required": false,
+                "description": "Deadline van de taak"
+              },
+              {
+                "name": "assignedTo",
+                "type": "string | null",
+                "required": false,
+                "description": "Gebruikers-ID van toegewezene"
+              },
+              {
+                "name": "createdBy",
+                "type": "string",
+                "required": true,
+                "description": "Gebruikers-ID van aanmaker"
+              },
+              {
+                "name": "createdAt",
+                "type": "Date",
+                "required": true,
+                "description": "Aanmaakdatum"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Notification",
+        "description": "Notificaties voor taakdeadlines en statuswijzigingen.",
+        "entities": [
+          {
+            "name": "Notification",
+            "description": "Notificatie gekoppeld aan een gebruiker en taak.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke notificatie-ID"
+              },
+              {
+                "name": "userId",
+                "type": "string",
+                "required": true,
+                "description": "Gebruikers-ID ontvanger"
+              },
+              {
+                "name": "taskId",
+                "type": "string",
+                "required": true,
+                "description": "Gerelateerde taak-ID"
+              },
+              {
+                "name": "message",
+                "type": "string",
+                "required": true,
+                "description": "Berichttekst"
+              },
+              {
+                "name": "read",
+                "type": "boolean",
+                "required": true,
+                "description": "Is de notificatie gelezen?"
+              },
+              {
+                "name": "createdAt",
+                "type": "Date",
+                "required": true,
+                "description": "Aanmaakdatum"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "path": "/",
+        "type": "page",
+        "description": "Landing/dashboard pagina na login",
+        "file": "app/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/login",
+        "type": "page",
+        "description": "Login pagina voor gebruikersauthenticatie",
+        "file": "app/login/page.tsx",
+        "layout": null
+      },
+      {
+        "path": "/register",
+        "type": "page",
+        "description": "Registratiepagina voor nieuwe gebruikers",
+        "file": "app/register/page.tsx",
+        "layout": null
+      },
+      {
+        "path": "/tasks",
+        "type": "page",
+        "description": "Overzicht van alle taken",
+        "file": "app/tasks/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/tasks/[id]",
+        "type": "page",
+        "description": "Detailpagina voor een specifieke taak",
+        "file": "app/tasks/[id]/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/notifications",
+        "type": "page",
+        "description": "Overzicht van notificaties voor de gebruiker",
+        "file": "app/notifications/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/users",
+        "type": "page",
+        "description": "Beheer van gebruikers (alleen admin)",
+        "file": "app/users/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/profile",
+        "type": "page",
+        "description": "Profielpagina van de ingelogde gebruiker",
+        "file": "app/profile/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/",
+        "type": "layout",
+        "description": "Root layout",
+        "file": "app/layout.tsx",
+        "layout": null
+      },
+      {
+        "path": "/(dashboard)",
+        "type": "layout",
+        "description": "Dashboard layout met navigatie",
+        "file": "app/(dashboard)/layout.tsx",
+        "layout": null
+      }
+    ],
+    "apiRoutes": [
+      {
+        "path": "app/api/auth/login/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Authenticatie: login endpoint"
+      },
+      {
+        "path": "app/api/auth/register/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Authenticatie: registratie endpoint"
+      },
+      {
+        "path": "app/api/auth/logout/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Authenticatie: logout endpoint"
+      },
+      {
+        "path": "app/api/tasks/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Taken ophalen en aanmaken"
+      },
+      {
+        "path": "app/api/tasks/[id]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Taak ophalen, bijwerken of verwijderen"
+      },
+      {
+        "path": "app/api/notifications/route.ts",
+        "methods": [
+          "GET"
+        ],
+        "description": "Notificaties ophalen voor ingelogde gebruiker"
+      },
+      {
+        "path": "app/api/notifications/[id]/route.ts",
+        "methods": [
+          "PATCH"
+        ],
+        "description": "Notificatie als gelezen markeren"
+      },
+      {
+        "path": "app/api/users/route.ts",
+        "methods": [
+          "GET"
+        ],
+        "description": "Gebruikerslijst ophalen (alleen admin)"
+      },
+      {
+        "path": "app/api/users/[id]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Gebruiker ophalen, bijwerken of verwijderen (alleen admin)"
+      }
+    ],
+    "components": [
+      {
+        "name": "TaskList",
+        "description": "Lijstweergave van taken met status en deadline",
+        "file": "components/tasks/task-list.tsx",
+        "usedOn": [
+          "/tasks",
+          "/"
+        ]
+      },
+      {
+        "name": "TaskForm",
+        "description": "Formulier voor aanmaken/bewerken van een taak",
+        "file": "components/tasks/task-form.tsx",
+        "usedOn": [
+          "/tasks",
+          "/tasks/[id]"
+        ]
+      },
+      {
+        "name": "TaskDetail",
+        "description": "Detailweergave van een taak",
+        "file": "components/tasks/task-detail.tsx",
+        "usedOn": [
+          "/tasks/[id]"
+        ]
+      },
+      {
+        "name": "NotificationList",
+        "description": "Lijst van notificaties voor de gebruiker",
+        "file": "components/notifications/notification-list.tsx",
+        "usedOn": [
+          "/notifications",
+          "/"
+        ]
+      },
+      {
+        "name": "UserList",
+        "description": "Overzicht van gebruikers (alleen admin)",
+        "file": "components/users/user-list.tsx",
+        "usedOn": [
+          "/users"
+        ]
+      },
+      {
+        "name": "UserProfile",
+        "description": "Profielinformatie van de gebruiker",
+        "file": "components/users/user-profile.tsx",
+        "usedOn": [
+          "/profile"
+        ]
+      },
+      {
+        "name": "DashboardStats",
+        "description": "Kleine statistieken/overzichten op dashboard",
+        "file": "components/dashboard/dashboard-stats.tsx",
+        "usedOn": [
+          "/"
+        ]
+      },
+      {
+        "name": "MainNav",
+        "description": "Hoofdnavigatie voor dashboard",
+        "file": "components/layout/main-nav.tsx",
+        "usedOn": [
+          "/",
+          "/tasks",
+          "/users",
+          "/notifications",
+          "/profile"
+        ]
+      }
+    ],
+    "stateManagement": {
+      "strategy": "React state + server actions + context voor auth",
+      "notes": "Lokaal React state voor forms/lijsten, context voor gebruikersauthenticatie, server actions voor mutaties."
+    },
+    "dataLayer": {
+      "strategy": "In-memory store (singleton pattern per entity)",
+      "notes": "Voor MVP: data wordt in-memory opgeslagen in server memory. Eenvoudig te vervangen door een database in een latere fase."
+    }
+  }
+}
