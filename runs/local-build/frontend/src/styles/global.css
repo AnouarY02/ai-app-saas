@@ -1,0 +1,156 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f7f9fa;
+  color: #222;
+}
+
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-nav {
+  width: 220px;
+  background: #222a36;
+  color: #fff;
+  padding: 0;
+}
+.main-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.main-nav li {
+  border-bottom: 1px solid #2d3646;
+}
+.main-nav a {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.main-nav a.active, .main-nav a:hover {
+  background: #30405a;
+}
+.nav-icon {
+  margin-right: 0.75em;
+  font-size: 1.2em;
+}
+.nav-secondary {
+  margin-top: 2em;
+  border-top: 1px solid #2d3646;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.main-header {
+  background: #fff;
+  border-bottom: 1px solid #e4e8ee;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.user-info {
+  font-weight: 500;
+}
+.page-content {
+  padding: 2rem;
+  flex: 1;
+}
+
+.auth-layout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f9fa;
+}
+.auth-container {
+  background: #fff;
+  padding: 2.5rem 2rem 2rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(40, 60, 90, 0.12);
+  min-width: 320px;
+}
+
+.login-form, .profile-form, .settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.form-error {
+  color: #d32f2f;
+  background: #ffeaea;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  font-size: 0.96em;
+}
+.form-success {
+  color: #388e3c;
+  background: #eafbe7;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  font-size: 0.96em;
+}
+
+.btn {
+  padding: 0.7em 1.5em;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+  outline: none;
+}
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+.btn-primary:disabled {
+  background: #bcd2fa;
+  color: #fff;
+  cursor: not-allowed;
+}
+.btn-secondary {
+  background: #e4e8ee;
+  color: #222a36;
+}
+.btn-danger {
+  background: #d32f2f;
+  color: #fff;
+}
+.spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid #fff;
+  border-top: 2px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 0.5em;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
