@@ -1,0 +1,21 @@
+.dashboard {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+.profileBox {
+  background: #f4f8fd;
+  border-radius: 6px;
+  padding: 1.2rem 1rem;
+  margin-bottom: 1.7rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+.error {
+  color: #e53e3e;
+  margin-bottom: 1rem;
+}
+.info {
+  margin-top: 1.5rem;
+  color: #555;
+}
+
