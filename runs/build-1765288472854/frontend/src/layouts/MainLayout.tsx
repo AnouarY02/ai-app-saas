@@ -1,16 +1,14 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import MainNav from '../components/MainNav';
-import styles from './MainLayout.module.css';
+import Navigation from '../components/Navigation';
 
 const MainLayout: React.FC = () => (
-  <div className={styles.container}>
-    <MainNav />
-    <main className={styles.mainContent}>
+  <div className="min-h-screen flex flex-col">
+    <Navigation />
+    <main className="flex-1 container mx-auto px-4 py-8">
       <Outlet />
     </main>
   </div>
 );
 
 export default MainLayout;
-
