@@ -1,17 +1,14 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../state/AuthContext';
+import { useAuth } from '../state/authContext';
 
 const LogoutPage: React.FC = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const doLogout = async () => {
-      await logout();
-      navigate('/login');
-    };
-    doLogout();
+    logout();
+    navigate('/', { replace: true });
     // eslint-disable-next-line
   }, []);
 
@@ -19,4 +16,3 @@ const LogoutPage: React.FC = () => {
 };
 
 export default LogoutPage;
-
