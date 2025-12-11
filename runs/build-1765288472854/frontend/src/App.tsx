@@ -4,20 +4,16 @@ import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import LandingPage from './routes/LandingPage';
 import LoginPage from './routes/LoginPage';
-import RegisterPage from './routes/RegisterPage';
 import DashboardPage from './routes/DashboardPage';
-import AccountPage from './routes/AccountPage';
+import ProfilePage from './routes/ProfilePage';
+import SettingsPage from './routes/SettingsPage';
 import LogoutPage from './routes/LogoutPage';
 import NotFoundPage from './routes/NotFoundPage';
+import { AuthProvider } from './state/authContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import { useAuth } from './state/AuthContext';
 
-const App: React.FC = () => {
-  const { isLoading } = useAuth();
-  if (isLoading) {
-    return <div className="app-loading">Loading...</div>;
-  }
-  return (
+const App: React.FC = () => (
+  <AuthProvider>
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<LandingPage />} />
@@ -30,10 +26,18 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/account"
+          path="/profile"
           element={
             <ProtectedRoute>
-              <AccountPage />
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
             </ProtectedRoute>
           }
         />
@@ -41,19 +45,10 @@ const App: React.FC = () => {
       </Route>
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route
-          path="/logout"
-          element={
-            <ProtectedRoute>
-              <LogoutPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/logout" element={<LogoutPage />} />
       </Route>
     </Routes>
-  );
-};
+  </AuthProvider>
+);
 
 export default App;
-
