@@ -1,0 +1,10 @@
+FROM node:18-alpine
+WORKDIR /app
+COPY backend/package.json backend/package-lock.json ./backend/
+COPY shared/package.json shared/package-lock.json ./shared/
+RUN cd backend && npm install && cd ../shared && npm install && cd ..
+COPY backend ./backend
+COPY shared ./shared
+WORKDIR /app/backend
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
