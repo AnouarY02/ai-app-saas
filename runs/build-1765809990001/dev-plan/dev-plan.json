@@ -1,0 +1,840 @@
+{
+  "_raw": {
+    "headers": {
+      "host": "localhost:5678",
+      "user-agent": "curl/8.16.0",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "content-length": "264"
+    },
+    "params": {},
+    "query": {},
+    "body": {
+      "buildId": "build-1765809990001",
+      "prompt": "Een productieklare SaaS-app voor het beheren van padelbanen met gebruikers, reserveringen, betalingen en beheerfunctionaliteit.",
+      "meta": {
+        "initiator": "manual-run",
+        "source": "curl"
+      }
+    },
+    "webhookUrl": "http://localhost:5678/webhook/af/core/build",
+    "executionMode": "production"
+  },
+  "buildId": "build-1765809990001",
+  "appName": "Padelbaan SaaS",
+  "appDescription": "",
+  "client": null,
+  "tier": "small",
+  "blueprintId": "default-blueprint",
+  "config": {},
+  "userInput": "",
+  "hasMeaningfulInput": false,
+  "description": "Een productieklare SaaS-app voor het beheren van padelbanen met gebruikers, reserveringen, betalingen en beheerfunctionaliteit.",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "Volledig gebaseerd op Next.js 14 App Router, moderne TypeScript, en shadcn/ui voor consistente UI-componenten."
+  },
+  "domains": [
+    {
+      "name": "Gebruikersbeheer",
+      "description": "Beheer van gebruikersaccounts en rollen.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Een geregistreerde gebruiker van het platform.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke gebruikers-ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Volledige naam"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "E-mailadres"
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "required": true,
+              "description": "Gebruikersrol (admin, member)"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Aanmaakdatum"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Padelbanen",
+      "description": "Beheer van beschikbare padelbanen.",
+      "entities": [
+        {
+          "name": "Court",
+          "description": "Een padelbaan die gereserveerd kan worden.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke baan-ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van de baan"
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "required": true,
+              "description": "Locatie van de baan"
+            },
+            {
+              "name": "active",
+              "type": "boolean",
+              "required": true,
+              "description": "Beschikbaar voor reservering"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reserveringen",
+      "description": "Beheer van reserveringen van padelbanen.",
+      "entities": [
+        {
+          "name": "Reservation",
+          "description": "Een reservering van een padelbaan door een gebruiker.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke reserverings-ID"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "ID van de gebruiker"
+            },
+            {
+              "name": "courtId",
+              "type": "string",
+              "required": true,
+              "description": "ID van de baan"
+            },
+            {
+              "name": "startTime",
+              "type": "Date",
+              "required": true,
+              "description": "Starttijd van de reservering"
+            },
+            {
+              "name": "endTime",
+              "type": "Date",
+              "required": true,
+              "description": "Eindtijd van de reservering"
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "Status (pending, confirmed, cancelled)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Betalingen",
+      "description": "Beheer van betalingen voor reserveringen.",
+      "entities": [
+        {
+          "name": "Payment",
+          "description": "Betaling gekoppeld aan een reservering.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke betaling-ID"
+            },
+            {
+              "name": "reservationId",
+              "type": "string",
+              "required": true,
+              "description": "Gekoppelde reservering"
+            },
+            {
+              "name": "amount",
+              "type": "number",
+              "required": true,
+              "description": "Bedrag in euro's"
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "Status (pending, paid, failed)"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Datum van betaling"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Homepagina met overzicht en navigatie.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Loginpagina voor gebruikers.",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "layout",
+      "description": "Dashboardlayout voor ingelogde gebruikers.",
+      "file": "app/(dashboard)/layout.tsx",
+      "layout": null
+    },
+    {
+      "path": "/dashboard",
+      "type": "page",
+      "description": "Dashboardoverzicht met snelle toegang tot functies.",
+      "file": "app/(dashboard)/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/dashboard/courts",
+      "type": "page",
+      "description": "Overzicht en beheer van padelbanen.",
+      "file": "app/(dashboard)/courts/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/dashboard/reservations",
+      "type": "page",
+      "description": "Overzicht en beheer van reserveringen.",
+      "file": "app/(dashboard)/reservations/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/dashboard/payments",
+      "type": "page",
+      "description": "Overzicht van betalingen.",
+      "file": "app/(dashboard)/payments/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/dashboard/users",
+      "type": "page",
+      "description": "Gebruikersbeheer (alleen voor admins).",
+      "file": "app/(dashboard)/users/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "app/api/auth/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Authenticatie van gebruikers (login)."
+    },
+    {
+      "path": "app/api/users/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en aanmaken van gebruikers."
+    },
+    {
+      "path": "app/api/users/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en verwijderen van een gebruiker."
+    },
+    {
+      "path": "app/api/courts/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en aanmaken van padelbanen."
+    },
+    {
+      "path": "app/api/courts/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en verwijderen van een padelbaan."
+    },
+    {
+      "path": "app/api/reservations/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en aanmaken van reserveringen."
+    },
+    {
+      "path": "app/api/reservations/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en annuleren van reserveringen."
+    },
+    {
+      "path": "app/api/payments/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en aanmaken van betalingen."
+    },
+    {
+      "path": "app/api/payments/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "description": "Details en status bijwerken van betalingen."
+    }
+  ],
+  "components": [
+    {
+      "name": "Navbar",
+      "description": "Navigatiebalk voor de hele app.",
+      "file": "components/navbar.tsx",
+      "usedOn": [
+        "app/layout.tsx",
+        "app/(dashboard)/layout.tsx"
+      ]
+    },
+    {
+      "name": "CourtList",
+      "description": "Lijst met beschikbare padelbanen.",
+      "file": "components/courts/court-list.tsx",
+      "usedOn": [
+        "app/(dashboard)/courts/page.tsx"
+      ]
+    },
+    {
+      "name": "ReservationList",
+      "description": "Lijst met reserveringen.",
+      "file": "components/reservations/reservation-list.tsx",
+      "usedOn": [
+        "app/(dashboard)/reservations/page.tsx"
+      ]
+    },
+    {
+      "name": "PaymentList",
+      "description": "Lijst met betalingen.",
+      "file": "components/payments/payment-list.tsx",
+      "usedOn": [
+        "app/(dashboard)/payments/page.tsx"
+      ]
+    },
+    {
+      "name": "UserList",
+      "description": "Lijst met gebruikers (admin only).",
+      "file": "components/users/user-list.tsx",
+      "usedOn": [
+        "app/(dashboard)/users/page.tsx"
+      ]
+    },
+    {
+      "name": "CourtForm",
+      "description": "Formulier voor het toevoegen/bewerken van een padelbaan.",
+      "file": "components/courts/court-form.tsx",
+      "usedOn": [
+        "app/(dashboard)/courts/page.tsx"
+      ]
+    },
+    {
+      "name": "ReservationForm",
+      "description": "Formulier voor het aanmaken van een reservering.",
+      "file": "components/reservations/reservation-form.tsx",
+      "usedOn": [
+        "app/(dashboard)/reservations/page.tsx"
+      ]
+    },
+    {
+      "name": "PaymentForm",
+      "description": "Formulier voor het registreren van een betaling.",
+      "file": "components/payments/payment-form.tsx",
+      "usedOn": [
+        "app/(dashboard)/payments/page.tsx"
+      ]
+    },
+    {
+      "name": "UserForm",
+      "description": "Formulier voor het toevoegen/bewerken van een gebruiker.",
+      "file": "components/users/user-form.tsx",
+      "usedOn": [
+        "app/(dashboard)/users/page.tsx"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React state + server actions",
+    "notes": "Client-side state voor forms en interacties, server actions voor mutaties en data ophalen via API routes."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store",
+    "notes": "Voor MVP wordt een eenvoudige in-memory store gebruikt binnen de API-routes. Kan later vervangen worden door een database."
+  },
+  "repoMeta": {
+    "name": "padelbaan-saas-small",
+    "description": "AI-Fabriek app: Padelbaan SaaS",
+    "private": true
+  },
+  "plan": {
+    "appName": "Padelbaan SaaS",
+    "description": "Een productieklare SaaS-app voor het beheren van padelbanen met gebruikers, reserveringen, betalingen en beheerfunctionaliteit.",
+    "stack": {
+      "framework": "Next.js 14 App Router",
+      "language": "TypeScript",
+      "styling": [
+        "Tailwind CSS",
+        "shadcn/ui"
+      ],
+      "api": [
+        "Next.js Route Handlers (app/api)"
+      ],
+      "notes": "Volledig gebaseerd op Next.js 14 App Router, moderne TypeScript, en shadcn/ui voor consistente UI-componenten."
+    },
+    "domains": [
+      {
+        "name": "Gebruikersbeheer",
+        "description": "Beheer van gebruikersaccounts en rollen.",
+        "entities": [
+          {
+            "name": "User",
+            "description": "Een geregistreerde gebruiker van het platform.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke gebruikers-ID"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Volledige naam"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "required": true,
+                "description": "E-mailadres"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "required": true,
+                "description": "Gebruikersrol (admin, member)"
+              },
+              {
+                "name": "createdAt",
+                "type": "Date",
+                "required": true,
+                "description": "Aanmaakdatum"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Padelbanen",
+        "description": "Beheer van beschikbare padelbanen.",
+        "entities": [
+          {
+            "name": "Court",
+            "description": "Een padelbaan die gereserveerd kan worden.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke baan-ID"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Naam van de baan"
+              },
+              {
+                "name": "location",
+                "type": "string",
+                "required": true,
+                "description": "Locatie van de baan"
+              },
+              {
+                "name": "active",
+                "type": "boolean",
+                "required": true,
+                "description": "Beschikbaar voor reservering"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Reserveringen",
+        "description": "Beheer van reserveringen van padelbanen.",
+        "entities": [
+          {
+            "name": "Reservation",
+            "description": "Een reservering van een padelbaan door een gebruiker.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke reserverings-ID"
+              },
+              {
+                "name": "userId",
+                "type": "string",
+                "required": true,
+                "description": "ID van de gebruiker"
+              },
+              {
+                "name": "courtId",
+                "type": "string",
+                "required": true,
+                "description": "ID van de baan"
+              },
+              {
+                "name": "startTime",
+                "type": "Date",
+                "required": true,
+                "description": "Starttijd van de reservering"
+              },
+              {
+                "name": "endTime",
+                "type": "Date",
+                "required": true,
+                "description": "Eindtijd van de reservering"
+              },
+              {
+                "name": "status",
+                "type": "string",
+                "required": true,
+                "description": "Status (pending, confirmed, cancelled)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Betalingen",
+        "description": "Beheer van betalingen voor reserveringen.",
+        "entities": [
+          {
+            "name": "Payment",
+            "description": "Betaling gekoppeld aan een reservering.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke betaling-ID"
+              },
+              {
+                "name": "reservationId",
+                "type": "string",
+                "required": true,
+                "description": "Gekoppelde reservering"
+              },
+              {
+                "name": "amount",
+                "type": "number",
+                "required": true,
+                "description": "Bedrag in euro's"
+              },
+              {
+                "name": "status",
+                "type": "string",
+                "required": true,
+                "description": "Status (pending, paid, failed)"
+              },
+              {
+                "name": "createdAt",
+                "type": "Date",
+                "required": true,
+                "description": "Datum van betaling"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "path": "/",
+        "type": "page",
+        "description": "Homepagina met overzicht en navigatie.",
+        "file": "app/page.tsx",
+        "layout": "app/layout.tsx"
+      },
+      {
+        "path": "/login",
+        "type": "page",
+        "description": "Loginpagina voor gebruikers.",
+        "file": "app/login/page.tsx",
+        "layout": "app/layout.tsx"
+      },
+      {
+        "path": "/dashboard",
+        "type": "layout",
+        "description": "Dashboardlayout voor ingelogde gebruikers.",
+        "file": "app/(dashboard)/layout.tsx",
+        "layout": null
+      },
+      {
+        "path": "/dashboard",
+        "type": "page",
+        "description": "Dashboardoverzicht met snelle toegang tot functies.",
+        "file": "app/(dashboard)/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/dashboard/courts",
+        "type": "page",
+        "description": "Overzicht en beheer van padelbanen.",
+        "file": "app/(dashboard)/courts/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/dashboard/reservations",
+        "type": "page",
+        "description": "Overzicht en beheer van reserveringen.",
+        "file": "app/(dashboard)/reservations/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/dashboard/payments",
+        "type": "page",
+        "description": "Overzicht van betalingen.",
+        "file": "app/(dashboard)/payments/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/dashboard/users",
+        "type": "page",
+        "description": "Gebruikersbeheer (alleen voor admins).",
+        "file": "app/(dashboard)/users/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      }
+    ],
+    "apiRoutes": [
+      {
+        "path": "app/api/auth/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Authenticatie van gebruikers (login)."
+      },
+      {
+        "path": "app/api/users/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en aanmaken van gebruikers."
+      },
+      {
+        "path": "app/api/users/[id]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en verwijderen van een gebruiker."
+      },
+      {
+        "path": "app/api/courts/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en aanmaken van padelbanen."
+      },
+      {
+        "path": "app/api/courts/[id]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en verwijderen van een padelbaan."
+      },
+      {
+        "path": "app/api/reservations/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en aanmaken van reserveringen."
+      },
+      {
+        "path": "app/api/reservations/[id]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en annuleren van reserveringen."
+      },
+      {
+        "path": "app/api/payments/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en aanmaken van betalingen."
+      },
+      {
+        "path": "app/api/payments/[id]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH"
+        ],
+        "description": "Details en status bijwerken van betalingen."
+      }
+    ],
+    "components": [
+      {
+        "name": "Navbar",
+        "description": "Navigatiebalk voor de hele app.",
+        "file": "components/navbar.tsx",
+        "usedOn": [
+          "app/layout.tsx",
+          "app/(dashboard)/layout.tsx"
+        ]
+      },
+      {
+        "name": "CourtList",
+        "description": "Lijst met beschikbare padelbanen.",
+        "file": "components/courts/court-list.tsx",
+        "usedOn": [
+          "app/(dashboard)/courts/page.tsx"
+        ]
+      },
+      {
+        "name": "ReservationList",
+        "description": "Lijst met reserveringen.",
+        "file": "components/reservations/reservation-list.tsx",
+        "usedOn": [
+          "app/(dashboard)/reservations/page.tsx"
+        ]
+      },
+      {
+        "name": "PaymentList",
+        "description": "Lijst met betalingen.",
+        "file": "components/payments/payment-list.tsx",
+        "usedOn": [
+          "app/(dashboard)/payments/page.tsx"
+        ]
+      },
+      {
+        "name": "UserList",
+        "description": "Lijst met gebruikers (admin only).",
+        "file": "components/users/user-list.tsx",
+        "usedOn": [
+          "app/(dashboard)/users/page.tsx"
+        ]
+      },
+      {
+        "name": "CourtForm",
+        "description": "Formulier voor het toevoegen/bewerken van een padelbaan.",
+        "file": "components/courts/court-form.tsx",
+        "usedOn": [
+          "app/(dashboard)/courts/page.tsx"
+        ]
+      },
+      {
+        "name": "ReservationForm",
+        "description": "Formulier voor het aanmaken van een reservering.",
+        "file": "components/reservations/reservation-form.tsx",
+        "usedOn": [
+          "app/(dashboard)/reservations/page.tsx"
+        ]
+      },
+      {
+        "name": "PaymentForm",
+        "description": "Formulier voor het registreren van een betaling.",
+        "file": "components/payments/payment-form.tsx",
+        "usedOn": [
+          "app/(dashboard)/payments/page.tsx"
+        ]
+      },
+      {
+        "name": "UserForm",
+        "description": "Formulier voor het toevoegen/bewerken van een gebruiker.",
+        "file": "components/users/user-form.tsx",
+        "usedOn": [
+          "app/(dashboard)/users/page.tsx"
+        ]
+      }
+    ],
+    "stateManagement": {
+      "strategy": "React state + server actions",
+      "notes": "Client-side state voor forms en interacties, server actions voor mutaties en data ophalen via API routes."
+    },
+    "dataLayer": {
+      "strategy": "In-memory store",
+      "notes": "Voor MVP wordt een eenvoudige in-memory store gebruikt binnen de API-routes. Kan later vervangen worden door een database."
+    }
+  }
+}
