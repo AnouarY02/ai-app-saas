@@ -1,0 +1,746 @@
+{
+  "_raw": {
+    "headers": {
+      "host": "localhost:5678",
+      "user-agent": "curl/8.16.0",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "content-length": "1247"
+    },
+    "params": {},
+    "query": {},
+    "body": {
+      "buildId": "build-1765814800001",
+      "prompt": "Je bent WF1 (Core / Blueprint Engine) van de AI-Fabriek.\n\nDoel:\nZet deze opdracht om in een VOLLEDIGE, productieklare blueprint voor een SaaS-app.\n\nTaken:\n1. Analyseer het app-idee functioneel en technisch.\n2. Genereer een complete blueprint.json die ALLEEN ontwerp en structuur bevat (GEEN code).\n3. Deze blueprint is de enige bron voor WF2 (DevPlan) en WF3 (Codebuild).\n\nBlueprint MUST bevatten:\n- appName\n- korte productomschrijving\n- doelgebruikers\n- belangrijkste features (gegroepeerd per domein)\n- pagina-structuur (routes + pagina-doel)\n- datamodel (entiteiten, velden, relaties)\n- API-opzet (endpoints, method, auth ja/nee)\n- non-functional requirements (security, performance, schaalbaarheid)\n- frontend-architectuur (framework, routing, state)\n- backend-architectuur (stack, modules, services)\n\nHarde regels:\n- Output = EXACT ��n geldig JSON-object\n- Geen markdown, geen uitleg, geen extra tekst\n- Geen aannames buiten het app-idee\n- Alles moet logisch en consistent zijn\n\nApp-idee:\nEen moderne SaaS-app met een dashboard waarin gebruikers features kunnen beheren, demo-pagina�s kunnen bekijken en eenvoudig kunnen uitbreiden met nieuwe modules.\n"
+    },
+    "webhookUrl": "http://localhost:5678/webhook/af/core/build",
+    "executionMode": "production"
+  },
+  "buildId": "build-1765814800001",
+  "appName": "AI App Dashboard",
+  "appDescription": "",
+  "client": null,
+  "tier": "small",
+  "blueprintId": "default-blueprint",
+  "config": {},
+  "userInput": "",
+  "hasMeaningfulInput": false,
+  "description": "Een moderne SaaS-app met een dashboard waar gebruikers features kunnen beheren, demo-pagina’s kunnen bekijken en eenvoudig nieuwe modules kunnen toevoegen of uitbreiden.",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "Volledig server-side rendering waar mogelijk, client-side voor interactieve dashboard features. UI consistent met shadcn/ui."
+  },
+  "domains": [
+    {
+      "name": "User",
+      "description": "Beheer van gebruikersprofielen en authenticatie.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Een geregistreerde gebruiker van de SaaS-app.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke gebruikers-ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Volledige naam"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "E-mailadres"
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "required": true,
+              "description": "Gebruikersrol (admin/user)"
+            },
+            {
+              "name": "createdAt",
+              "type": "string",
+              "required": true,
+              "description": "Aanmaakdatum (ISO string)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Feature",
+      "description": "Beheer van features/modules binnen de app.",
+      "entities": [
+        {
+          "name": "Feature",
+          "description": "Een feature of module die beschikbaar is in de SaaS-app.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke feature-ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van de feature"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Beschrijving van de feature"
+            },
+            {
+              "name": "enabled",
+              "type": "boolean",
+              "required": true,
+              "description": "Of de feature actief is voor de gebruiker"
+            },
+            {
+              "name": "createdAt",
+              "type": "string",
+              "required": true,
+              "description": "Aanmaakdatum (ISO string)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Demo",
+      "description": "Demo-pagina’s en voorbeelden van modules.",
+      "entities": [
+        {
+          "name": "DemoPage",
+          "description": "Een demo-pagina die een feature of module demonstreert.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke demo-ID"
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "description": "Titel van de demo"
+            },
+            {
+              "name": "featureId",
+              "type": "string",
+              "required": true,
+              "description": "Relatie naar Feature"
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "required": true,
+              "description": "Demo content (HTML/Markdown)"
+            },
+            {
+              "name": "createdAt",
+              "type": "string",
+              "required": true,
+              "description": "Aanmaakdatum (ISO string)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Landing/dashboard pagina met overzicht van features en demo’s.",
+      "file": "app/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/features",
+      "type": "page",
+      "description": "Overzicht en beheer van beschikbare features/modules.",
+      "file": "app/features/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/features/new",
+      "type": "page",
+      "description": "Formulier om een nieuwe feature/module toe te voegen.",
+      "file": "app/features/new/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/features/[id]",
+      "type": "page",
+      "description": "Detailpagina van een specifieke feature/module.",
+      "file": "app/features/[id]/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/demos",
+      "type": "page",
+      "description": "Overzicht van demo-pagina’s.",
+      "file": "app/demos/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/demos/[id]",
+      "type": "page",
+      "description": "Detail/demo van een specifieke module/feature.",
+      "file": "app/demos/[id]/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/account",
+      "type": "page",
+      "description": "Gebruikersprofiel en accountinstellingen.",
+      "file": "app/account/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Loginpagina voor gebruikersauthenticatie.",
+      "file": "app/login/page.tsx",
+      "layout": null
+    },
+    {
+      "path": "/register",
+      "type": "page",
+      "description": "Registratiepagina voor nieuwe gebruikers.",
+      "file": "app/register/page.tsx",
+      "layout": null
+    },
+    {
+      "path": "/(dashboard)",
+      "type": "layout",
+      "description": "Hoofd-dashboard layout met navigatie en sidebar.",
+      "file": "app/(dashboard)/layout.tsx",
+      "layout": null
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "app/api/auth/login/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Login endpoint voor authenticatie."
+    },
+    {
+      "path": "app/api/auth/register/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Registratie endpoint voor nieuwe gebruikers."
+    },
+    {
+      "path": "app/api/auth/me/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "description": "Ophalen van huidige gebruikersinformatie."
+    },
+    {
+      "path": "app/api/features/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Features ophalen of nieuwe feature aanmaken."
+    },
+    {
+      "path": "app/api/features/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Feature detail ophalen, bijwerken of verwijderen."
+    },
+    {
+      "path": "app/api/demos/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Demo-pagina’s ophalen of nieuwe demo aanmaken."
+    },
+    {
+      "path": "app/api/demos/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Demo detail ophalen, bijwerken of verwijderen."
+    }
+  ],
+  "components": [
+    {
+      "name": "Sidebar",
+      "description": "Navigatie zijbalk voor dashboard routes.",
+      "file": "components/sidebar.tsx",
+      "usedOn": [
+        "app/(dashboard)/layout.tsx"
+      ]
+    },
+    {
+      "name": "FeatureList",
+      "description": "Lijstweergave van alle features/modules.",
+      "file": "components/features/feature-list.tsx",
+      "usedOn": [
+        "app/features/page.tsx",
+        "app/page.tsx"
+      ]
+    },
+    {
+      "name": "FeatureForm",
+      "description": "Formulier voor het toevoegen/bewerken van features.",
+      "file": "components/features/feature-form.tsx",
+      "usedOn": [
+        "app/features/new/page.tsx",
+        "app/features/[id]/page.tsx"
+      ]
+    },
+    {
+      "name": "DemoList",
+      "description": "Lijstweergave van alle demo-pagina’s.",
+      "file": "components/demos/demo-list.tsx",
+      "usedOn": [
+        "app/demos/page.tsx",
+        "app/page.tsx"
+      ]
+    },
+    {
+      "name": "DemoDetail",
+      "description": "Detailweergave van een demo-pagina.",
+      "file": "components/demos/demo-detail.tsx",
+      "usedOn": [
+        "app/demos/[id]/page.tsx"
+      ]
+    },
+    {
+      "name": "UserProfile",
+      "description": "Weergave en bewerking van gebruikersprofiel.",
+      "file": "components/user/user-profile.tsx",
+      "usedOn": [
+        "app/account/page.tsx"
+      ]
+    },
+    {
+      "name": "LoginForm",
+      "description": "Loginformulier voor authenticatie.",
+      "file": "components/auth/login-form.tsx",
+      "usedOn": [
+        "app/login/page.tsx"
+      ]
+    },
+    {
+      "name": "RegisterForm",
+      "description": "Registratieformulier voor nieuwe gebruikers.",
+      "file": "components/auth/register-form.tsx",
+      "usedOn": [
+        "app/register/page.tsx"
+      ]
+    },
+    {
+      "name": "Header",
+      "description": "Bovenbalk met appnaam en gebruikersmenu.",
+      "file": "components/header.tsx",
+      "usedOn": [
+        "app/(dashboard)/layout.tsx"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React state + server actions + context voor auth",
+    "notes": "Lokaal React state voor forms en UI, context voor gebruikersauthenticatie, server actions voor data-mutaties via API."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store (voor demo/MVP); eenvoudig te vervangen door database",
+    "notes": "Data wordt in-memory opgeslagen via API route handlers. Voor productie kan eenvoudig een database worden aangesloten."
+  },
+  "repoMeta": {
+    "name": "ai-app-dashboard-small",
+    "description": "AI-Fabriek app: AI App Dashboard",
+    "private": true
+  },
+  "plan": {
+    "appName": "AI App Dashboard",
+    "description": "Een moderne SaaS-app met een dashboard waar gebruikers features kunnen beheren, demo-pagina’s kunnen bekijken en eenvoudig nieuwe modules kunnen toevoegen of uitbreiden.",
+    "stack": {
+      "framework": "Next.js 14 App Router",
+      "language": "TypeScript",
+      "styling": [
+        "Tailwind CSS",
+        "shadcn/ui"
+      ],
+      "api": [
+        "Next.js Route Handlers (app/api)"
+      ],
+      "notes": "Volledig server-side rendering waar mogelijk, client-side voor interactieve dashboard features. UI consistent met shadcn/ui."
+    },
+    "domains": [
+      {
+        "name": "User",
+        "description": "Beheer van gebruikersprofielen en authenticatie.",
+        "entities": [
+          {
+            "name": "User",
+            "description": "Een geregistreerde gebruiker van de SaaS-app.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke gebruikers-ID"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Volledige naam"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "required": true,
+                "description": "E-mailadres"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "required": true,
+                "description": "Gebruikersrol (admin/user)"
+              },
+              {
+                "name": "createdAt",
+                "type": "string",
+                "required": true,
+                "description": "Aanmaakdatum (ISO string)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Feature",
+        "description": "Beheer van features/modules binnen de app.",
+        "entities": [
+          {
+            "name": "Feature",
+            "description": "Een feature of module die beschikbaar is in de SaaS-app.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke feature-ID"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Naam van de feature"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "required": false,
+                "description": "Beschrijving van de feature"
+              },
+              {
+                "name": "enabled",
+                "type": "boolean",
+                "required": true,
+                "description": "Of de feature actief is voor de gebruiker"
+              },
+              {
+                "name": "createdAt",
+                "type": "string",
+                "required": true,
+                "description": "Aanmaakdatum (ISO string)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Demo",
+        "description": "Demo-pagina’s en voorbeelden van modules.",
+        "entities": [
+          {
+            "name": "DemoPage",
+            "description": "Een demo-pagina die een feature of module demonstreert.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke demo-ID"
+              },
+              {
+                "name": "title",
+                "type": "string",
+                "required": true,
+                "description": "Titel van de demo"
+              },
+              {
+                "name": "featureId",
+                "type": "string",
+                "required": true,
+                "description": "Relatie naar Feature"
+              },
+              {
+                "name": "content",
+                "type": "string",
+                "required": true,
+                "description": "Demo content (HTML/Markdown)"
+              },
+              {
+                "name": "createdAt",
+                "type": "string",
+                "required": true,
+                "description": "Aanmaakdatum (ISO string)"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "path": "/",
+        "type": "page",
+        "description": "Landing/dashboard pagina met overzicht van features en demo’s.",
+        "file": "app/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/features",
+        "type": "page",
+        "description": "Overzicht en beheer van beschikbare features/modules.",
+        "file": "app/features/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/features/new",
+        "type": "page",
+        "description": "Formulier om een nieuwe feature/module toe te voegen.",
+        "file": "app/features/new/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/features/[id]",
+        "type": "page",
+        "description": "Detailpagina van een specifieke feature/module.",
+        "file": "app/features/[id]/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/demos",
+        "type": "page",
+        "description": "Overzicht van demo-pagina’s.",
+        "file": "app/demos/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/demos/[id]",
+        "type": "page",
+        "description": "Detail/demo van een specifieke module/feature.",
+        "file": "app/demos/[id]/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/account",
+        "type": "page",
+        "description": "Gebruikersprofiel en accountinstellingen.",
+        "file": "app/account/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/login",
+        "type": "page",
+        "description": "Loginpagina voor gebruikersauthenticatie.",
+        "file": "app/login/page.tsx",
+        "layout": null
+      },
+      {
+        "path": "/register",
+        "type": "page",
+        "description": "Registratiepagina voor nieuwe gebruikers.",
+        "file": "app/register/page.tsx",
+        "layout": null
+      },
+      {
+        "path": "/(dashboard)",
+        "type": "layout",
+        "description": "Hoofd-dashboard layout met navigatie en sidebar.",
+        "file": "app/(dashboard)/layout.tsx",
+        "layout": null
+      }
+    ],
+    "apiRoutes": [
+      {
+        "path": "app/api/auth/login/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Login endpoint voor authenticatie."
+      },
+      {
+        "path": "app/api/auth/register/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Registratie endpoint voor nieuwe gebruikers."
+      },
+      {
+        "path": "app/api/auth/me/route.ts",
+        "methods": [
+          "GET"
+        ],
+        "description": "Ophalen van huidige gebruikersinformatie."
+      },
+      {
+        "path": "app/api/features/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Features ophalen of nieuwe feature aanmaken."
+      },
+      {
+        "path": "app/api/features/[id]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Feature detail ophalen, bijwerken of verwijderen."
+      },
+      {
+        "path": "app/api/demos/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Demo-pagina’s ophalen of nieuwe demo aanmaken."
+      },
+      {
+        "path": "app/api/demos/[id]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Demo detail ophalen, bijwerken of verwijderen."
+      }
+    ],
+    "components": [
+      {
+        "name": "Sidebar",
+        "description": "Navigatie zijbalk voor dashboard routes.",
+        "file": "components/sidebar.tsx",
+        "usedOn": [
+          "app/(dashboard)/layout.tsx"
+        ]
+      },
+      {
+        "name": "FeatureList",
+        "description": "Lijstweergave van alle features/modules.",
+        "file": "components/features/feature-list.tsx",
+        "usedOn": [
+          "app/features/page.tsx",
+          "app/page.tsx"
+        ]
+      },
+      {
+        "name": "FeatureForm",
+        "description": "Formulier voor het toevoegen/bewerken van features.",
+        "file": "components/features/feature-form.tsx",
+        "usedOn": [
+          "app/features/new/page.tsx",
+          "app/features/[id]/page.tsx"
+        ]
+      },
+      {
+        "name": "DemoList",
+        "description": "Lijstweergave van alle demo-pagina’s.",
+        "file": "components/demos/demo-list.tsx",
+        "usedOn": [
+          "app/demos/page.tsx",
+          "app/page.tsx"
+        ]
+      },
+      {
+        "name": "DemoDetail",
+        "description": "Detailweergave van een demo-pagina.",
+        "file": "components/demos/demo-detail.tsx",
+        "usedOn": [
+          "app/demos/[id]/page.tsx"
+        ]
+      },
+      {
+        "name": "UserProfile",
+        "description": "Weergave en bewerking van gebruikersprofiel.",
+        "file": "components/user/user-profile.tsx",
+        "usedOn": [
+          "app/account/page.tsx"
+        ]
+      },
+      {
+        "name": "LoginForm",
+        "description": "Loginformulier voor authenticatie.",
+        "file": "components/auth/login-form.tsx",
+        "usedOn": [
+          "app/login/page.tsx"
+        ]
+      },
+      {
+        "name": "RegisterForm",
+        "description": "Registratieformulier voor nieuwe gebruikers.",
+        "file": "components/auth/register-form.tsx",
+        "usedOn": [
+          "app/register/page.tsx"
+        ]
+      },
+      {
+        "name": "Header",
+        "description": "Bovenbalk met appnaam en gebruikersmenu.",
+        "file": "components/header.tsx",
+        "usedOn": [
+          "app/(dashboard)/layout.tsx"
+        ]
+      }
+    ],
+    "stateManagement": {
+      "strategy": "React state + server actions + context voor auth",
+      "notes": "Lokaal React state voor forms en UI, context voor gebruikersauthenticatie, server actions voor data-mutaties via API."
+    },
+    "dataLayer": {
+      "strategy": "In-memory store (voor demo/MVP); eenvoudig te vervangen door database",
+      "notes": "Data wordt in-memory opgeslagen via API route handlers. Voor productie kan eenvoudig een database worden aangesloten."
+    }
+  }
+}
