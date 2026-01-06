@@ -1,30 +1,38 @@
 import { Request, Response, NextFunction } from 'express';
 import { userService } from '../services/userService';
-import { UpdateProfileRequest } from '../types';
-import { logger } from '../shared/logger';
+import { logger } from '../utils/logger';
 
-export const userController = {
-  async getProfile(req: Request, res: Response, next: NextFunction) {
-    try {
-      const userId = req.user?.id;
-      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-      const user = await userService.getProfile(userId);
-      res.status(200).json(user);
-    } catch (err) {
-      next(err);
+export async function getProfile(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.userId;
+    const user = await userService.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-  },
-
-  async updateProfile(req: Request, res: Response, next: NextFunction) {
-    try {
-      const userId = req.user?.id;
-      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-      const update: UpdateProfileRequest = req.body;
-      const user = await userService.updateProfile(userId, update);
-      logger.info(`User updated profile: ${userId}`);
-      res.status(200).json(user);
-    } catch (err) {
-      next(err);
-    }
+    res.status(200).json({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      createdAt: user.createdAt
+    });
+  } catch (err) {
+    next(err);
   }
-};
+}
+
+export async function updateProfile(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.userId;
+    const { name, email, password } = req.body;
+    const updated = await userService.updateProfile(userId, { name, email, password });
+    logger.info(`User ${userId} updated profile`);
+    res.status(200).json({
+      id: updated.id,
+      email: updated.email,
+      name: updated.name,
+      createdAt: updated.createdAt
+    });
+  } catch (err) {
+    next(err);
+  }
+}

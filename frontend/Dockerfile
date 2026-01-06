@@ -1,6 +1,6 @@
 # AI-Fabriek Generated Dockerfile - Frontend
 # Next.js 14 optimized multi-stage build
-# Build: clean-paths-final
+# Build: enforce3layers-hardgate-test-1
 
 # ============================================
 # Stage 1: Dependencies

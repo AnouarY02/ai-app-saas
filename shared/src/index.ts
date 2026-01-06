@@ -1,6 +1,18 @@
-// Barrel export for shared layer
-export * from './types';
+// Types
+export * from './types/user';
+export * from './types/session';
+export * from './types/auth';
+export * from './types/profile';
+export * from './types/apiError';
+
+// Validators
 export * from './validators/authSchemas';
+export * from './validators/profileSchemas';
+
+// Constants & Errors
+export * from './constants';
 export * from './errorTypes';
-export * from './utils/logger';
+
+// Utilities
+export * from './utils/format';
 export * from './apiClient';
