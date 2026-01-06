@@ -1,17 +1,17 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Navigation from '../components/Navigation';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import './MainLayout.css';
 
-const MainLayout: React.FC = () => {
-  return (
-    <div className="main-layout">
-      <Navigation />
-      <main className="main-content">
-        <Outlet />
-      </main>
-    </div>
-  );
-};
+const MainLayout: React.FC = () => (
+  <div className="layout-root">
+    <Header />
+    <main className="layout-main">
+      <Outlet />
+    </main>
+    <Footer />
+  </div>
+);
 
 export default MainLayout;

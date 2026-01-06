@@ -1,8 +1,10 @@
-FROM node:20-alpine
-WORKDIR /app
-COPY ../backend/package.json ../backend/pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install
-COPY ../backend .
-COPY ../shared ../shared
+FROM node:18-alpine
+WORKDIR /app/backend
+COPY backend/package.json backend/yarn.lock ../shared/package.json ../shared/yarn.lock ./
+RUN yarn install --frozen-lockfile
+COPY backend ./
+COPY shared ../shared
+ENV NODE_ENV=production
+RUN yarn build
 EXPOSE 3000
-CMD ["pnpm", "run", "dev:backend"]
+CMD ["yarn", "start"]

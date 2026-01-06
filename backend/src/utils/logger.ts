@@ -1,20 +1,10 @@
 export const logger = {
-  info: (msg: string, meta?: any) => {
-    if (meta) {
-      // eslint-disable-next-line no-console
-      console.log(`[INFO] ${msg}`, meta);
-    } else {
-      // eslint-disable-next-line no-console
-      console.log(`[INFO] ${msg}`);
+  info: (...args: any[]) => {
+    if (process.env.LOG_LEVEL !== 'error') {
+      console.log('[INFO]', ...args);
     }
   },
-  error: (msg: string, meta?: any) => {
-    if (meta) {
-      // eslint-disable-next-line no-console
-      console.error(`[ERROR] ${msg}`, meta);
-    } else {
-      // eslint-disable-next-line no-console
-      console.error(`[ERROR] ${msg}`);
-    }
+  error: (...args: any[]) => {
+    console.error('[ERROR]', ...args);
   }
 };

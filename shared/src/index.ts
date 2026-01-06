@@ -1,6 +1,6 @@
-// Barrel file for shared exports
-
+// shared/src/index.ts
 export * from './types';
-export * from './schemas';
-export * from './utils';
-export * from './errorTypes';
+export * from './api/types';
+export * from './utils/validation';
+export * from './utils/validationUtils';
+export * from './error';
