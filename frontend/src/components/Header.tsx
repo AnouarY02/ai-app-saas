@@ -1,21 +1,46 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import styles from './Header.module.css';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../state/AuthContext';
+import './Header.css';
 
-interface HeaderProps {
-  minimal?: boolean;
-}
+const navItems = [
+  { label: 'Home', path: '/', icon: '🏠' },
+  { label: 'Dashboard', path: '/dashboard', icon: '📊' },
+  { label: 'Settings', path: '/settings', icon: '⚙️' }
+];
 
-const Header: React.FC<HeaderProps> = ({ minimal }) => (
-  <header className={styles.header}>
-    <div className={styles.logo}><Link to="/">ai-app</Link></div>
-    {!minimal && (
-      <nav className={styles.nav}>
-        <Link to="/">Home</Link>
-        <Link to="/profile">Profile</Link>
+const Header: React.FC = () => {
+  const { user, logout } = useAuth();
+  const location = useLocation();
+  return (
+    <header className="header-root">
+      <div className="header-logo">
+        <Link to="/">AI App</Link>
+      </div>
+      <nav className="header-nav">
+        {navItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={
+              location.pathname === item.path ? 'nav-link active' : 'nav-link'
+            }
+          >
+            <span className="nav-icon">{item.icon}</span> {item.label}
+          </Link>
+        ))}
       </nav>
-    )}
-  </header>
-);
+      <div className="header-actions">
+        {user ? (
+          <button className="logout-btn" onClick={logout}>
+            Logout
+          </button>
+        ) : (
+          <Link to="/login" className="login-btn">Login</Link>
+        )}
+      </div>
+    </header>
+  );
+};
 
 export default Header;

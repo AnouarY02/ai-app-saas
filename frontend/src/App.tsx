@@ -1,38 +1,43 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import HomePage from './routes/HomePage';
 import LoginPage from './routes/LoginPage';
-import LogoutPage from './routes/LogoutPage';
-import ProfilePage from './routes/ProfilePage';
-import { useAuth } from './hooks/useAuth';
+import RegisterPage from './routes/RegisterPage';
+import DashboardPage from './routes/DashboardPage';
+import SettingsPage from './routes/SettingsPage';
+import AboutPage from './routes/AboutPage';
+import { useAuth } from './state/AuthContext';
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
-  if (loading) return <div style={{ textAlign: 'center', marginTop: 48 }}>Loading...</div>;
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
-};
+function ProtectedRoute() {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  return <Outlet />;
+}
 
 const App: React.FC = () => {
   return (
     <Routes>
+      {/* Public routes with MainLayout */}
       <Route element={<MainLayout />}>
-        <Route index element={<HomePage />} />
-        <Route
-          path="profile"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        {/* Protected routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Route>
       </Route>
+      {/* Auth routes with AuthLayout */}
       <Route element={<AuthLayout />}>
-        <Route path="login" element={<LoginPage />} />
-        <Route path="logout" element={<LogoutPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* 404 fallback */}
+      <Route path="*" element={<div className="flex flex-col items-center justify-center h-screen"><h1 className="text-3xl font-bold mb-4">404 - Not Found</h1><a href="/" className="text-blue-600 hover:underline">Go Home</a></div>} />
     </Routes>
   );
 };

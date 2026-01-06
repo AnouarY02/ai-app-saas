@@ -1,6 +1,6 @@
 # AI-Fabriek Generated Dockerfile - Backend
 # Multi-stage build voor optimale image size
-# Build: enforce3layers-hardgate-test-1
+# Build: clean-paths-final
 
 # ============================================
 # Stage 1: Dependencies

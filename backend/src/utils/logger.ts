@@ -1,17 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-
 export const logger = {
-  info: (msg: string) => {
+  info: (...args: any[]) => {
     if (process.env.LOG_LEVEL !== 'error') {
-      console.log(`[INFO] ${msg}`);
+      console.log('[INFO]', ...args);
     }
   },
-  error: (err: any) => {
-    console.error(`[ERROR]`, err);
+  error: (...args: any[]) => {
+    console.error('[ERROR]', ...args);
   }
 };
-
-export function requestLogger(req: Request, res: Response, next: NextFunction) {
-  logger.info(`${req.method} ${req.url}`);
-  next();
-}
