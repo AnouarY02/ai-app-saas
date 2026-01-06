@@ -1,36 +1,30 @@
+// Main Express server bootstrap
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import apiRouter from './routes/api';
-import { logger, requestLogger } from './utils/logger';
-import { errorHandler, notFoundHandler } from './middleware/error';
-
-// Load env vars
-dotenv.config();
-
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-const NODE_ENV = process.env.NODE_ENV || 'development';
+import { errorHandler, notFoundHandler } from './middleware/errorHandlers';
+import { logger } from './utils/logger';
 
 const app = express();
 
-// CORS
+// CORS setup (allow all origins for dev, restrict via env if needed)
 app.use(cors({
-  origin: process.env.FRONTEND_URL || true,
+  origin: process.env.FRONTEND_URL || '*',
   credentials: true
 }));
 
-// Logging
-app.use(requestLogger);
-
-// Body parser
+// JSON body parser
 app.use(express.json());
 
-// Health check
-app.get('/health', (req, res) => {
-  res.status(200).json({ ok: true, appName: 'ai-app', buildId: 'enforce3layers-hardgate-test-1' });
+// Simple request logger
+app.use(logger);
+
+// Health check endpoint
+app.get('/health', (_req, res) => {
+  res.status(200).json({ ok: true, appName: process.env.APP_NAME || 'ai-app', buildId: process.env.BUILD_ID || 'quicktest' });
 });
 
-// API routes
+// API routes (none defined, but placeholder)
 app.use('/api', apiRouter);
 
 // 404 handler
@@ -39,6 +33,9 @@ app.use(notFoundHandler);
 // Error handler
 app.use(errorHandler);
 
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
+
 app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT} [${NODE_ENV}]`);
+  // eslint-disable-next-line no-console
+  console.log(`[ai-app] Backend listening on port ${PORT}`);
 });

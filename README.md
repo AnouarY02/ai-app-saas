@@ -1,110 +1,91 @@
-# AI App SaaS Monorepo
+# ai-app
 
 ## Project Overview
-A modern SaaS starter with React (Vite) frontend, Node.js (Express) backend, and shared TypeScript code. Managed as a monorepo for developer efficiency.
+A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite)
-- `backend/` – Express API server
-- `shared/` – Shared TypeScript types and utilities
-- `infra/` – Tooling, configs, and automation scripts
+- `frontend/` – React app (Vite, TailwindCSS)
+- `backend/` – Node.js Express API (TypeScript)
+- `shared/` – Shared TypeScript utilities and types
+- `infra/` – Infrastructure, configuration, and tooling
 
 ## Prerequisites
 - [Node.js](https://nodejs.org/) >= 18.x
-- [pnpm](https://pnpm.io/) (recommended) or npm
-- Docker (optional, for containerized dev)
+- [Yarn](https://yarnpkg.com/) (v1 or v3)
+- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
 ## Environment Variables
-Create a `.env` file in the root. Required variables:
+Copy `.env.example` to `.env` and fill in the required values:
 
-```
-NODE_ENV=development
-PORT=3000
-SESSION_SECRET=your-session-secret
-```
+**Required:**
+- `NODE_ENV` (e.g. development, production)
+- `JWT_SECRET` (your JWT signing secret)
+- `PORT` (backend port, default: 3000)
 
-Optional variables:
+**Optional:**
+- `FRONTEND_URL` (default: http://localhost:5173)
+- `BACKEND_URL` (default: http://localhost:3000)
+- `LOG_LEVEL` (e.g. info, debug)
 
-```
-FRONTEND_URL=http://localhost:5173
-BACKEND_URL=http://localhost:3000
-LOG_LEVEL=info
-```
+## Local Development
 
-## Installation
-1. Clone the repo:
+### With Docker
+1. Copy `.env.example` to `.env` and edit as needed.
+2. Run:
    ```sh
-   git clone https://github.com/AnouarY02/ai-app-saas.git
-   cd ai-app-saas
+   yarn install
+   yarn start
    ```
+3. Frontend: http://localhost:5173  
+   Backend: http://localhost:3000
+
+### Without Docker
+1. Copy `.env.example` to `.env` and edit as needed.
 2. Install dependencies:
    ```sh
-   pnpm install
+   yarn install
    ```
+3. In one terminal, run:
+   ```sh
+   yarn dev
+   ```
+   This starts both frontend and backend concurrently.
 
-## Running Locally
-- **With pnpm:**
-  ```sh
-  pnpm dev
-  ```
-  - Frontend: http://localhost:5173
-  - Backend: http://localhost:3000
+## Scripts Reference
+- `yarn dev` – Start frontend & backend in dev mode (concurrently)
+- `yarn build` – Build both frontend and backend
+- `yarn lint` – Lint all code (TypeScript, React)
+- `yarn format` – Format codebase with Prettier
+- `yarn start` – Start all services via Docker Compose
 
-- **With Docker Compose:**
-  ```sh
-  docker-compose up --build
-  ```
+## Frontend Setup
+- Located in `frontend/`
+- Built with React, Vite, TailwindCSS
+- Dev server runs on port 5173
+- See `frontend/README.md` for details
 
-## Development Workflow
-- Code in `frontend/`, `backend/`, or `shared/` as needed.
-- Shared code is imported via workspace references.
-- Use `pnpm dev` for concurrent local dev.
+## Backend Setup
+- Located in `backend/`
+- Node.js, Express, TypeScript
+- Dev server runs on port 3000
+- See `backend/README.md` for details
 
-## Build & Production
-- Build all apps:
-  ```sh
-  pnpm build
-  ```
-- Start backend (after build):
-  ```sh
-  pnpm start
-  ```
-- For production Docker, adjust Dockerfiles and use `docker-compose -f docker-compose.yml up --build`.
+## Shared Utilities
+- Located in `shared/`
+- Common TypeScript types and utilities for both frontend and backend
 
-## Linting & Formatting
-- Lint all code:
-  ```sh
-  pnpm lint
-  ```
-- Check formatting:
-  ```sh
-  pnpm format
-  ```
-- Configs in `infra/.eslintrc.json` and `infra/.prettierrc`.
+## Code Quality (Linting & Formatting)
+- ESLint config: `infra/.eslintrc.json`
+- Prettier config: `infra/.prettierrc`
+- Run `yarn lint` and `yarn format` at repo root
 
-## Testing
-- Run all tests:
-  ```sh
-  pnpm test
-  ```
-- Uses [Vitest](https://vitest.dev/) for unit/integration tests.
-
-## Docker Usage
-- Build and run both frontend and backend:
-  ```sh
-  docker-compose up --build
-  ```
-- Edit `.env` as needed for secrets and URLs.
-
-## API Endpoints
-- All backend API routes are served from `/api` (see `backend/src/routes/api.ts`).
-- Example: `GET /api/users`
-
-## Authentication Flow
-- Session-based authentication with `SESSION_SECRET`.
-- Frontend authenticates via API endpoints; see `frontend/src/hooks/useAuth.ts`.
+## Deployment
+- Use Docker Compose for local or production deployment
+- Build images with `docker-compose build`
+- Start services with `docker-compose up -d`
 
 ## Troubleshooting & FAQ
-- **Port conflicts?** Stop other apps using 3000/5173 or change `PORT`/`FRONTEND_URL`.
-- **Dependency issues?** Try `pnpm install --force`.
-- **Docker issues?** Ensure Docker Desktop is running and ports are available.
+- Ensure all required environment variables are set in `.env`
+- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
+- For dependency issues, run `yarn install` at the repo root
+- For more, see infra/README.md
