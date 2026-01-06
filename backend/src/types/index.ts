@@ -1,56 +1,62 @@
-export interface User {
+export type User = {
   id: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
+  name: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
-export interface Session {
+export type Session = {
   id: string;
   userId: string;
   token: string;
   expiresAt: Date;
   createdAt: Date;
-}
+};
 
-export interface AIRequest {
-  id: string;
-  userId: string;
-  input: string;
-  output: string;
-  status: 'pending' | 'completed' | 'failed';
-  createdAt: Date;
-  updatedAt: Date;
-}
+export type AuthResponse = {
+  user: Omit<User, 'passwordHash'>;
+  token: string;
+};
 
-export interface LoginRequest {
+export type RegisterRequest = {
   email: string;
   password: string;
-}
+  name?: string;
+};
 
-export interface LoginResponse {
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type LogoutRequest = {
   token: string;
-  user: Omit<User, 'passwordHash'>;
-}
+};
 
-export interface LogoutRequest {}
-export interface LogoutResponse { success: boolean; }
-
-export interface UpdateSettingsRequest {
+export type UpdateProfileRequest = {
+  name?: string;
   email?: string;
   password?: string;
-}
+};
 
-export interface APIError {
-  error: string;
-  details?: any;
-}
+export type UserProfile = {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
+};
+
+export type SuccessResponse = {
+  success: boolean;
+};
 
 declare global {
   namespace Express {
     interface Request {
       user?: { id: string; email: string };
+      token?: string;
     }
   }
 }

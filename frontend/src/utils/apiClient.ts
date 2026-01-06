@@ -1,51 +1,50 @@
 import axios from 'axios';
-import {
-  User,
-  LoginResponse,
-  AIRequest,
-  UpdateSettingsRequest
-} from '../types/apiTypes';
 
-const api = axios.create({
-  baseURL: '/api',
-});
+const API_BASE = '/api';
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers = config.headers || {};
-    config.headers['Authorization'] = `Bearer ${token}`;
-  }
-  return config;
-});
+export interface User {
+  id: string;
+  email: string;
+  name?: string;
+  createdAt: string;
+}
 
-export async function loginRequest(email: string, password: string): Promise<LoginResponse> {
-  const res = await api.post('/auth/login', { email, password });
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+export async function loginRequest(email: string, password: string): Promise<AuthResponse> {
+  const res = await axios.post(`${API_BASE}/auth/login`, { email, password });
   return res.data;
 }
 
-export async function logoutRequest(): Promise<void> {
-  await api.post('/auth/logout');
-}
-
-export async function getCurrentUser(): Promise<User> {
-  const res = await api.get('/user/me');
+export async function registerRequest(email: string, password: string, name?: string): Promise<AuthResponse> {
+  const res = await axios.post(`${API_BASE}/auth/register`, { email, password, name });
   return res.data;
 }
 
-export async function updateUserSettings(
-  data: UpdateSettingsRequest
+export async function logoutRequest(token: string): Promise<void> {
+  await axios.post(
+    `${API_BASE}/auth/logout`,
+    { token },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+}
+
+export async function getProfile(token: string): Promise<User> {
+  const res = await axios.get(`${API_BASE}/users/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+}
+
+export async function updateProfile(
+  token: string,
+  data: { name?: string; email?: string; password?: string }
 ): Promise<User> {
-  const res = await api.put('/user/settings', data);
-  return res.data;
-}
-
-export async function createAIRequest(input: string): Promise<AIRequest> {
-  const res = await api.post('/ai/requests', { input });
-  return res.data;
-}
-
-export async function listAIRequests(): Promise<AIRequest[]> {
-  const res = await api.get('/ai/requests');
+  const res = await axios.put(`${API_BASE}/users/me`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return res.data;
 }

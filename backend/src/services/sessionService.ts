@@ -1,26 +1,28 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Session } from '../types';
+import { sessionRepository } from '../repositories/sessionRepository';
 
-const sessions: Session[] = [];
+const SESSION_EXPIRES_IN_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 export const sessionService = {
-  async createSession(userId: string, token: string): Promise<Session> {
-    const expiresAt = new Date(Date.now() + (parseInt(process.env.SESSION_EXPIRY_MINUTES || '60', 10) * 60 * 1000));
+  async create(userId: string, token: string): Promise<Session> {
+    const now = new Date();
     const session: Session = {
       id: uuidv4(),
       userId,
       token,
-      expiresAt,
-      createdAt: new Date()
+      expiresAt: new Date(now.getTime() + SESSION_EXPIRES_IN_MS),
+      createdAt: now
     };
-    sessions.push(session);
+    await sessionRepository.create(session);
     return session;
   },
-  async deleteSessionByToken(token: string): Promise<void> {
-    const idx = sessions.findIndex(s => s.token === token);
-    if (idx !== -1) sessions.splice(idx, 1);
-  },
+
   async findByToken(token: string): Promise<Session | undefined> {
-    return sessions.find(s => s.token === token);
+    return sessionRepository.findByToken(token);
+  },
+
+  async logout(token: string): Promise<void> {
+    await sessionRepository.deleteByToken(token);
   }
 };

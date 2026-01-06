@@ -1,6 +1,6 @@
 # AI-Fabriek Generated Dockerfile - Frontend
 # Next.js 14 optimized multi-stage build
-# Build: clean-final-test
+# Build: clean-paths-final
 
 # ============================================
 # Stage 1: Dependencies

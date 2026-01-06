@@ -3,4 +3,8 @@ dist/
 build/
 .env
 .env.*
+yarn-error.log
+*.log
 .DS_Store
+frontend/dist/
+backend/dist/

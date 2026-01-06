@@ -1,10 +1,11 @@
 FROM node:18-alpine
-WORKDIR /app/frontend
-COPY frontend/package.json frontend/yarn.lock ../shared/package.json ../shared/yarn.lock ./
+WORKDIR /app
+COPY package.json yarn.lock ./
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
 RUN yarn install --frozen-lockfile
-COPY frontend ./
-COPY shared ../shared
-ENV NODE_ENV=production
-RUN yarn build
-EXPOSE 3000
-CMD ["yarn", "start"]
+COPY frontend ./frontend
+COPY shared ./shared
+WORKDIR /app/frontend
+EXPOSE 5173
+CMD ["yarn", "dev"]
