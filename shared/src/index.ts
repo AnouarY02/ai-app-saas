@@ -1,6 +1,6 @@
-// shared/src/index.ts
+// Barrel export for shared layer
 export * from './types';
-export * from './api/types';
-export * from './utils/validation';
-export * from './utils/validationUtils';
-export * from './error';
+export * from './validators/authSchemas';
+export * from './errorTypes';
+export * from './utils/logger';
+export * from './apiClient';

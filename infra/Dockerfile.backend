@@ -1,10 +1,12 @@
 FROM node:18-alpine
-WORKDIR /app/backend
-COPY backend/package.json backend/yarn.lock ../shared/package.json ../shared/yarn.lock ./
+WORKDIR /app
+COPY package.json yarn.lock ./
+COPY backend/package.json ./backend/
+COPY shared/package.json ./shared/
 RUN yarn install --frozen-lockfile
-COPY backend ./
-COPY shared ../shared
-ENV NODE_ENV=production
+COPY backend ./backend
+COPY shared ./shared
+WORKDIR /app/backend
 RUN yarn build
 EXPOSE 3000
 CMD ["yarn", "start"]

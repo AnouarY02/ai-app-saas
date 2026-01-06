@@ -1,71 +1,84 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, LoginResponse } from '../types/apiTypes';
-import { loginRequest, logoutRequest, getCurrentUser } from '../utils/apiClient';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { loginRequest, registerRequest, logoutRequest, getProfile } from '../utils/apiClient';
 
-interface AuthContextType {
+export interface User {
+  id: string;
+  email: string;
+  name?: string;
+  createdAt: string;
+}
+
+interface AuthContextProps {
   user: User | null;
+  token: string | null;
   loading: boolean;
-  error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  register: (email: string, password: string, name?: string) => Promise<void>;
+  logout: () => Promise<void>;
   setUser: (user: User | null) => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+const TOKEN_KEY = 'aiapp_token';
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    const storedToken = localStorage.getItem(TOKEN_KEY);
+    if (storedToken) {
+      setToken(storedToken);
+      // Try to fetch user profile
+      getProfile(storedToken)
+        .then(profile => {
+          setUser(profile);
+        })
+        .catch(() => {
+          setUser(null);
+          setToken(null);
+          localStorage.removeItem(TOKEN_KEY);
+        })
+        .finally(() => setLoading(false));
+    } else {
       setLoading(false);
-      return;
     }
-    getCurrentUser()
-      .then((u) => setUser(u))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
   }, []);
 
   const login = async (email: string, password: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res: LoginResponse = await loginRequest(email, password);
-      localStorage.setItem('token', res.token);
-      setUser(res.user);
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
+    const { user, token } = await loginRequest(email, password);
+    setUser(user);
+    setToken(token);
+    localStorage.setItem(TOKEN_KEY, token);
+  };
+
+  const register = async (email: string, password: string, name?: string) => {
+    const { user, token } = await registerRequest(email, password, name);
+    setUser(user);
+    setToken(token);
+    localStorage.setItem(TOKEN_KEY, token);
   };
 
   const logout = async () => {
-    setLoading(true);
-    try {
-      await logoutRequest();
-    } catch {
-      // ignore
+    if (token) {
+      await logoutRequest(token);
     }
-    localStorage.removeItem('token');
     setUser(null);
-    setLoading(false);
+    setToken(null);
+    localStorage.removeItem(TOKEN_KEY);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, logout, setUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
+export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
-};
+}

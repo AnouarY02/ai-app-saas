@@ -1,127 +1,91 @@
-# ai-app SaaS Monorepo
+# ai-app
 
 ## Project Overview
-A SaaS AI application with a React frontend and a Node.js (Express) backend, written in TypeScript. The monorepo structure enables shared code and types between frontend and backend for maximum productivity and type safety.
+A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
 
 ## Monorepo Structure
-- `frontend/` – React + TypeScript UI
-- `backend/` – Node.js + Express API (TypeScript)
-- `shared/` – Shared types and utilities (TypeScript)
-- `infra/` – Infrastructure, configs, and tooling
+- `frontend/` – React app (Vite, TailwindCSS)
+- `backend/` – Node.js Express API (TypeScript)
+- `shared/` – Shared TypeScript utilities and types
+- `infra/` – Infrastructure, configuration, and tooling
 
 ## Prerequisites
 - [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://classic.yarnpkg.com/) (workspaces support)
-- Docker & Docker Compose (for containerized development)
+- [Yarn](https://yarnpkg.com/) (v1 or v3)
+- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
 ## Environment Variables
-Create a `.env` file in the root directory. Example:
-
-```
-NODE_ENV=development
-PORT=3000
-JWT_SECRET=your_jwt_secret_here
-FRONTEND_URL=http://localhost:3001
-# Optional
-BACKEND_URL=http://localhost:3000
-LOG_LEVEL=info
-SESSION_EXPIRY_MINUTES=60
-```
+Copy `.env.example` to `.env` and fill in the required values:
 
 **Required:**
-- `NODE_ENV` – Node environment (development/production)
-- `PORT` – Port for backend API
-- `JWT_SECRET` – Secret for JWT signing
-- `FRONTEND_URL` – URL where frontend is served
+- `NODE_ENV` (e.g. development, production)
+- `JWT_SECRET` (your JWT signing secret)
+- `PORT` (backend port, default: 3000)
 
 **Optional:**
-- `BACKEND_URL` – API endpoint for frontend
-- `LOG_LEVEL` – Logging verbosity
-- `SESSION_EXPIRY_MINUTES` – Session expiry duration
+- `FRONTEND_URL` (default: http://localhost:5173)
+- `BACKEND_URL` (default: http://localhost:3000)
+- `LOG_LEVEL` (e.g. info, debug)
 
-## Local Development (Yarn/NPM)
-Install dependencies:
+## Local Development
 
-```
-yarn install
-```
+### With Docker
+1. Copy `.env.example` to `.env` and edit as needed.
+2. Run:
+   ```sh
+   yarn install
+   yarn start
+   ```
+3. Frontend: http://localhost:5173  
+   Backend: http://localhost:3000
 
-Start both frontend and backend in dev mode:
-
-```
-yarn dev
-```
-
-Or start individually:
-
-```
-yarn start:frontend
-# or
-yarn start:backend
-```
-
-Build all packages:
-
-```
-yarn build
-```
-
-## Running with Docker Compose
-1. Copy `.env.example` to `.env` and fill in the secrets.
-2. Build and start all services:
-
-```
-yarn docker:up
-```
-
-- Frontend: [http://localhost:3001](http://localhost:3001)
-- Backend: [http://localhost:3000](http://localhost:3000)
-
-Stop services:
-
-```
-yarn docker:down
-```
+### Without Docker
+1. Copy `.env.example` to `.env` and edit as needed.
+2. Install dependencies:
+   ```sh
+   yarn install
+   ```
+3. In one terminal, run:
+   ```sh
+   yarn dev
+   ```
+   This starts both frontend and backend concurrently.
 
 ## Scripts Reference
-- `yarn dev` – Start frontend and backend in dev mode
-- `yarn build` – Build all workspaces
-- `yarn lint` – Lint all code
-- `yarn test` – Run all tests
-- `yarn start:frontend` – Start frontend only
-- `yarn start:backend` – Start backend only
-- `yarn docker:up` – Start all services with Docker Compose
-- `yarn docker:down` – Stop all Docker Compose services
+- `yarn dev` – Start frontend & backend in dev mode (concurrently)
+- `yarn build` – Build both frontend and backend
+- `yarn lint` – Lint all code (TypeScript, React)
+- `yarn format` – Format codebase with Prettier
+- `yarn start` – Start all services via Docker Compose
 
-## API Overview
-The backend exposes RESTful endpoints for AI operations and authentication. See `backend/src/routes/api.ts` and `backend/src/controllers/aiController.ts` for details.
+## Frontend Setup
+- Located in `frontend/`
+- Built with React, Vite, TailwindCSS
+- Dev server runs on port 5173
+- See `frontend/README.md` for details
 
-## Frontend Overview
-The frontend is a React app using TypeScript and React Router. API calls are made via `frontend/src/utils/apiClient.ts`.
+## Backend Setup
+- Located in `backend/`
+- Node.js, Express, TypeScript
+- Dev server runs on port 3000
+- See `backend/README.md` for details
 
-## Testing
-Run all tests (frontend, backend, shared):
+## Shared Utilities
+- Located in `shared/`
+- Common TypeScript types and utilities for both frontend and backend
 
-```
-yarn test
-```
+## Code Quality (Linting & Formatting)
+- ESLint config: `infra/.eslintrc.json`
+- Prettier config: `infra/.prettierrc`
+- Run `yarn lint` and `yarn format` at repo root
 
-## Linting & Formatting
-- Lint code:
-  ```
-  yarn lint
-  ```
-- Format code (Prettier):
-  ```
-  yarn prettier --write .
-  ```
+## Deployment
+- Use Docker Compose for local or production deployment
+- Build images with `docker-compose build`
+- Start services with `docker-compose up -d`
 
-## Deployment Notes
-- Use Docker Compose for local dev and simple deployments.
-- For production, build images and deploy via your preferred orchestrator (Kubernetes, ECS, etc).
-- Ensure secrets are set via environment variables.
-
-## Troubleshooting
-- Ensure all required environment variables are set in `.env`.
-- If ports are in use, update `PORT` and `FRONTEND_URL` accordingly.
-- For dependency issues, try `yarn install --force`.
+## Troubleshooting & FAQ
+- Ensure all required environment variables are set in `.env`
+- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
+- For dependency issues, run `yarn install` at the repo root
+- For more, see infra/README.md
