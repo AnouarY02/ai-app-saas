@@ -1,34 +1,20 @@
 {
   "root": true,
   "env": {
-    "browser": true,
     "es2021": true,
     "node": true
   },
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
     "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2021,
-    "sourceType": "module",
-    "project": [
-      "./frontend/tsconfig.json",
-      "./backend/tsconfig.json",
-      "./shared/tsconfig.json"
-    ]
+    "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint",
-    "react"
-  ],
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
-  },
-  "ignorePatterns": ["dist", "node_modules", "build"]
+  "plugins": ["@typescript-eslint"],
+  "ignorePatterns": ["dist/", "node_modules/"],
+  "rules": {}
 }

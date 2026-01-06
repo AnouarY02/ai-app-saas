@@ -3,8 +3,6 @@ dist/
 build/
 .env
 .env.*
-yarn-error.log
 *.log
+pnpm-lock.yaml
 .DS_Store
-frontend/dist/
-backend/dist/

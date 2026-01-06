@@ -1,0 +1,13 @@
+.authWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f7f7fa;
+}
+.authContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}

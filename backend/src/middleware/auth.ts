@@ -1,21 +1,25 @@
 import { Request, Response, NextFunction } from 'express';
-import { jwtService } from '../services/jwtService';
-import { userService } from '../services/userService';
+import { sessionService } from '../services/sessionService';
 
-export async function authenticateJWT(req: Request, res: Response, next: NextFunction) {
-  const token = jwtService.extractToken(req);
+export async function requireAuth(req: Request, res: Response, next: NextFunction) {
+  let token: string | undefined = undefined;
+  const authHeader = req.headers['authorization'];
+  if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  } else if (req.body && req.body.token) {
+    token = req.body.token;
+  } else if (req.query && typeof req.query.token === 'string') {
+    token = req.query.token;
+  }
   if (!token) {
-    return res.status(401).json({ error: 'Missing or invalid token' });
+    return res.status(401).json({ error: 'Missing or invalid session token' });
   }
-  try {
-    const payload = jwtService.verify(token);
-    const user = await userService.findById(payload.userId);
-    if (!user) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-    req.user = { id: user.id, email: user.email };
-    next();
-  } catch (err) {
-    return res.status(401).json({ error: 'Invalid or expired token' });
+  const session = await sessionService.findByToken(token);
+  if (!session || session.expiresAt < new Date()) {
+    return res.status(401).json({ error: 'Session expired or invalid' });
   }
+  req.session = session;
+  req.userId = session.userId;
+  req.token = token;
+  next();
 }

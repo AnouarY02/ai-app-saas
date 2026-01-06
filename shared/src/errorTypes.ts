@@ -1,21 +1,44 @@
-// Shared error type definitions for ai-app
+import type { ApiError } from './types/apiError';
+import { ERROR_CODES } from './constants';
 
-/**
- * AppErrorCode enumerates possible error codes for the app.
- * Extend as needed when new error cases are introduced.
- */
-export enum AppErrorCode {
-  UNKNOWN = 'UNKNOWN',
-  VALIDATION_ERROR = 'VALIDATION_ERROR',
-  NOT_FOUND = 'NOT_FOUND',
-  INTERNAL_ERROR = 'INTERNAL_ERROR',
+export class ApiErrorBase extends Error implements ApiError {
+  code: string;
+  details?: unknown;
+
+  constructor(code: string, message: string, details?: unknown) {
+    super(message);
+    this.code = code;
+    this.details = details;
+    Object.setPrototypeOf(this, ApiErrorBase.prototype);
+  }
 }
 
-/**
- * AppError is a standard error shape for backend/frontend error handling.
- */
-export interface AppError {
-  code: AppErrorCode;
-  message: string;
-  details?: unknown;
+export class UnauthorizedError extends ApiErrorBase {
+  constructor(message = 'Unauthorized', details?: unknown) {
+    super(ERROR_CODES.UNAUTHORIZED, message, details);
+  }
+}
+
+export class InvalidInputError extends ApiErrorBase {
+  constructor(message = 'Invalid input', details?: unknown) {
+    super(ERROR_CODES.INVALID_INPUT, message, details);
+  }
+}
+
+export class NotFoundError extends ApiErrorBase {
+  constructor(message = 'Not found', details?: unknown) {
+    super(ERROR_CODES.NOT_FOUND, message, details);
+  }
+}
+
+export class InternalError extends ApiErrorBase {
+  constructor(message = 'Internal server error', details?: unknown) {
+    super(ERROR_CODES.INTERNAL_ERROR, message, details);
+  }
+}
+
+export class SessionExpiredError extends ApiErrorBase {
+  constructor(message = 'Session expired', details?: unknown) {
+    super(ERROR_CODES.SESSION_EXPIRED, message, details);
+  }
 }
