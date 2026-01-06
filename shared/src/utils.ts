@@ -1,28 +1,24 @@
-// shared/src/utils.ts
+// Shared utility functions for ai-app
 
 /**
- * isObject: Checks if a value is a non-null object.
+ * isEmptyObject checks if the provided value is a plain empty object.
  */
-export function isObject(val: unknown): val is Record<string, unknown> {
-  return typeof val === 'object' && val !== null;
+export function isEmptyObject(obj: unknown): obj is Record<string, never> {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    Object.keys(obj).length === 0 &&
+    obj.constructor === Object
+  );
 }
 
 /**
- * pick: Returns a shallow copy of an object with only the specified keys.
+ * safeJsonParse attempts to parse a string as JSON, returning undefined if parsing fails.
  */
-export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
-  const out = {} as Pick<T, K>;
-  for (const key of keys) {
-    if (key in obj) {
-      out[key] = obj[key];
-    }
+export function safeJsonParse<T = unknown>(input: string): T | undefined {
+  try {
+    return JSON.parse(input) as T;
+  } catch {
+    return undefined;
   }
-  return out;
-}
-
-/**
- * sleep: Returns a promise that resolves after the given milliseconds.
- */
-export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }

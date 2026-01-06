@@ -1,22 +1,11 @@
-// shared/src/types.ts
+// Shared type definitions for ai-app
 
 /**
- * AppConfig: Basic configuration for the app, shared between frontend and backend.
+ * HealthStatus represents the possible values for the health check endpoint.
  */
-export interface AppConfig {
-  appName: string;
-  version: string;
-  frontendUrl?: string;
-  backendUrl?: string;
-}
+export type HealthStatus = 'ok' | 'error';
 
 /**
- * ApiResponse: Generic API response wrapper.
- * T is the type of the data payload.
+ * EmptyObject is used for endpoints that expect or return an empty object.
  */
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  code?: string | number;
-}
+export type EmptyObject = Record<string, never>;

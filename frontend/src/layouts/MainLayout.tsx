@@ -1,13 +1,13 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import MainNavigation from '../components/MainNavigation';
-import styles from './MainLayout.module.css';
+import Navigation from '../components/Navigation';
+import './MainLayout.css';
 
 const MainLayout: React.FC = () => {
   return (
-    <div className={styles.layout}>
-      <MainNavigation />
-      <main className={styles.mainContent}>
+    <div className="main-layout">
+      <Navigation />
+      <main className="main-content">
         <Outlet />
       </main>
     </div>

@@ -1,85 +1,68 @@
-# ai-app Monorepo
+# ai-app
 
 ## Project Overview
-A modern SaaS AI application with a React (Vite, TypeScript) frontend and a Node.js (Express, TypeScript) backend. Monorepo structure for shared utilities and consistent tooling.
+A modern SaaS monorepo featuring a React (Vite) frontend, Express (TypeScript) backend, and a shared codebase for types and utilities. Built for rapid development and scalability.
 
 ## Monorepo Structure
-- `frontend/` — React + Vite frontend app (TypeScript)
-- `backend/` — Express API server (TypeScript)
-- `shared/` — Shared TypeScript utilities and types
-- `infra/` — Tooling, configs, CI/CD, and Docker
+- `frontend/` – React app (Vite, TypeScript)
+- `backend/` – Express API (TypeScript)
+- `shared/` – Shared types and utilities
+- `infra/` – Tooling, configs, and CI/CD
 
-## Prerequisites
-- [Node.js](https://nodejs.org/) v20+
-- [pnpm](https://pnpm.io/) v8+
-- [Docker](https://www.docker.com/) (for containerized workflow)
-
-## Installation
-1. Clone the repository:
+## Getting Started
+1. **Install dependencies:**
    ```sh
-   git clone https://github.com/AnouarY02/ai-app-saas.git
-   cd ai-app-saas
+   npm install
    ```
-2. Install dependencies (monorepo):
+2. **Copy environment variables:**
    ```sh
-   pnpm install
+   cp .env.example .env
    ```
-
-## Development Workflow
-- Start backend:
-  ```sh
-  pnpm run dev:backend
-  ```
-- Start frontend:
-  ```sh
-  pnpm run dev:frontend
-  ```
-- Both frontend and backend will reload on code changes.
-
-## Building the App
-- Build all packages:
-  ```sh
-  pnpm run build
-  ```
-- Or build individually:
-  ```sh
-  pnpm run build:shared
-  pnpm run build:backend
-  pnpm run build:frontend
-  ```
-
-## Running in Docker
-- Build and run both frontend and backend:
-  ```sh
-  docker-compose up --build
-  ```
-- Access frontend at [http://localhost:5173](http://localhost:5173)
-- Backend API runs at [http://localhost:3000](http://localhost:3000)
+3. **Run in development mode:**
+   ```sh
+   npm run dev
+   ```
+   - Frontend: http://localhost:5173
+   - Backend: http://localhost:3000
 
 ## Environment Variables
-Copy `.env.example` to `.env` and adjust as needed:
+- **Required:**
+  - `PORT` (e.g., 3000)
+- **Optional:**
+  - `FRONTEND_PORT` (default: 5173)
+  - `NODE_ENV` (default: development)
 
-Required:
-- `PORT` — Port for backend server (default: 3000)
+## Development Workflow
+- **Start both apps:** `npm run dev`
+- **Start backend only:** `npm start`
+- **Build all:** `npm run build`
+- **Lint:** `npm run lint`
+- **Format:** `npm run format`
 
-Optional:
-- `NODE_ENV` — Node environment (default: development)
-- `FRONTEND_URL` — URL for frontend (default: http://localhost:5173)
+## Building for Production
+1. Build both frontend and backend:
+   ```sh
+   npm run build
+   ```
+2. Start backend server:
+   ```sh
+   npm start
+   ```
 
-## Linting and Formatting
-- Lint code:
-  ```sh
-  pnpm run lint
-  ```
-- Check formatting:
-  ```sh
-  pnpm run format
-  ```
+## Running with Docker
+1. Build and start all services:
+   ```sh
+   docker-compose up --build
+   ```
+2. Access frontend at [http://localhost:5173](http://localhost:5173)
+3. Access backend at [http://localhost:3000](http://localhost:3000)
 
-## CI/CD
-- GitHub Actions workflow is defined in `infra/.github/workflows/ci.yml` for linting, formatting, and building on every push and PR.
+## Code Quality and Formatting
+- **Lint:** Uses ESLint for TypeScript and React
+- **Format:** Uses Prettier (see `infra/prettier.config.js`)
+- **Config:** See `infra/` for all tooling configs
 
-## Troubleshooting
-- Ensure all dependencies are installed with `pnpm install`.
-- If ports are in use, adjust `PORT` and `FRONTEND_URL` in `.env` and `docker-compose.yml`.
-- For Docker issues, ensure Docker Desktop is running and you have sufficient resources allocated.
+## Extending the App
+- Add new shared utilities/types in `shared/`
+- Add new frontend features in `frontend/`
+- Add new API endpoints in `backend/`

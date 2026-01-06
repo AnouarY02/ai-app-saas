@@ -1,26 +1,21 @@
-// shared/src/errorTypes.ts
+// Shared error type definitions for ai-app
 
 /**
- * Error codes used across the app for consistency.
+ * AppErrorCode enumerates possible error codes for the app.
+ * Extend as needed when new error cases are introduced.
  */
-export enum ErrorCode {
+export enum AppErrorCode {
   UNKNOWN = 'UNKNOWN',
-  INVALID_CONFIG = 'INVALID_CONFIG',
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
   NOT_FOUND = 'NOT_FOUND',
   INTERNAL_ERROR = 'INTERNAL_ERROR',
 }
 
 /**
- * AppError: Custom error class for shared error handling.
+ * AppError is a standard error shape for backend/frontend error handling.
  */
-export class AppError extends Error {
-  code: ErrorCode;
-  status?: number;
-
-  constructor(message: string, code: ErrorCode = ErrorCode.UNKNOWN, status?: number) {
-    super(message);
-    this.name = 'AppError';
-    this.code = code;
-    this.status = status;
-  }
+export interface AppError {
+  code: AppErrorCode;
+  message: string;
+  details?: unknown;
 }

@@ -1,6 +1,6 @@
 # AI-Fabriek Generated Dockerfile - Backend
 # Multi-stage build voor optimale image size
-# Build: quicktest
+# Build: final-fix-test
 
 # ============================================
 # Stage 1: Dependencies
