@@ -1,0 +1,54 @@
+.dashboard-root {
+  max-width: 700px;
+  margin: 0 auto;
+}
+.ai-form {
+  display: flex;
+  gap: 1em;
+  align-items: flex-end;
+  margin-bottom: 2em;
+}
+.ai-form label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #334155;
+}
+.ai-form input {
+  margin-top: 0.4em;
+  padding: 0.5em;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 1em;
+}
+.ai-requests-section {
+  margin-top: 2em;
+}
+.ai-requests-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ai-request-item {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1em;
+  margin-bottom: 1em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.ai-request-item.status-completed {
+  border-left: 4px solid #16a34a;
+}
+.ai-request-item.status-failed {
+  border-left: 4px solid #dc2626;
+}
+.ai-request-item.status-pending {
+  border-left: 4px solid #f59e42;
+}
+.ai-request-meta {
+  color: #64748b;
+  font-size: 0.92em;
+  margin-top: 0.5em;
+}
