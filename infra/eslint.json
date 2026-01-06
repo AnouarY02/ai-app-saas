@@ -10,8 +10,13 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
     "prettier"
   ],
-  "ignorePatterns": ["dist/", "node_modules/"],
-  "rules": {}
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "ignorePatterns": ["dist", "build", "node_modules"]
 }
