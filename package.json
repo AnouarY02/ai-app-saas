@@ -1,0 +1,27 @@
+{
+  "name": "ai-app-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev:frontend": "vite --config frontend/vite.config.ts",
+    "dev:backend": "ts-node backend/src/server.ts",
+    "build:frontend": "vite build --config frontend/vite.config.ts",
+    "build:backend": "tsc -p backend/tsconfig.json",
+    "build:shared": "tsc -p shared/tsconfig.json",
+    "build": "pnpm run build:shared && pnpm run build:backend && pnpm run build:frontend",
+    "start": "node backend/dist/server.js",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --check ."
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "pnpm": "^8.0.0"
+  }
+}

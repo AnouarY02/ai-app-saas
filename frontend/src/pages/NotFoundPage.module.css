@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  background: #fff;
+}
+
+.title {
+  font-size: 2rem;
+  color: #d97706;
+  margin-bottom: 1rem;
+}
+
+.text {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.homeLink {
+  color: #3730a3;
+  text-decoration: underline;
+  font-weight: 500;
+}
