@@ -1,35 +1,13 @@
-// shared/src/types/api.ts
-import type { User } from './user';
-import type { AIRequest } from './aiRequest';
+// Shared API types
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
+/**
+ * Health check status response type
+ */
+export type ApiHealthStatus = {
+  status: string;
+};
 
-export interface LoginResponse {
-  token: string;
-  user: User;
-}
-
-export interface LogoutRequest {}
-
-export interface LogoutResponse {
-  success: boolean;
-}
-
-export interface UpdateSettingsRequest {
-  email?: string;
-  password?: string;
-}
-
-export interface PaginatedResult<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
-export interface AIRequestCreate {
-  input: string;
-}
+/**
+ * Empty object type for endpoints that expect no request body
+ */
+export type EmptyObject = Record<string, never>;

@@ -1,24 +1,33 @@
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+// Simple shared logger utility
 
-const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error'];
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
-function getLogLevel(): LogLevel {
-  if (typeof process !== 'undefined' && process.env && process.env.LOG_LEVEL) {
-    const lvl = process.env.LOG_LEVEL.toLowerCase();
-    if (LOG_LEVELS.includes(lvl as LogLevel)) return lvl as LogLevel;
+export interface Logger {
+  debug: (...args: any[]) => void;
+  info: (...args: any[]) => void;
+  warn: (...args: any[]) => void;
+  error: (...args: any[]) => void;
+}
+
+const prefix = '[ai-app]';
+
+export const logger: Logger = {
+  debug: (...args) => {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.debug(prefix, '[DEBUG]', ...args);
+    }
+  },
+  info: (...args) => {
+    // eslint-disable-next-line no-console
+    console.info(prefix, '[INFO]', ...args);
+  },
+  warn: (...args) => {
+    // eslint-disable-next-line no-console
+    console.warn(prefix, '[WARN]', ...args);
+  },
+  error: (...args) => {
+    // eslint-disable-next-line no-console
+    console.error(prefix, '[ERROR]', ...args);
   }
-  return 'info';
-}
-
-const currentLevel = getLogLevel();
-
-function shouldLog(level: LogLevel): boolean {
-  return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(currentLevel);
-}
-
-export const logger = {
-  debug: (...args: any[]) => shouldLog('debug') && console.debug('[DEBUG]', ...args),
-  info: (...args: any[]) => shouldLog('info') && console.info('[INFO]', ...args),
-  warn: (...args: any[]) => shouldLog('warn') && console.warn('[WARN]', ...args),
-  error: (...args: any[]) => shouldLog('error') && console.error('[ERROR]', ...args),
 };

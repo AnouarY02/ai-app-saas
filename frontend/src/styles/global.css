@@ -1,29 +1,27 @@
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
-  background: #f8fafc;
+  background: #f9f9fb;
   color: #222;
 }
 
-.primary-btn {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background 0.2s;
+h1, h2, h3 {
+  font-weight: 600;
 }
-.primary-btn:disabled {
-  background: #a5b4fc;
-  cursor: not-allowed;
+
+a {
+  color: #2563eb;
+  text-decoration: none;
 }
-.form-error {
-  color: #dc2626;
-  margin-top: 0.5em;
+a.active {
+  font-weight: bold;
 }
-.form-success {
-  color: #16a34a;
-  margin-top: 0.5em;
+
+section {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
