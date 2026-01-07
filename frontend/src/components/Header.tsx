@@ -3,22 +3,22 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../state/AuthContext';
 import './Header.css';
 
-const navItems = [
+const navMenu = [
   { label: 'Home', path: '/', icon: '🏠' },
   { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-  { label: 'Settings', path: '/settings', icon: '⚙️' }
 ];
 
 const Header: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const location = useLocation();
+
   return (
-    <header className="header-root">
+    <header className="header">
       <div className="header-logo">
-        <Link to="/">AI App</Link>
+        <Link to="/">AI SaaS</Link>
       </div>
       <nav className="header-nav">
-        {navItems.map((item) => (
+        {navMenu.map((item) => (
           <Link
             key={item.path}
             to={item.path}
@@ -26,17 +26,23 @@ const Header: React.FC = () => {
               location.pathname === item.path ? 'nav-link active' : 'nav-link'
             }
           >
-            <span className="nav-icon">{item.icon}</span> {item.label}
+            <span className="nav-icon">{item.icon}</span>
+            {item.label}
           </Link>
         ))}
       </nav>
-      <div className="header-actions">
-        {user ? (
-          <button className="logout-btn" onClick={logout}>
-            Logout
-          </button>
+      <div className="header-user">
+        {isAuthenticated ? (
+          <>
+            <span className="user-email">{user?.email}</span>
+            <Link to="/logout" className="nav-link logout-link">
+              Logout
+            </Link>
+          </>
         ) : (
-          <Link to="/login" className="login-btn">Login</Link>
+          <Link to="/login" className="nav-link login-link">
+            Login
+          </Link>
         )}
       </div>
     </header>

@@ -1,8 +1,8 @@
-.footer-root {
-  text-align: center;
-  padding: 1em 0;
+.footer {
   background: #f1f5f9;
-  color: #64748b;
-  font-size: 0.95em;
+  padding: 1rem 0;
+  text-align: center;
   border-top: 1px solid #e5e7eb;
+  font-size: 0.98rem;
+  color: #6b7280;
 }

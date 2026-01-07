@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 export const loginRequestSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6)
+  password: z.string().min(6),
 });
 
 export const logoutRequestSchema = z.object({});
+
 export const sessionRequestSchema = z.object({});
-export const dashboardRequestSchema = z.object({});

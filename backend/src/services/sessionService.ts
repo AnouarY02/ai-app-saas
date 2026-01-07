@@ -1,28 +1,36 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Session } from '../types';
-import { sessionRepository } from '../repositories/sessionRepository';
+import { Session } from '../types/entities';
 
-const SESSION_EXPIRES_IN_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+// In-memory session store for MVP
+type SessionStore = Map<string, Session>;
+const sessions: SessionStore = new Map();
+
+const SESSION_EXPIRES_HOURS = 2;
 
 export const sessionService = {
-  async create(userId: string, token: string): Promise<Session> {
+  async createSession(userId: string, token: string): Promise<Session> {
     const now = new Date();
+    const expiresAt = new Date(now.getTime() + SESSION_EXPIRES_HOURS * 60 * 60 * 1000);
     const session: Session = {
       id: uuidv4(),
       userId,
       token,
-      expiresAt: new Date(now.getTime() + SESSION_EXPIRES_IN_MS),
-      createdAt: now
+      createdAt: now,
+      expiresAt
     };
-    await sessionRepository.create(session);
+    sessions.set(token, session);
     return session;
   },
-
   async findByToken(token: string): Promise<Session | undefined> {
-    return sessionRepository.findByToken(token);
+    const session = sessions.get(token);
+    if (!session) return undefined;
+    if (session.expiresAt < new Date()) {
+      sessions.delete(token);
+      return undefined;
+    }
+    return session;
   },
-
-  async logout(token: string): Promise<void> {
-    await sessionRepository.deleteByToken(token);
+  async deleteSessionByToken(token: string): Promise<void> {
+    sessions.delete(token);
   }
 };

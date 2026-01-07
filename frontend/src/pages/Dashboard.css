@@ -1,0 +1,31 @@
+.dashboard-page {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 2rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.dashboard-page h1 {
+  margin-bottom: 1.2rem;
+}
+.dashboard-user {
+  margin-bottom: 1.5rem;
+  color: #2563eb;
+  font-size: 1.1rem;
+}
+.dashboard-features h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.7rem;
+}
+.dashboard-features ul {
+  padding-left: 1.2rem;
+}
+.dashboard-loading, .dashboard-error {
+  text-align: center;
+  margin: 2rem auto;
+  color: #d97706;
+}
+.dashboard-error {
+  color: #dc2626;
+}

@@ -1,8 +1,16 @@
 import { Router } from 'express';
-import { authRouter } from './auth';
-import { userRouter } from './user';
+import { login, logout, getSession } from '../controllers/authController';
+import { getDashboardData } from '../controllers/dashboardController';
+import { requireAuth } from '../middleware/auth';
 
-export const apiRouter = Router();
+const router = Router();
 
-apiRouter.use('/auth', authRouter);
-apiRouter.use('/users', userRouter);
+// Auth
+router.post('/auth/login', login);
+router.post('/auth/logout', requireAuth, logout);
+router.get('/auth/session', requireAuth, getSession);
+
+// Dashboard
+router.get('/dashboard', requireAuth, getDashboardData);
+
+export default router;
