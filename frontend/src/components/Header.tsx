@@ -1,44 +1,71 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../state/AuthContext';
-import './Header.css';
 
 const navItems = [
   { label: 'Home', path: '/', icon: '🏠' },
-  { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-  { label: 'Settings', path: '/settings', icon: '⚙️' }
+  { label: 'App', path: '/app', icon: '📊' },
 ];
 
+const headerStyle: React.CSSProperties = {
+  width: '100%',
+  background: '#fff',
+  borderBottom: '1px solid #e5e7eb',
+  padding: '0 16px',
+  display: 'flex',
+  alignItems: 'center',
+  height: 56,
+  boxSizing: 'border-box',
+  zIndex: 10,
+};
+
+const navStyle: React.CSSProperties = {
+  display: 'flex',
+  gap: 24,
+  marginLeft: 24,
+};
+
+const linkStyle: React.CSSProperties = {
+  textDecoration: 'none',
+  color: '#222',
+  fontWeight: 500,
+  fontSize: 16,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+  padding: '6px 10px',
+  borderRadius: 4,
+  transition: 'background 0.2s',
+};
+
+const activeLinkStyle: React.CSSProperties = {
+  ...linkStyle,
+  background: '#e5e7eb',
+};
+
+const logoStyle: React.CSSProperties = {
+  fontWeight: 700,
+  fontSize: 20,
+  color: '#2a2a2a',
+  letterSpacing: 1,
+};
+
 const Header: React.FC = () => {
-  const { user, logout } = useAuth();
   const location = useLocation();
   return (
-    <header className="header-root">
-      <div className="header-logo">
-        <Link to="/">AI App</Link>
-      </div>
-      <nav className="header-nav">
+    <header style={headerStyle}>
+      <span style={logoStyle}>ai-app</span>
+      <nav style={navStyle}>
         {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-            className={
-              location.pathname === item.path ? 'nav-link active' : 'nav-link'
-            }
+            style={location.pathname === item.path ? activeLinkStyle : linkStyle}
           >
-            <span className="nav-icon">{item.icon}</span> {item.label}
+            <span>{item.icon}</span>
+            {item.label}
           </Link>
         ))}
       </nav>
-      <div className="header-actions">
-        {user ? (
-          <button className="logout-btn" onClick={logout}>
-            Logout
-          </button>
-        ) : (
-          <Link to="/login" className="login-btn">Login</Link>
-        )}
-      </div>
     </header>
   );
 };

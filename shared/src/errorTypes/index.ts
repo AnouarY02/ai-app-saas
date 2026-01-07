@@ -1,25 +1,21 @@
-export enum AppErrorCode {
+// Shared error types and helpers
+
+export enum SharedErrorCode {
   UNKNOWN = 'UNKNOWN',
-  VALIDATION_ERROR = 'VALIDATION_ERROR',
-  AUTH_REQUIRED = 'AUTH_REQUIRED',
-  INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
-  USER_EXISTS = 'USER_EXISTS',
-  USER_NOT_FOUND = 'USER_NOT_FOUND',
-  SESSION_EXPIRED = 'SESSION_EXPIRED',
-  FORBIDDEN = 'FORBIDDEN',
+  NETWORK = 'NETWORK',
+  VALIDATION = 'VALIDATION',
   NOT_FOUND = 'NOT_FOUND',
+  UNAUTHORIZED = 'UNAUTHORIZED',
 }
 
-export class AppError extends Error {
-  code: AppErrorCode;
-  status?: number;
-  details?: any;
+export class SharedError extends Error {
+  code: SharedErrorCode;
+  details?: unknown;
 
-  constructor(code: AppErrorCode, message: string, status?: number, details?: any) {
+  constructor(code: SharedErrorCode, message: string, details?: unknown) {
     super(message);
+    this.name = 'SharedError';
     this.code = code;
-    this.status = status;
     this.details = details;
-    Object.setPrototypeOf(this, AppError.prototype);
   }
 }

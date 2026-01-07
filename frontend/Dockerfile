@@ -1,48 +1,23 @@
-# AI-Fabriek Generated Dockerfile - Frontend
-# Next.js 14 optimized multi-stage build
-# Build: clean-paths-final
-
-# ============================================
-# Stage 1: Dependencies
-# ============================================
-FROM node:18-alpine AS deps
+# --- builder stage ---
+FROM node:20-alpine AS builder
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY tsconfig.json vite.config.ts ./
+COPY index.html ./
+COPY src ./src
+RUN npm run build
 
-RUN apk add --no-cache libc6-compat
+# --- runner stage ---
+FROM nginx:1.25-alpine AS runner
+WORKDIR /usr/share/nginx/html
+COPY --from=builder /app/dist .
+COPY --from=builder /app/index.html ./index.html
+RUN rm /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf || true
 
-COPY package*.json ./
-RUN npm ci --ignore-scripts && \
-    npm cache clean --force
-
-# ============================================
-# Stage 2: Builder
-# ============================================
-FROM node:18-alpine AS builder
-WORKDIR /app
-
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-# Build Next.js
-RUN npm run build || true
-
-# ============================================
-# Stage 3: Runner (nginx for static serving)
-# ============================================
-FROM nginx:alpine AS runner
-
-# Custom nginx config
-COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf 2>/dev/null ||      echo 'server {        listen 80;        root /usr/share/nginx/html;        location / { try_files \$uri \$uri/ /index.html; }        location /api { proxy_pass \$NEXT_PUBLIC_API_URL; }      }' > /etc/nginx/conf.d/default.conf
-
-# Copy built files
-COPY --from=builder /app/out /usr/share/nginx/html 2>/dev/null ||      COPY --from=builder /app/.next/standalone /usr/share/nginx/html 2>/dev/null ||      COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Health check
-RUN apk add --no-cache wget
+# fallback config for SPA
+RUN printf 'server {\n  listen 80;\n  server_name _;\n  root /usr/share/nginx/html;\n  location / {\n    try_files $uri $uri/ /index.html;\n  }\n}\n' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]

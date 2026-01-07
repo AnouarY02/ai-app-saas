@@ -10,15 +10,15 @@ const cardStyle: React.CSSProperties = {
   textAlign: 'center',
 };
 
-const HomePage: React.FC = () => {
+const AppPage: React.FC = () => {
   return (
     <div style={cardStyle}>
-      <h1 style={{ fontSize: 28, margin: '0 0 12px 0', fontWeight: 700 }}>Welcome to ai-app</h1>
+      <h1 style={{ fontSize: 26, margin: '0 0 12px 0', fontWeight: 700 }}>App Dashboard</h1>
       <p style={{ color: '#444', fontSize: 17, marginBottom: 0 }}>
-        This is a minimal SaaS shell. Use the navigation above to explore the app.
+        This is the main application workspace. Future features will appear here.
       </p>
     </div>
   );
 };
 
-export default HomePage;
+export default AppPage;

@@ -1,54 +1,36 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import type {
-  LoginRequest,
-  RegisterRequest,
-  LogoutRequest,
-  UpdateProfileRequest,
-  AuthResponse,
-  SuccessResponse,
-  UserProfile,
-} from '../types';
+// Minimal API client for frontend/backend shared usage
+import type { ApiStatus } from '../types/api';
+import { SharedError, SharedErrorCode } from '../errorTypes';
+
+export interface ApiClientOptions {
+  baseUrl: string;
+  headers?: Record<string, string>;
+}
 
 export class ApiClient {
-  private axios: AxiosInstance;
+  baseUrl: string;
+  headers: Record<string, string>;
 
-  constructor(baseURL: string, token?: string) {
-    this.axios = axios.create({ baseURL });
-    if (token) {
-      this.setToken(token);
+  constructor(options: ApiClientOptions) {
+    this.baseUrl = options.baseUrl.replace(/\/$/, '');
+    this.headers = options.headers || {};
+  }
+
+  async getStatus(): Promise<ApiStatus> {
+    try {
+      const res = await fetch(`${this.baseUrl}/status`, {
+        headers: this.headers,
+      });
+      if (!res.ok) {
+        throw new SharedError(
+          SharedErrorCode.NETWORK,
+          `Failed to fetch status: ${res.status}`
+        );
+      }
+      return (await res.json()) as ApiStatus;
+    } catch (err) {
+      if (err instanceof SharedError) throw err;
+      throw new SharedError(SharedErrorCode.UNKNOWN, 'Unknown error', err);
     }
-  }
-
-  setToken(token: string) {
-    this.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }
-
-  clearToken() {
-    delete this.axios.defaults.headers.common['Authorization'];
-  }
-
-  async login(data: LoginRequest): Promise<AuthResponse> {
-    const res = await this.axios.post<AuthResponse>('/api/auth/login', data);
-    return res.data;
-  }
-
-  async register(data: RegisterRequest): Promise<AuthResponse> {
-    const res = await this.axios.post<AuthResponse>('/api/auth/register', data);
-    return res.data;
-  }
-
-  async logout(data: LogoutRequest): Promise<SuccessResponse> {
-    const res = await this.axios.post<SuccessResponse>('/api/auth/logout', data);
-    return res.data;
-  }
-
-  async getProfile(): Promise<UserProfile> {
-    const res = await this.axios.get<UserProfile>('/api/users/me');
-    return res.data;
-  }
-
-  async updateProfile(data: UpdateProfileRequest): Promise<UserProfile> {
-    const res = await this.axios.put<UserProfile>('/api/users/me', data);
-    return res.data;
   }
 }
