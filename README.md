@@ -1,91 +1,73 @@
 # ai-app
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+ai-app is a full-stack SaaS application built as a monorepo with a React (Vite) frontend and a Node.js (Express, TypeScript) backend.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` – React + Vite app
+- `backend/` – Express API (TypeScript)
+- `shared/` – Shared code, types, and utilities
+- `infra/` – Infra tooling and configuration
 
 ## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
+- [Docker](https://www.docker.com/)
+- [Node.js](https://nodejs.org/) & [pnpm](https://pnpm.io/) (for local non-docker dev)
 
 ## Environment Variables
-Copy `.env.example` to `.env` and fill in the required values:
+Copy and edit the example env file:
 
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
+```sh
+cp .env.example .env
+```
 
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
+Required:
+- `NODE_ENV` (default: production)
+- `PORT` (backend port)
+- `JWT_SECRET` (JWT signing secret)
+- `SESSION_EXPIRY` (e.g. 1d, 3600s)
+- `VITE_BACKEND_URL` (frontend → backend URL)
 
-## Local Development
+## Local Development (with Docker)
 
-### With Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Run:
-   ```sh
-   yarn install
-   yarn start
-   ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
+```sh
+cp .env.example .env
+docker compose up -d --build
+```
 
-### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Install dependencies:
-   ```sh
-   yarn install
-   ```
-3. In one terminal, run:
-   ```sh
-   yarn dev
-   ```
-   This starts both frontend and backend concurrently.
+- Test backend health:
+  ```sh
+  curl http://localhost:4000/health
+  ```
+- Open frontend:
+  - [http://localhost:3000](http://localhost:3000)
+
+## Local Development (without Docker)
+- Install dependencies: `pnpm install`
+- Start all apps: `pnpm dev`
+
+## Build and Production Deployment
+- Build: `pnpm build`
+- Start with Docker Compose as above
+
+## Running Tests
+- `pnpm test`
 
 ## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
+- `pnpm dev` – Start frontend & backend in dev mode
+- `pnpm build` – Build frontend & backend
+- `pnpm start` – Start both via Docker Compose
+- `pnpm test` – Run tests
+- `pnpm lint` – Lint codebase
+- `pnpm typecheck` – TypeScript type check
 
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
+## API Overview
+- Main API endpoint: `http://localhost:4000/api`
+- Health check: `http://localhost:4000/health`
 
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
+## Shared Contracts and Types
+- Shared types and utilities live in `shared/`
 
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
-
-## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
-
-## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
-
-## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+## Troubleshooting
+- Ensure `.env` is present and filled
+- If ports are busy, change `PORT` in `.env` and update compose file accordingly
+- Check container logs: `docker compose logs backend` or `frontend`

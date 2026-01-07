@@ -1,21 +1,36 @@
 import { Request, Response, NextFunction } from 'express';
-import { jwtService } from '../services/jwtService';
-import { userService } from '../services/userService';
+import jwt from 'jsonwebtoken';
+import { sessions } from '../data/inMemoryDb';
+import { JWT_SECRET } from '../utils/constants';
+import { users } from '../data/inMemoryDb';
 
-export async function authenticateJWT(req: Request, res: Response, next: NextFunction) {
-  const token = jwtService.extractToken(req);
-  if (!token) {
-    return res.status(401).json({ error: 'Missing or invalid token' });
-  }
+export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const payload = jwtService.verify(token);
-    const user = await userService.findById(payload.userId);
+    let token = '';
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+    if (!token) {
+      return res.status(401).json({ error: 'Missing auth token' });
+    }
+    // Check session exists
+    const session = sessions.find(s => s.token === token);
+    if (!session) {
+      return res.status(401).json({ error: 'Invalid session' });
+    }
+    // Verify JWT
+    const payload = jwt.verify(token, JWT_SECRET) as any;
+    const user = users.find(u => u.id === payload.id);
     if (!user) {
       return res.status(401).json({ error: 'User not found' });
     }
-    req.user = { id: user.id, email: user.email };
+    (req as any).user = user;
+    (req as any).authToken = token;
     next();
   } catch (err) {
-    return res.status(401).json({ error: 'Invalid or expired token' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
-}
+};

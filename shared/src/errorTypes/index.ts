@@ -1,25 +1,20 @@
-export enum AppErrorCode {
-  UNKNOWN = 'UNKNOWN',
-  VALIDATION_ERROR = 'VALIDATION_ERROR',
-  AUTH_REQUIRED = 'AUTH_REQUIRED',
-  INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
-  USER_EXISTS = 'USER_EXISTS',
-  USER_NOT_FOUND = 'USER_NOT_FOUND',
-  SESSION_EXPIRED = 'SESSION_EXPIRED',
-  FORBIDDEN = 'FORBIDDEN',
-  NOT_FOUND = 'NOT_FOUND',
-}
+// Error code and error class definitions
 
-export class AppError extends Error {
-  code: AppErrorCode;
-  status?: number;
-  details?: any;
+export type ErrorCode =
+  | 'UNAUTHORIZED'
+  | 'INVALID_INPUT'
+  | 'NOT_FOUND'
+  | 'INTERNAL_ERROR'
+  | 'SESSION_EXPIRED';
 
-  constructor(code: AppErrorCode, message: string, status?: number, details?: any) {
+export class ApiError extends Error {
+  code: ErrorCode;
+  details?: unknown;
+
+  constructor(code: ErrorCode, message: string, details?: unknown) {
     super(message);
     this.code = code;
-    this.status = status;
     this.details = details;
-    Object.setPrototypeOf(this, AppError.prototype);
+    Object.setPrototypeOf(this, ApiError.prototype);
   }
 }

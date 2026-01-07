@@ -1,31 +1,16 @@
-import type { User } from './user';
-
-export interface AuthResponse {
-  user: User;
-  token: string;
-}
-
+// Auth DTOs
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  name?: string;
-}
-
-export interface LogoutRequest {
+export interface LoginResponse {
   token: string;
+  user: import('./user').UserPublic;
 }
 
-export interface UpdateProfileRequest {
-  name?: string;
-  email?: string;
-  password?: string;
-}
+export interface LogoutRequest {}
 
-export interface SuccessResponse {
+export interface LogoutResponse {
   success: boolean;
 }

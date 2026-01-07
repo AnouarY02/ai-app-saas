@@ -1,8 +1,24 @@
 import { Router } from 'express';
-import { authRouter } from './auth';
-import { userRouter } from './user';
+import authController from '../controllers/authController';
+import userController from '../controllers/userController';
+import dashboardController from '../controllers/dashboardController';
+import settingsController from '../controllers/settingsController';
+import { requireAuth } from '../middleware/auth';
 
-export const apiRouter = Router();
+const router = Router();
 
-apiRouter.use('/auth', authRouter);
-apiRouter.use('/users', userRouter);
+// Auth
+router.post('/auth/login', authController.login);
+router.post('/auth/logout', requireAuth, authController.logout);
+
+// User
+router.get('/users/me', requireAuth, userController.getMe);
+
+// Dashboard
+router.get('/dashboard', requireAuth, dashboardController.getDashboardData);
+
+// Settings
+router.get('/settings', requireAuth, settingsController.getSettings);
+router.put('/settings', requireAuth, settingsController.updateSettings);
+
+export default router;

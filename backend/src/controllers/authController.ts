@@ -1,41 +1,33 @@
 import { Request, Response, NextFunction } from 'express';
-import { userService } from '../services/userService';
-import { sessionService } from '../services/sessionService';
-import { AuthResponse, RegisterRequest, LoginRequest, LogoutRequest } from '../types';
-import { logger } from '../shared/logger';
+import { z } from 'zod';
+import authService from '../services/authService';
+import { loginRequestSchema } from '../types/validators';
+import { logError } from '../utils/logger';
 
-export const authController = {
-  async register(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { email, password, name } = req.body as RegisterRequest;
-      const { user, token } = await userService.register(email, password, name);
-      logger.info(`User registered: ${user.id}`);
-      const response: AuthResponse = { user, token };
-      res.status(201).json(response);
-    } catch (err) {
-      next(err);
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const parsed = loginRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Invalid login payload' });
     }
-  },
-
-  async login(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { email, password } = req.body as LoginRequest;
-      const { user, token } = await userService.login(email, password);
-      logger.info(`User logged in: ${user.id}`);
-      const response: AuthResponse = { user, token };
-      res.status(200).json(response);
-    } catch (err) {
-      next(err);
-    }
-  },
-
-  async logout(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { token } = req.body as LogoutRequest;
-      await sessionService.logout(token);
-      res.status(200).json({ success: true });
-    } catch (err) {
-      next(err);
-    }
+    const { email, password } = parsed.data;
+    const result = await authService.login(email, password);
+    res.json(result);
+  } catch (err) {
+    logError('Login error:', err);
+    next(err);
   }
 };
+
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const token = req.authToken;
+    await authService.logout(token);
+    res.json({ success: true });
+  } catch (err) {
+    logError('Logout error:', err);
+    next(err);
+  }
+};
+
+export default { login, logout };
