@@ -1,0 +1,68 @@
+.nav {
+  width: 220px;
+  background: #1e293b;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem 1rem 1rem;
+  min-height: 100vh;
+}
+.logo {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  letter-spacing: 1px;
+}
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  flex: 1;
+}
+.menu li {
+  margin-bottom: 1.2rem;
+}
+.menu a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.menu a:hover {
+  background: #334155;
+  color: #fff;
+}
+.active {
+  background: #0ea5e9;
+  color: #fff !important;
+}
+.icon {
+  margin-right: 0.7rem;
+  font-size: 1.3rem;
+}
+.userSection {
+  margin-top: auto;
+  border-top: 1px solid #334155;
+  padding-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.userName {
+  font-size: 1rem;
+  color: #a3e635;
+  margin-bottom: 0.2rem;
+}
+.logout, .login {
+  color: #f87171;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.15s;
+}
+.logout:hover, .login:hover {
+  color: #ef4444;
+}

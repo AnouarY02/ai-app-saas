@@ -1,43 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
-import { aiRequestService } from '../services/aiRequestService';
-import { aiRequestCreateSchema } from '../validators/aiValidators';
+import { aiInteractionRequestSchema, queryParamsSchema } from '../validators/aiValidators';
+import { aiService } from '../services/aiService';
+import { logger } from '../utils/logger';
 
-export async function createRequest(req: Request, res: Response, next: NextFunction) {
+export async function createInteraction(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    const parsed = aiRequestCreateSchema.safeParse(req.body);
-    if (!parsed.success) {
-      return res.status(400).json({ error: 'Invalid request', details: parsed.error.errors });
-    }
-    const aiRequest = await aiRequestService.createAIRequest(userId, parsed.data.input);
-    res.status(201).json(aiRequest);
+    const userId = req.user.id;
+    const data = aiInteractionRequestSchema.parse(req.body);
+    // Simulate AI response (replace with real AI integration)
+    const output = `Echo: ${data.input}`;
+    const interaction = await aiService.create({ userId, input: data.input, output });
+    logger.info(`AI interaction created for user ${userId}`);
+    res.status(201).json({ output, interaction });
   } catch (err) {
     next(err);
   }
 }
 
-export async function listRequests(req: Request, res: Response, next: NextFunction) {
+export async function getHistory(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    const requests = await aiRequestService.listByUser(userId);
-    res.status(200).json(requests);
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function getRequest(req: Request, res: Response, next: NextFunction) {
-  try {
-    const userId = req.user?.id;
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    const id = req.params.id;
-    const aiRequest = await aiRequestService.getById(id);
-    if (!aiRequest || aiRequest.userId !== userId) {
-      return res.status(404).json({ error: 'AI request not found' });
-    }
-    res.status(200).json(aiRequest);
+    const userId = req.user.id;
+    const { limit = 20, offset = 0 } = queryParamsSchema.parse(req.query);
+    const interactions = await aiService.listByUser(userId, limit, offset);
+    res.status(200).json({ interactions });
   } catch (err) {
     next(err);
   }

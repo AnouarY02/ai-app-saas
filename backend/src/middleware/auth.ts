@@ -1,21 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
-import { jwtService } from '../services/jwtService';
-import { userService } from '../services/userService';
+import { sessionService } from '../services/sessionService';
 
-export async function authenticateJWT(req: Request, res: Response, next: NextFunction) {
-  const token = jwtService.extractToken(req);
-  if (!token) {
-    return res.status(401).json({ error: 'Missing or invalid token' });
-  }
+export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   try {
-    const payload = jwtService.verify(token);
-    const user = await userService.findById(payload.userId);
-    if (!user) {
-      return res.status(401).json({ error: 'User not found' });
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Missing or invalid Authorization header' });
     }
-    req.user = { id: user.id, email: user.email };
+    const token = authHeader.slice(7);
+    const payload = await sessionService.verifyToken(token);
+    if (!payload) {
+      return res.status(401).json({ error: 'Invalid or expired session token' });
+    }
+    req.user = { id: payload.userId };
+    req.session = { id: payload.sessionId };
     next();
   } catch (err) {
-    return res.status(401).json({ error: 'Invalid or expired token' });
+    next(err);
   }
 }

@@ -1,14 +1,21 @@
 import React from 'react';
-import styles from './HomePage.module.css';
+import { useAuth } from '../state/AuthContext';
+import { Link } from 'react-router-dom';
 
 const HomePage: React.FC = () => {
+  const { user } = useAuth();
   return (
-    <section className={styles.hero}>
-      <h1 className={styles.title}>Welcome to AI App</h1>
-      <p className={styles.subtitle}>
-        This is your starting point for a modern SaaS application. Explore the monorepo structure, shared utilities, and more.
-      </p>
-    </section>
+    <div>
+      <h1>Welcome to AI SaaS App</h1>
+      <p>This is your entry point to powerful AI features.</p>
+      {user ? (
+        <Link to="/app">Go to AI App</Link>
+      ) : (
+        <>
+          <Link to="/login">Login</Link> or <Link to="/register">Register</Link>
+        </>
+      )}
+    </div>
   );
 };
 

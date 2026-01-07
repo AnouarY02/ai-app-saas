@@ -1,3 +1,5 @@
+// shared/src/types/index.ts
 export * from './user';
 export * from './session';
-export * from './auth';
+export * from './aiInteraction';
+export * from './api';

@@ -1,29 +1,26 @@
-body {
+html, body, #root {
+  height: 100%;
   margin: 0;
-  font-family: system-ui, sans-serif;
+  padding: 0;
+  font-family: 'Inter', Arial, sans-serif;
   background: #f8fafc;
-  color: #222;
+  color: #1e293b;
 }
-
-.primary-btn {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background 0.2s;
+h1, h2, h3 {
+  font-weight: 700;
+  margin-bottom: 0.7em;
 }
-.primary-btn:disabled {
-  background: #a5b4fc;
-  cursor: not-allowed;
+a {
+  color: #0ea5e9;
+  text-decoration: none;
 }
-.form-error {
-  color: #dc2626;
-  margin-top: 0.5em;
+a:hover {
+  text-decoration: underline;
 }
-.form-success {
-  color: #16a34a;
-  margin-top: 0.5em;
+form {
+  display: flex;
+  flex-direction: column;
+}
+button {
+  font-family: inherit;
 }

@@ -1,77 +1,85 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { loginRequest, registerRequest, logoutRequest, getProfile } from '../utils/apiClient';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { loginApi, registerApi, logoutApi, getMeApi } from '../lib/api';
 
 export interface User {
   id: string;
+  name: string;
   email: string;
-  name?: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface AuthContextProps {
   user: User | null;
-  token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name?: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  setUser: (user: User | null) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-const TOKEN_KEY = 'aiapp_token';
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem(TOKEN_KEY);
-    if (storedToken) {
-      setToken(storedToken);
-      // Try to fetch user profile
-      getProfile(storedToken)
-        .then(profile => {
-          setUser(profile);
-        })
-        .catch(() => {
-          setUser(null);
-          setToken(null);
-          localStorage.removeItem(TOKEN_KEY);
-        })
-        .finally(() => setLoading(false));
-    } else {
+  const refreshUser = useCallback(async () => {
+    setLoading(true);
+    try {
+      const u = await getMeApi();
+      setUser(u);
+    } catch {
+      setUser(null);
+    } finally {
       setLoading(false);
     }
   }, []);
 
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
+
   const login = async (email: string, password: string) => {
-    const { user, token } = await loginRequest(email, password);
-    setUser(user);
-    setToken(token);
-    localStorage.setItem(TOKEN_KEY, token);
+    setLoading(true);
+    try {
+      await loginApi(email, password);
+      await refreshUser();
+    } catch (err: any) {
+      setUser(null);
+      throw err.response?.data?.error || err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const register = async (email: string, password: string, name?: string) => {
-    const { user, token } = await registerRequest(email, password, name);
-    setUser(user);
-    setToken(token);
-    localStorage.setItem(TOKEN_KEY, token);
+  const register = async (name: string, email: string, password: string) => {
+    setLoading(true);
+    try {
+      await registerApi(name, email, password);
+      await refreshUser();
+    } catch (err: any) {
+      setUser(null);
+      throw err.response?.data?.error || err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
-    if (token) {
-      await logoutRequest(token);
+    setLoading(true);
+    try {
+      await logoutApi();
+      setUser(null);
+    } catch (err: any) {
+      // ignore
+    } finally {
+      setLoading(false);
     }
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem(TOKEN_KEY);
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, setUser }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

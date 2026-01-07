@@ -1,35 +1,59 @@
 // shared/src/types/api.ts
 import type { User } from './user';
-import type { AIRequest } from './aiRequest';
+import type { AIInteraction } from './aiInteraction';
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+export interface SuccessResponse {
+  success: boolean;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+}
 
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
-export interface LoginResponse {
+export interface LogoutRequest {
   token: string;
-  user: User;
 }
 
-export interface LogoutRequest {}
-
-export interface LogoutResponse {
-  success: boolean;
-}
-
-export interface UpdateSettingsRequest {
+export interface UpdateUserRequest {
+  name?: string;
   email?: string;
   password?: string;
+}
+
+export interface AIInteractionRequest {
+  input: string;
+}
+
+export interface AIInteractionResponse {
+  output: string;
+  interaction: AIInteraction;
+}
+
+export interface AIInteractionHistoryResponse {
+  interactions: AIInteraction[];
 }
 
 export interface PaginatedResult<T> {
   items: T[];
   total: number;
-  page: number;
-  pageSize: number;
+  limit: number;
+  offset: number;
 }
 
-export interface AIRequestCreate {
-  input: string;
+export interface ErrorResponse {
+  error: string;
+  code?: string;
+  details?: unknown;
 }
