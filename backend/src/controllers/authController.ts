@@ -1,41 +1,67 @@
 import { Request, Response, NextFunction } from 'express';
-import { userService } from '../services/userService';
-import { sessionService } from '../services/sessionService';
-import { AuthResponse, RegisterRequest, LoginRequest, LogoutRequest } from '../types';
-import { logger } from '../shared/logger';
+import { z } from 'zod';
+import { prisma } from '../prisma/client';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { getUserPublic } from '../services/userService';
 
-export const authController = {
-  async register(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { email, password, name } = req.body as RegisterRequest;
-      const { user, token } = await userService.register(email, password, name);
-      logger.info(`User registered: ${user.id}`);
-      const response: AuthResponse = { user, token };
-      res.status(201).json(response);
-    } catch (err) {
-      next(err);
-    }
-  },
+const loginRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6)
+});
 
-  async login(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { email, password } = req.body as LoginRequest;
-      const { user, token } = await userService.login(email, password);
-      logger.info(`User logged in: ${user.id}`);
-      const response: AuthResponse = { user, token };
-      res.status(200).json(response);
-    } catch (err) {
-      next(err);
-    }
-  },
+const signupRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().optional()
+});
 
-  async logout(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { token } = req.body as LogoutRequest;
-      await sessionService.logout(token);
-      res.status(200).json({ success: true });
-    } catch (err) {
-      next(err);
+export async function login(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, password } = loginRequestSchema.parse(req.body);
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+    res.json({ token, user: getUserPublic(user) });
+  } catch (err) {
+    next(err);
   }
-};
+}
+
+export async function signup(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, password, name } = signupRequestSchema.parse(req.body);
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: { email, passwordHash, name }
+    });
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+    res.status(201).json({ token, user: getUserPublic(user) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function me(req: Request, res: Response, next: NextFunction) {
+  try {
+    // @ts-ignore
+    const userId = req.userId;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(getUserPublic(user));
+  } catch (err) {
+    next(err);
+  }
+}

@@ -1,23 +1,45 @@
 import express from 'express';
 import cors from 'cors';
-import { apiRouter } from './routes/api';
-import { errorHandler, notFoundHandler } from './core/errorHandlers';
-import { loggerMiddleware } from './shared/logger';
+import dotenv from 'dotenv';
+import morgan from 'morgan';
+import healthRouter from './routes/health';
+import authRoutes from './routes/authRoutes';
+import contactRoutes from './routes/contactRoutes';
+import dealRoutes from './routes/dealRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
+import { errorHandler, notFoundHandler } from './middleware/errorMiddleware';
 
-export const app = express();
+dotenv.config();
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
-}));
+const app = express();
+
+// Middleware
 app.use(express.json());
-app.use(loggerMiddleware);
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ ok: true, app: process.env.npm_package_name || 'ai-app', buildId: process.env.BUILD_ID || 'dev' });
+// CORS
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL : '*',
+  credentials: true
+};
+app.use(cors(corsOptions));
+
+// Logging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
 });
 
-app.use('/api', apiRouter);
+// Routes
+app.use('/health', healthRouter);
+app.use('/auth', authRoutes);
+app.use('/contacts', contactRoutes);
+app.use('/deals', dealRoutes);
+app.use('/dashboard', dashboardRoutes);
 
+// 404 handler
 app.use(notFoundHandler);
+// Error handler
 app.use(errorHandler);
+
+export default app;
