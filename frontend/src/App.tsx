@@ -1,43 +1,53 @@
-import React from 'react';
-import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
-import MainLayout from './layouts/MainLayout';
-import AuthLayout from './layouts/AuthLayout';
-import HomePage from './routes/HomePage';
-import LoginPage from './routes/LoginPage';
-import RegisterPage from './routes/RegisterPage';
-import DashboardPage from './routes/DashboardPage';
-import SettingsPage from './routes/SettingsPage';
-import AboutPage from './routes/AboutPage';
-import { useAuth } from './state/AuthContext';
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import ContactsPage from './pages/ContactsPage';
+import ContactFormPage from './pages/ContactFormPage';
+import ContactDetailPage from './pages/ContactDetailPage';
+import DealsPage from './pages/DealsPage';
+import DealFormPage from './pages/DealFormPage';
+import DealDetailPage from './pages/DealDetailPage';
+import LogoutPage from './pages/LogoutPage';
+import MainLayout from './components/MainLayout';
+import AuthLayout from './components/AuthLayout';
+import { useAppDispatch, useAppSelector } from './redux/hooks';
+import { fetchMe } from './redux/authSlice';
 
-function ProtectedRoute() {
-  const { user, loading } = useAuth();
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, loading } = useAppSelector((state) => state.auth);
   const location = useLocation();
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
-  return <Outlet />;
-}
+  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
+  return <>{children}</>;
+};
 
 const App: React.FC = () => {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(fetchMe());
+  }, [dispatch]);
+
   return (
     <Routes>
-      {/* Public routes with MainLayout */}
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-        </Route>
-      </Route>
-      {/* Auth routes with AuthLayout */}
+      {/* Auth layout */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
       </Route>
-      {/* 404 fallback */}
-      <Route path="*" element={<div className="flex flex-col items-center justify-center h-screen"><h1 className="text-3xl font-bold mb-4">404 - Not Found</h1><a href="/" className="text-blue-600 hover:underline">Go Home</a></div>} />
+      {/* Main layout (protected) */}
+      <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/contacts" element={<ContactsPage />} />
+        <Route path="/contacts/new" element={<ContactFormPage />} />
+        <Route path="/contacts/:id" element={<ContactDetailPage />} />
+        <Route path="/deals" element={<DealsPage />} />
+        <Route path="/deals/new" element={<DealFormPage />} />
+        <Route path="/deals/:id" element={<DealDetailPage />} />
+        <Route path="/logout" element={<LogoutPage />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Route>
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };

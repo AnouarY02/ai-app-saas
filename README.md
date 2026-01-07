@@ -1,91 +1,100 @@
-# ai-app
+# SaaS CRM
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+A modern SaaS CRM platform for managing contacts, deals, and sales pipelines. Built as a TypeScript monorepo with shared models and utilities.
+
+## Features
+- Contact and deal management
+- User authentication (JWT)
+- Dashboard with metrics and pipeline
+- RESTful API (Express)
+- React frontend with Redux Toolkit
+- Shared TypeScript models/utilities
+
+## Tech Stack
+- **Frontend:** React, TypeScript, Redux Toolkit
+- **Backend:** Node.js, Express, TypeScript
+- **Database:** PostgreSQL (via Docker)
+- **Monorepo:** npm workspaces
+- **Testing:** Jest
+- **Linting/Formatting:** ESLint, Prettier
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` — React app (TypeScript)
+- `backend/` — Express API (TypeScript)
+- `shared/` — Shared models and utilities
+- `infra/` — Linting, formatting, CI/CD configs
 
-## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
+## Getting Started
 
-## Environment Variables
-Copy `.env.example` to `.env` and fill in the required values:
+### Prerequisites
+- Node.js v18+
+- npm v8+
+- Docker & Docker Compose
 
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
-
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
-
-## Local Development
-
-### With Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Run:
+### Installation
+1. Clone the repo:
    ```sh
-   yarn install
-   yarn start
+   git clone https://github.com/AnouarY02/ai-app-saas.git
+   cd ai-app-saas
    ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
-
-### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
 2. Install dependencies:
    ```sh
-   yarn install
+   npm install
    ```
-3. In one terminal, run:
+3. Copy and configure environment variables:
    ```sh
-   yarn dev
+   cp .env.example .env
+   # Edit .env as needed
    ```
-   This starts both frontend and backend concurrently.
 
-## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
+## Environment Variables
+See `.env.example` for all required and optional variables:
+- `NODE_ENV`, `PORT`, `DATABASE_URL`, `JWT_SECRET` (required)
+- `FRONTEND_URL`, `BACKEND_URL`, `LOG_LEVEL`, `CORS_ORIGIN` (optional)
 
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
+## Running Locally
 
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
+### With Docker Compose
+```sh
+docker-compose up --build
+```
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:4000
+- Database: localhost:5432 (Postgres)
 
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
+### Without Docker
+```sh
+npm run dev
+```
+- Starts both frontend and backend in dev mode.
 
-## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
+## Scripts
+- `npm run dev` — Start frontend & backend concurrently (dev mode)
+- `npm run build` — Build all workspaces
+- `npm run lint` — Lint all code
+- `npm test` — Run all tests
+- `npm start` — Start backend API (production)
 
-## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
+## API Overview
+- RESTful endpoints for contacts, deals, and authentication
+- See `backend/src/routes/` for details
 
-## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+## Authentication
+- JWT-based authentication
+- Login/register via `/api/auth`
+- Protect routes with JWT in `Authorization` header
+
+## Deployment Notes
+- Use Docker Compose for local/prod deployments
+- Configure environment variables for production
+- Database migrations/seeding handled via backend scripts (see backend/README.md)
+
+## Contributing
+1. Fork the repo
+2. Create a feature branch
+3. Commit and push your changes
+4. Open a pull request
+
+## License
+MIT

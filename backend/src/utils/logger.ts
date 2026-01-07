@@ -1,10 +1,12 @@
 export const logger = {
-  info: (...args: any[]) => {
-    if (process.env.LOG_LEVEL !== 'error') {
-      console.log('[INFO]', ...args);
-    }
+  info: (msg: string) => {
+    console.log(`[${new Date().toISOString()}] INFO: ${msg}`);
   },
-  error: (...args: any[]) => {
-    console.error('[ERROR]', ...args);
+  error: (err: any) => {
+    if (err instanceof Error) {
+      console.error(`[${new Date().toISOString()}] ERROR:`, err.stack || err.message);
+    } else {
+      console.error(`[${new Date().toISOString()}] ERROR:`, err);
+    }
   }
 };

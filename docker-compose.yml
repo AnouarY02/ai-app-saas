@@ -1,29 +1,53 @@
-version: '3.8'
 services:
   backend:
     build:
-      context: .
-      dockerfile: infra/Dockerfile.backend
-    env_file:
-      - .env
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/app/backend
-      - ./shared:/app/shared
-    depends_on: []
-    command: yarn workspace backend start
+      - "4000:4000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=4000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   frontend:
     build:
-      context: .
-      dockerfile: infra/Dockerfile.frontend
-    env_file:
-      - .env
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app/frontend
-      - ./shared:/app/shared
+      - "3000:80"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - BACKEND_URL=${BACKEND_URL:-http://localhost:4000}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
     depends_on:
-      - backend
-    command: yarn workspace frontend dev
+      backend:
+        condition: service_healthy
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: crm
+      POSTGRES_USER: crmuser
+      POSTGRES_PASSWORD: crmpassword
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crmuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data:

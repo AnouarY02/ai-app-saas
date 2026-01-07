@@ -1,29 +1,8 @@
+/* Tailwind CSS base styles (assume Tailwind is globally included via CDN or build) */
+html, body {
+  min-height: 100%;
+  background-color: #f9fafb;
+}
 body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  background: #f8fafc;
-  color: #222;
-}
-
-.primary-btn {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.primary-btn:disabled {
-  background: #a5b4fc;
-  cursor: not-allowed;
-}
-.form-error {
-  color: #dc2626;
-  margin-top: 0.5em;
-}
-.form-success {
-  color: #16a34a;
-  margin-top: 0.5em;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
 }
