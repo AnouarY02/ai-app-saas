@@ -1,35 +1,10 @@
-// shared/src/types/api.ts
-import type { User } from './user';
-import type { AIRequest } from './aiRequest';
+// Shared API status and error types
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
+export type ApiStatus = 'success' | 'error';
 
-export interface LoginResponse {
-  token: string;
-  user: User;
-}
-
-export interface LogoutRequest {}
-
-export interface LogoutResponse {
-  success: boolean;
-}
-
-export interface UpdateSettingsRequest {
-  email?: string;
-  password?: string;
-}
-
-export interface PaginatedResult<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
-export interface AIRequestCreate {
-  input: string;
+export interface ErrorResponse {
+  status: 'error';
+  message: string;
+  code?: string; // Optional error code for programmatic handling
+  details?: unknown; // Optional additional error details
 }

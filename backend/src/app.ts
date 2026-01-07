@@ -1,23 +1,32 @@
-import express from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
-import { apiRouter } from './routes/api';
-import { errorHandler, notFoundHandler } from './core/errorHandlers';
-import { loggerMiddleware } from './shared/logger';
+import morgan from 'morgan';
+import { errorHandler, notFoundHandler } from './middleware/errorHandlers';
+import healthRouter from './routes/health';
+import apiRouter from './routes/api';
 
-export const app = express();
+const app: Application = express();
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
-}));
+// Middleware
 app.use(express.json());
-app.use(loggerMiddleware);
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ ok: true, app: process.env.npm_package_name || 'ai-app', buildId: process.env.BUILD_ID || 'dev' });
-});
+// CORS: allow all origins in development
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors());
+}
 
+// Logging
+app.use(morgan('dev'));
+
+// Routes
+app.use('/health', healthRouter);
 app.use('/api', apiRouter);
 
+// 404 handler
 app.use(notFoundHandler);
+
+// Error handler
 app.use(errorHandler);
+
+export default app;

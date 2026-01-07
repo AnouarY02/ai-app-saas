@@ -1,13 +1,14 @@
 import React from 'react';
-import styles from './HomePage.module.css';
+import Button from '../components/Button';
 
 const HomePage: React.FC = () => {
   return (
-    <section className={styles.hero}>
-      <h1 className={styles.title}>Welcome to AI App</h1>
-      <p className={styles.subtitle}>
-        This is your starting point for a modern SaaS application. Explore the monorepo structure, shared utilities, and more.
+    <section className="flex flex-col items-center justify-center min-h-[60vh]">
+      <h1 className="text-4xl font-bold mb-4 text-center">Welcome to AI App</h1>
+      <p className="text-lg text-gray-600 mb-6 text-center max-w-xl">
+        This is a minimal AI SaaS starter. The app is ready for future expansion with a modern stack: React, TypeScript, Vite, and TailwindCSS.
       </p>
+      <Button variant="primary">Get Started</Button>
     </section>
   );
 };

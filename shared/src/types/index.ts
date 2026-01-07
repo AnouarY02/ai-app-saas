@@ -1,3 +1,2 @@
-export * from './user';
-export * from './session';
-export * from './auth';
+// Barrel for shared types
+export * from './api';

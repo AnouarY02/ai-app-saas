@@ -1,18 +1,23 @@
 import React from 'react';
 
-export const HomeIcon: React.FC<{ className?: string }> = ({ className }) => (
+export interface IconProps {
+  className?: string;
+}
+
+export const HomeIcon: React.FC<IconProps> = ({ className = '' }) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
     className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
   >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
-      d="M3 10.75L12 4l9 6.75M4.5 10.75V19a2 2 0 002 2h2.75a.75.75 0 00.75-.75v-3.5A.75.75 0 0110.75 16h2.5a.75.75 0 01.75.75v3.5a.75.75 0 00.75.75H19a2 2 0 002-2v-8.25"
+      d="M3 12l9-9 9 9M4 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-4 0h4"
     />
   </svg>
 );

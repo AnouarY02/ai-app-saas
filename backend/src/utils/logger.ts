@@ -1,10 +1,5 @@
-export const logger = {
-  info: (...args: any[]) => {
-    if (process.env.LOG_LEVEL !== 'error') {
-      console.log('[INFO]', ...args);
-    }
-  },
-  error: (...args: any[]) => {
-    console.error('[ERROR]', ...args);
-  }
-};
+export function logWithTimestamp(message: string) {
+  const ts = new Date().toISOString();
+  // eslint-disable-next-line no-console
+  console.log(`[${ts}] ${message}`);
+}

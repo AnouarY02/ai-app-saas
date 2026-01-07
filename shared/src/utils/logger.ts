@@ -1,24 +1,35 @@
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+// Simple cross-platform logger utility
 
-const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error'];
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
-function getLogLevel(): LogLevel {
-  if (typeof process !== 'undefined' && process.env && process.env.LOG_LEVEL) {
-    const lvl = process.env.LOG_LEVEL.toLowerCase();
-    if (LOG_LEVELS.includes(lvl as LogLevel)) return lvl as LogLevel;
+export interface LoggerOptions {
+  prefix?: string;
+}
+
+export class Logger {
+  private prefix: string;
+
+  constructor(options: LoggerOptions = {}) {
+    this.prefix = options.prefix ? `[${options.prefix}] ` : '';
   }
-  return 'info';
+
+  debug(...args: unknown[]) {
+    // eslint-disable-next-line no-console
+    console.debug(this.prefix + '[DEBUG]', ...args);
+  }
+  info(...args: unknown[]) {
+    // eslint-disable-next-line no-console
+    console.info(this.prefix + '[INFO]', ...args);
+  }
+  warn(...args: unknown[]) {
+    // eslint-disable-next-line no-console
+    console.warn(this.prefix + '[WARN]', ...args);
+  }
+  error(...args: unknown[]) {
+    // eslint-disable-next-line no-console
+    console.error(this.prefix + '[ERROR]', ...args);
+  }
 }
 
-const currentLevel = getLogLevel();
-
-function shouldLog(level: LogLevel): boolean {
-  return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(currentLevel);
-}
-
-export const logger = {
-  debug: (...args: any[]) => shouldLog('debug') && console.debug('[DEBUG]', ...args),
-  info: (...args: any[]) => shouldLog('info') && console.info('[INFO]', ...args),
-  warn: (...args: any[]) => shouldLog('warn') && console.warn('[WARN]', ...args),
-  error: (...args: any[]) => shouldLog('error') && console.error('[ERROR]', ...args),
-};
+// Singleton default logger
+export const logger = new Logger({ prefix: 'AI-APP' });

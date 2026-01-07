@@ -1,5 +1,5 @@
 {
-  "name": "ai-app-monorepo",
+  "name": "ai-app-saas",
   "private": true,
   "workspaces": [
     "frontend",
@@ -7,17 +7,17 @@
     "shared"
   ],
   "scripts": {
-    "dev": "concurrently \"yarn workspace backend dev\" \"yarn workspace frontend dev\"",
-    "build": "yarn workspace backend build && yarn workspace frontend build",
+    "dev": "concurrently \"npm:start --prefix backend\" \"npm:start --prefix frontend\"",
+    "build": "npm run build --workspaces",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
-    "start": "docker-compose up --build"
+    "start": "node backend/dist/server.js"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
     "eslint": "^8.0.0",
     "prettier": "^2.8.0",
-    "concurrently": "^8.0.0",
-    "cross-env": "^7.0.0"
+    "ts-node": "^10.0.0",
+    "concurrently": "^8.0.0"
   }
 }
