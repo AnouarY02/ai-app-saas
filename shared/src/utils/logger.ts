@@ -1,24 +1,23 @@
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+// Simple shared logger
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error'];
 
-function getLogLevel(): LogLevel {
-  if (typeof process !== 'undefined' && process.env && process.env.LOG_LEVEL) {
-    const lvl = process.env.LOG_LEVEL.toLowerCase();
-    if (LOG_LEVELS.includes(lvl as LogLevel)) return lvl as LogLevel;
+let currentLevel: LogLevel = process.env.LOG_LEVEL as LogLevel || 'info';
+
+export function setLogLevel(level: LogLevel) {
+  if (LOG_LEVELS.includes(level)) {
+    currentLevel = level;
   }
-  return 'info';
 }
 
-const currentLevel = getLogLevel();
-
-function shouldLog(level: LogLevel): boolean {
+function shouldLog(level: LogLevel) {
   return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(currentLevel);
 }
 
 export const logger = {
-  debug: (...args: any[]) => shouldLog('debug') && console.debug('[DEBUG]', ...args),
-  info: (...args: any[]) => shouldLog('info') && console.info('[INFO]', ...args),
-  warn: (...args: any[]) => shouldLog('warn') && console.warn('[WARN]', ...args),
-  error: (...args: any[]) => shouldLog('error') && console.error('[ERROR]', ...args),
+  debug: (...args: unknown[]) => shouldLog('debug') && console.debug('[DEBUG]', ...args),
+  info: (...args: unknown[]) => shouldLog('info') && console.info('[INFO]', ...args),
+  warn: (...args: unknown[]) => shouldLog('warn') && console.warn('[WARN]', ...args),
+  error: (...args: unknown[]) => shouldLog('error') && console.error('[ERROR]', ...args),
 };

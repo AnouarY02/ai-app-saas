@@ -1,41 +1,27 @@
-// Main Express server bootstrap
 import express from 'express';
 import cors from 'cors';
-import apiRouter from './routes/api';
-import { errorHandler, notFoundHandler } from './middleware/errorHandlers';
+import dotenv from 'dotenv';
 import { logger } from './utils/logger';
+import { errorHandler, notFoundHandler } from './middleware/error';
+import apiRouter from './routes/api';
+
+dotenv.config();
 
 const app = express();
 
-// CORS setup (allow all origins for dev, restrict via env if needed)
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
-}));
-
-// JSON body parser
+app.use(cors());
 app.use(express.json());
 
-// Simple request logger
-app.use(logger);
-
-// Health check endpoint
-app.get('/health', (_req, res) => {
-  res.status(200).json({ ok: true, appName: process.env.APP_NAME || 'ai-app', buildId: process.env.BUILD_ID || 'quicktest' });
+app.get('/health', (req, res) => {
+  res.status(200).json({ ok: true });
 });
 
-// API routes (none defined, but placeholder)
 app.use('/api', apiRouter);
 
-// 404 handler
 app.use(notFoundHandler);
-
-// Error handler
 app.use(errorHandler);
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`[ai-app] Backend listening on port ${PORT}`);
+  logger.info(`Backend listening on port ${PORT}`);
 });

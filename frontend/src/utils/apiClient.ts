@@ -1,50 +1,47 @@
-import axios from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-const API_BASE = '/api';
+const apiBase = process.env.REACT_APP_BACKEND_URL || "/";
 
-export interface User {
-  id: string;
-  email: string;
-  name?: string;
-  createdAt: string;
+class ApiClient {
+  private axios: AxiosInstance;
+  private token: string | null = null;
+
+  constructor() {
+    this.axios = axios.create({
+      baseURL: apiBase,
+      withCredentials: false,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    this.axios.interceptors.request.use((config) => {
+      if (this.token) {
+        config.headers = config.headers || {};
+        config.headers["Authorization"] = `Bearer ${this.token}`;
+      }
+      return config;
+    });
+  }
+
+  setToken(token: string | null) {
+    this.token = token;
+  }
+
+  async get(path: string, config?: AxiosRequestConfig) {
+    const res = await this.axios.get(path, config);
+    return res.data;
+  }
+
+  async post(path: string, data?: any, config?: AxiosRequestConfig) {
+    const res = await this.axios.post(path, data, config);
+    return res.data;
+  }
+
+  async put(path: string, data?: any, config?: AxiosRequestConfig) {
+    const res = await this.axios.put(path, data, config);
+    return res.data;
+  }
 }
 
-export interface AuthResponse {
-  user: User;
-  token: string;
-}
-
-export async function loginRequest(email: string, password: string): Promise<AuthResponse> {
-  const res = await axios.post(`${API_BASE}/auth/login`, { email, password });
-  return res.data;
-}
-
-export async function registerRequest(email: string, password: string, name?: string): Promise<AuthResponse> {
-  const res = await axios.post(`${API_BASE}/auth/register`, { email, password, name });
-  return res.data;
-}
-
-export async function logoutRequest(token: string): Promise<void> {
-  await axios.post(
-    `${API_BASE}/auth/logout`,
-    { token },
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-}
-
-export async function getProfile(token: string): Promise<User> {
-  const res = await axios.get(`${API_BASE}/users/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.data;
-}
-
-export async function updateProfile(
-  token: string,
-  data: { name?: string; email?: string; password?: string }
-): Promise<User> {
-  const res = await axios.put(`${API_BASE}/users/me`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.data;
-}
+const apiClient = new ApiClient();
+export default apiClient;

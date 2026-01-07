@@ -1,91 +1,69 @@
-# ai-app
+# AI App Monorepo
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+A monorepo for an AI SaaS application, featuring a React frontend, Node.js/Express backend, and shared TypeScript contracts/utilities. Dockerized for easy development and deployment.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` – React app (TypeScript)
+- `backend/` – Express API (TypeScript)
+- `shared/` – Shared TypeScript types and utilities
+- `infra/` – Infrastructure scripts and CI/CD configs
 
 ## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
+- [Node.js](https://nodejs.org/) >= 16.x
+- [Yarn](https://classic.yarnpkg.com/en/docs/install/) (Workspaces support)
+- [Docker](https://www.docker.com/get-started)
 
 ## Environment Variables
-Copy `.env.example` to `.env` and fill in the required values:
+Copy `.env.example` to `.env` and fill in required values:
 
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
+```
+NODE_ENV=development
+PORT=4000
+JWT_SECRET=your_jwt_secret_here
+FRONTEND_URL=http://localhost:3000
+BACKEND_URL=http://localhost:4000
+LOG_LEVEL=info
+```
 
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
+## Installation
+```sh
+yarn install
+```
 
-## Local Development
+## Running Locally (Dev)
+```sh
+yarn dev
+```
+- Starts backend (port 4000) and frontend (port 3000) concurrently.
 
-### With Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Run:
-   ```sh
-   yarn install
-   yarn start
-   ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
+## Building for Production
+```sh
+yarn build
+```
+- Builds shared, backend, and frontend packages.
 
-### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Install dependencies:
-   ```sh
-   yarn install
-   ```
-3. In one terminal, run:
-   ```sh
-   yarn dev
-   ```
-   This starts both frontend and backend concurrently.
+## Running with Docker
+```sh
+cp .env.example .env
+docker-compose up --build
+```
+- Access frontend at [http://localhost:3000](http://localhost:3000)
+- Backend API at [http://localhost:4000](http://localhost:4000)
 
-## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
+## API Endpoints Overview
+See `backend/src/routes/api.ts` for available endpoints.
 
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
+## Shared Contracts & Utilities
+Shared types and utilities are in `shared/` and imported by both frontend and backend.
 
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
-
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
-
-## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
-
-## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
+## Testing
+```sh
+yarn test
+```
+- Runs tests across the monorepo (requires test scripts in each package).
 
 ## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+- Ensure all required env variables are set in `.env`.
+- If ports are in use, change `PORT` and update docker-compose accordingly.
+- For Docker issues, ensure Docker Desktop is running and up to date.

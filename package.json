@@ -7,17 +7,17 @@
     "shared"
   ],
   "scripts": {
-    "dev": "concurrently \"yarn workspace backend dev\" \"yarn workspace frontend dev\"",
-    "build": "yarn workspace backend build && yarn workspace frontend build",
+    "dev": "concurrently \"yarn workspace backend dev\" \"yarn workspace frontend start\"",
+    "build": "yarn workspace shared build && yarn workspace backend build && yarn workspace frontend build",
+    "start": "docker-compose up",
     "lint": "eslint . --ext .ts,.tsx",
-    "format": "prettier --write .",
-    "start": "docker-compose up --build"
+    "test": "jest"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "eslint": "^8.0.0",
-    "prettier": "^2.8.0",
-    "concurrently": "^8.0.0",
-    "cross-env": "^7.0.0"
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "typescript": "^5.4.4"
   }
 }

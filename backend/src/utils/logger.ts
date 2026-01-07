@@ -1,10 +1,5 @@
 export const logger = {
-  info: (...args: any[]) => {
-    if (process.env.LOG_LEVEL !== 'error') {
-      console.log('[INFO]', ...args);
-    }
-  },
-  error: (...args: any[]) => {
-    console.error('[ERROR]', ...args);
-  }
+  info: (...args: any[]) => console.log('[INFO]', ...args),
+  warn: (...args: any[]) => console.warn('[WARN]', ...args),
+  error: (...args: any[]) => console.error('[ERROR]', ...args),
 };

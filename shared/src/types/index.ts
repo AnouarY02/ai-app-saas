@@ -1,3 +1,5 @@
 export * from './user';
 export * from './session';
-export * from './auth';
+export * from './userSettings';
+export * from './api';
+export * from './error';

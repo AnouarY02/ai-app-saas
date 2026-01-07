@@ -1,28 +1,33 @@
+import { db } from '../models/db';
+import { Session, User } from '../models/types';
 import { v4 as uuidv4 } from 'uuid';
-import { Session } from '../types';
-import { sessionRepository } from '../repositories/sessionRepository';
+import jwt from 'jsonwebtoken';
+import { ApiError } from '../utils/errors';
 
-const SESSION_EXPIRES_IN_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
+const SESSION_EXPIRY_HOURS = 24;
 
 export const sessionService = {
-  async create(userId: string, token: string): Promise<Session> {
-    const now = new Date();
+  createSession(user: User): string {
+    const token = jwt.sign({ user: { id: user.id, email: user.email, name: user.name } }, JWT_SECRET, {
+      expiresIn: `${SESSION_EXPIRY_HOURS}h`,
+    });
     const session: Session = {
       id: uuidv4(),
-      userId,
+      userId: user.id,
       token,
-      expiresAt: new Date(now.getTime() + SESSION_EXPIRES_IN_MS),
-      createdAt: now
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + SESSION_EXPIRY_HOURS * 60 * 60 * 1000),
     };
-    await sessionRepository.create(session);
-    return session;
+    db.sessions.push(session);
+    return token;
   },
 
-  async findByToken(token: string): Promise<Session | undefined> {
-    return sessionRepository.findByToken(token);
+  logout(userId: string, token: string) {
+    const idx = db.sessions.findIndex(s => s.userId === userId && s.token === token);
+    if (idx >= 0) {
+      db.sessions.splice(idx, 1);
+    }
+    return Promise.resolve();
   },
-
-  async logout(token: string): Promise<void> {
-    await sessionRepository.deleteByToken(token);
-  }
 };

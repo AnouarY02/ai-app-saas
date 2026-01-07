@@ -1,25 +1,25 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { FiHome, FiSmile } from 'react-icons/fi';
-import './Navigation.css';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "../state/AuthContext";
+import "./Navigation.css";
 
-const navItems = [
-  { label: 'Home', path: '/', icon: <FiHome /> },
-  { label: 'Hello', path: '/hello', icon: <FiSmile /> },
+const navMenu = [
+  { label: "Dashboard", path: "/dashboard", icon: "🏠" },
+  { label: "Profile", path: "/profile", icon: "👤" },
+  { label: "Settings", path: "/settings", icon: "⚙️" }
 ];
 
 const Navigation: React.FC = () => {
+  const { user } = useAuth();
   return (
-    <nav className="main-nav">
-      <ul>
-        {navItems.map((item) => (
+    <nav className="nav">
+      <div className="nav-header">AI App</div>
+      <ul className="nav-list">
+        {navMenu.map((item) => (
           <li key={item.path}>
             <NavLink
               to={item.path}
-              className={({ isActive }) =>
-                isActive ? 'nav-link active' : 'nav-link'
-              }
-              end={item.path === '/'}
+              className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
             >
               <span className="nav-icon">{item.icon}</span>
               {item.label}
@@ -27,6 +27,13 @@ const Navigation: React.FC = () => {
           </li>
         ))}
       </ul>
+      {user && (
+        <div className="nav-footer">
+          <NavLink to="/logout" className="nav-link">
+            <span className="nav-icon">🚪</span> Logout
+          </NavLink>
+        </div>
+      )}
     </nav>
   );
 };

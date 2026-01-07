@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+yarn-error.log
+dist
+.env
+.git
+.gitignore
+infra/
+frontend/node_modules
+backend/node_modules
+shared/node_modules
+frontend/dist
+backend/dist
+shared/dist

@@ -1,35 +1,35 @@
-// shared/src/types/api.ts
-import type { User } from './user';
-import type { AIRequest } from './aiRequest';
+// API request/response types
+import type { UserPublic, UserProfile } from './user';
+import type { UserSettings } from './userSettings';
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name?: string;
+}
 
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
-export interface LoginResponse {
+export interface AuthResponse {
   token: string;
-  user: User;
+  user: UserPublic;
 }
 
 export interface LogoutRequest {}
 
-export interface LogoutResponse {
+export interface SuccessResponse {
   success: boolean;
 }
 
-export interface UpdateSettingsRequest {
+export interface UpdateProfileRequest {
+  name?: string;
   email?: string;
   password?: string;
 }
 
-export interface PaginatedResult<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
-export interface AIRequestCreate {
-  input: string;
+export interface UpdateUserSettingsRequest {
+  settings: Record<string, unknown>;
 }
