@@ -1,91 +1,95 @@
-# ai-app
+# SaaS CRM
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+A modern SaaS CRM application with a React + Chakra UI frontend and a Node.js/Express backend, managed as a TypeScript monorepo. Includes shared types and validation logic.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` — React + Chakra UI app (TypeScript)
+- `backend/` — Node.js + Express API (TypeScript)
+- `shared/` — Shared types, API client, and validation utilities
+- `infra/` — Tooling configs (ESLint, Prettier, etc.)
 
-## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
+## Tech Stack
+- **Frontend:** React, Chakra UI, TypeScript
+- **Backend:** Node.js, Express, TypeScript
+- **Database:** PostgreSQL (Dockerized)
+- **Shared:** Types, API client, validation (zod)
+- **Tooling:** ESLint, Prettier, Docker Compose, Yarn Workspaces
+
+## Getting Started
+1. **Clone the repo:**
+   ```sh
+   git clone https://github.com/AnouarY02/ai-app-saas.git
+   cd ai-app-saas
+   ```
+2. **Install dependencies:**
+   ```sh
+   yarn install
+   ```
+3. **Set up environment variables:**
+   ```sh
+   cp .env.example .env
+   # Edit .env as needed
+   ```
 
 ## Environment Variables
-Copy `.env.example` to `.env` and fill in the required values:
+See `.env.example` for all required and optional environment variables:
+- `NODE_ENV`, `PORT`, `JWT_SECRET`, `DATABASE_URL` (**required**)
+- `FRONTEND_URL`, `BACKEND_URL`, `LOG_LEVEL`, `COOKIE_DOMAIN` (**optional**)
 
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
+## Running Locally
+- **Dev mode (with hot reload):**
+  ```sh
+  yarn dev
+  ```
+- **Build all:**
+  ```sh
+  yarn build
+  ```
+- **Start backend only:**
+  ```sh
+  yarn start
+  ```
 
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
-
-## Local Development
-
-### With Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Run:
-   ```sh
-   yarn install
-   yarn start
-   ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
-
-### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Install dependencies:
-   ```sh
-   yarn install
-   ```
-3. In one terminal, run:
-   ```sh
-   yarn dev
-   ```
-   This starts both frontend and backend concurrently.
+## Docker Usage
+- **Start all services (frontend, backend, db):**
+  ```sh
+  cp .env.example .env
+  docker-compose up --build
+  ```
+- **Stop services:**
+  ```sh
+  docker-compose down
+  ```
 
 ## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
+- `yarn dev` — Run frontend and backend in dev mode concurrently
+- `yarn build` — Build both frontend and backend
+- `yarn start` — Start backend (production mode)
+- `yarn lint` — Lint all code
+- `yarn format` — Format all code with Prettier
 
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
+## API Overview
+- RESTful endpoints for contacts, deals, authentication
+- See `backend/src/routes/` for details
 
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
+## Shared Types and Validation
+- Shared TypeScript types: `shared/types/`
+- Shared validation utilities: `shared/utils/`
+- Shared API client: `shared/apiClient.ts`
 
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
+## Code Quality and Formatting
+- **Lint:**
+  ```sh
+  yarn lint
+  ```
+- **Format:**
+  ```sh
+  yarn format
+  ```
+- ESLint and Prettier configs in `infra/`
 
-## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
-
-## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
-
-## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+## Deployment Notes
+- Configure environment variables for production
+- Use Docker Compose or deploy containers separately
+- Database migrations and backups are recommended for production
