@@ -1,35 +1,11 @@
-// shared/src/types/api.ts
-import type { User } from './user';
-import type { AIRequest } from './aiRequest';
+// Shared API status type
+export type ApiStatus = 'ok' | 'error';
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  user: User;
-}
-
-export interface LogoutRequest {}
-
-export interface LogoutResponse {
-  success: boolean;
-}
-
-export interface UpdateSettingsRequest {
-  email?: string;
-  password?: string;
-}
-
-export interface PaginatedResult<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
-export interface AIRequestCreate {
-  input: string;
+// Shared AppConfig type
+export interface AppConfig {
+  appName: string;
+  version: string;
+  env: 'development' | 'production' | 'test';
+  apiBaseUrl: string;
+  logLevel?: 'debug' | 'info' | 'warn' | 'error';
 }

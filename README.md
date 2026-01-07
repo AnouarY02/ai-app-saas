@@ -1,91 +1,85 @@
 # ai-app
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+A full-stack AI SaaS application monorepo, featuring a React + Vite + TypeScript frontend and a Node.js + Express + TypeScript backend, with shared modules and infrastructure tooling.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` – React + Vite + TypeScript frontend
+- `backend/` – Node.js + Express + TypeScript backend
+- `shared/` – Shared TypeScript modules (types, utils, constants)
+- `infra/` – Infrastructure scripts and tooling
 
-## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
+## Tech Stack
+- **Frontend:** React, Vite, TypeScript
+- **Backend:** Node.js, Express, TypeScript
+- **Monorepo:** npm workspaces
+- **Tooling:** ESLint, Prettier, Docker, Docker Compose
 
-## Environment Variables
-Copy `.env.example` to `.env` and fill in the required values:
+## Getting Started
 
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
+### Prerequisites
+- Node.js >= 18.x
+- npm >= 8.x
+- Docker & Docker Compose (for containerized development)
 
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
+### Installation
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/AnouarY02/ai-app-saas.git
+   cd ai-app-saas
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Copy and configure environment variables:
+   ```sh
+   cp .env.example .env
+   # Edit .env as needed
+   ```
 
 ## Local Development
 
 ### With Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Run:
-   ```sh
-   yarn install
-   yarn start
-   ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
+Start both frontend and backend using Docker Compose:
+```sh
+docker-compose up --build
+```
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:4000
 
 ### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Install dependencies:
-   ```sh
-   yarn install
-   ```
-3. In one terminal, run:
-   ```sh
-   yarn dev
-   ```
-   This starts both frontend and backend concurrently.
+Start backend and frontend in parallel:
+```sh
+npm run dev
+```
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:4000
 
-## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
+## Environment Variables
+See `.env.example` for all required and optional environment variables:
+- `PORT` (required): Backend server port (default: 4000)
+- `VITE_API_BASE_URL` (required): API base URL for frontend
+- `NODE_ENV` (optional): Node environment (default: development)
+- `LOG_LEVEL` (optional): Logging level (default: info)
 
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
+## Scripts and Tooling
+- `npm run dev` – Start frontend and backend concurrently (non-Docker)
+- `npm run build` – Build all workspaces
+- `npm run lint` – Lint all TypeScript/JavaScript code
+- `npm run format` – Format codebase with Prettier
+- `npm run start:frontend` – Start frontend only
+- `npm run start:backend` – Start backend only
+- `npm run deploy` – Run deployment script (see infra/scripts/deploy.ts)
 
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
+## Deployment Guide
+- Use Docker Compose for local or production-like deployments.
+- For custom deployments, see `infra/scripts/deploy.ts` and adapt as needed.
 
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
+## Contributing
+1. Fork the repo and create your branch from `main`.
+2. Ensure code passes lint and formatting checks.
+3. Open a pull request with a clear description.
 
-## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
-
-## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
-
-## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+## License
+MIT

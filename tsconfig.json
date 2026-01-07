@@ -1,11 +1,21 @@
 {
-  "extends": "./shared/tsconfig.json",
   "compilerOptions": {
-    "composite": true,
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
     "baseUrl": ".",
     "paths": {
+      "@frontend/*": ["frontend/src/*"],
+      "@backend/*": ["backend/src/*"],
       "@shared/*": ["shared/src/*"]
     }
   },
-  "include": ["frontend", "backend", "shared"]
+  "include": ["frontend", "backend", "shared", "infra"],
+  "exclude": ["node_modules", "dist"]
 }

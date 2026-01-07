@@ -1,18 +1,23 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FiHome, FiSmile } from 'react-icons/fi';
 import './Navigation.css';
 
-const navItems = [
-  { label: 'Home', path: '/', icon: <FiHome /> },
-  { label: 'Hello', path: '/hello', icon: <FiSmile /> },
+interface NavItem {
+  label: string;
+  path: string;
+  iconHint?: string;
+}
+
+const mainMenu: NavItem[] = [
+  { label: 'Home', path: '/', iconHint: 'home' },
+  { label: 'About', path: '/about', iconHint: 'info' },
 ];
 
 const Navigation: React.FC = () => {
   return (
-    <nav className="main-nav">
-      <ul>
-        {navItems.map((item) => (
+    <nav className="nav-bar">
+      <ul className="nav-list">
+        {mainMenu.map((item) => (
           <li key={item.path}>
             <NavLink
               to={item.path}
@@ -21,7 +26,8 @@ const Navigation: React.FC = () => {
               }
               end={item.path === '/'}
             >
-              <span className="nav-icon">{item.icon}</span>
+              {item.iconHint === 'home' && <span className="nav-icon">🏠</span>}
+              {item.iconHint === 'info' && <span className="nav-icon">ℹ️</span>}
               {item.label}
             </NavLink>
           </li>

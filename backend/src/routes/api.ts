@@ -1,8 +1,6 @@
-import { Router } from 'express';
-import { authRouter } from './auth';
-import { userRouter } from './user';
+import express from 'express';
 
-export const apiRouter = Router();
+const router = express.Router();
+// Placeholder for future API endpoints
 
-apiRouter.use('/auth', authRouter);
-apiRouter.use('/users', userRouter);
+export default router;

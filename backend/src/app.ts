@@ -1,23 +1,34 @@
-import express from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
-import { apiRouter } from './routes/api';
-import { errorHandler, notFoundHandler } from './core/errorHandlers';
-import { loggerMiddleware } from './shared/logger';
+import morgan from 'morgan';
+import routes from './routes';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { logWithTimestamp } from './utils/logger';
 
-export const app = express();
+const app: Application = express();
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
-}));
+// Middleware
 app.use(express.json());
-app.use(loggerMiddleware);
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ ok: true, app: process.env.npm_package_name || 'ai-app', buildId: process.env.BUILD_ID || 'dev' });
-});
+// CORS: allow all origins in development
+const isDev = process.env.NODE_ENV !== 'production';
+app.use(cors({ origin: isDev ? '*' : undefined }));
 
-app.use('/api', apiRouter);
+// Logging
+app.use(morgan('dev', {
+  stream: {
+    write: (msg: string) => logWithTimestamp(msg.trim())
+  }
+}));
 
+// Routes
+app.use('/', routes);
+
+// 404 handler
 app.use(notFoundHandler);
+
+// Error handler
 app.use(errorHandler);
+
+export default app;

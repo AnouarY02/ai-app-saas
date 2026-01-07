@@ -1,0 +1,12 @@
+.example-component {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #f0f4fa;
+  border-radius: 6px;
+  border: 1px solid #dbeafe;
+}
+
+.example-component h2 {
+  margin-top: 0;
+  color: #2d3650;
+}

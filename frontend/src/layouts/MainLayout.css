@@ -1,12 +1,14 @@
-.layout-root {
+.main-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
-.layout-main {
+
+.main-content {
   flex: 1;
-  padding: 2em 1em;
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  margin-top: 64px;
 }
