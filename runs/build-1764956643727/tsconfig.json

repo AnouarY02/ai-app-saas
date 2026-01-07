@@ -1,6 +1,0 @@
-{
-  "extends": "./infra/tsconfig.base.json",
-  "files": [],
-  "include": ["frontend", "backend", "shared"]
-}
-
