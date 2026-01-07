@@ -1,91 +1,93 @@
-# ai-app
+# SaaS CRM
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+A modern SaaS CRM application built as a TypeScript monorepo. It features a React + Tailwind CSS frontend, a Node.js (Express) backend, and a shared contracts/validation layer for robust type safety.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` — React + TypeScript + Tailwind CSS app
+- `backend/` — Node.js + Express + TypeScript API
+- `shared/` — Shared models and validation logic
+- `infra/` — Tooling and configuration (lint, prettier, jest, compose)
 
 ## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
+- [Node.js](https://nodejs.org/) >= 16.x
+- [Yarn](https://yarnpkg.com/) (recommended for workspaces)
 - [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
 ## Environment Variables
-Copy `.env.example` to `.env` and fill in the required values:
+Copy `.env.example` to `.env` and fill in required values:
 
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
+```
+cp .env.example .env
+```
 
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
+- `NODE_ENV` (required): `development` or `production`
+- `PORT` (required): Backend port (default: 4000)
+- `JWT_SECRET` (required): Secret for JWT signing
+- `FRONTEND_URL` (required): e.g. `http://localhost:3000`
+- `BACKEND_URL` (required): e.g. `http://localhost:4000`
+- `LOG_LEVEL` (optional): Logging level
+- `CORS_ORIGIN` (optional): Allowed CORS origin
+- `DATABASE_URL` (optional): Database connection string
 
 ## Local Development
 
-### With Docker
+### With Docker Compose
 1. Copy `.env.example` to `.env` and edit as needed.
 2. Run:
-   ```sh
-   yarn install
+   ```
    yarn start
+   # or
+   docker-compose up --build
    ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
+3. Frontend: [http://localhost:3000](http://localhost:3000)
+   Backend: [http://localhost:4000](http://localhost:4000)
 
-### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Install dependencies:
-   ```sh
+### Without Docker (Local Node)
+1. Install dependencies:
+   ```
    yarn install
    ```
-3. In one terminal, run:
-   ```sh
+2. Build all packages:
+   ```
+   yarn build
+   ```
+3. Start dev servers:
+   ```
    yarn dev
    ```
-   This starts both frontend and backend concurrently.
 
 ## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
+- `yarn dev` — Start frontend and backend in dev mode
+- `yarn build` — Build all packages
+- `yarn lint` — Lint all code
+- `yarn format` — Format codebase with Prettier
+- `yarn test` — Run all tests
+- `yarn start` — Start with Docker Compose
 
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
+## API Endpoints Overview
+See `backend/src/routes/` for available REST endpoints for contacts and deals.
 
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
+## Shared Contracts & Validation
+Shared models and validation logic live in `shared/` and are used by both frontend and backend for type safety and DRY validation.
 
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
+## Testing
+- Run all tests:
+  ```
+  yarn test
+  ```
+- Jest is configured for unit/integration tests in all packages.
 
 ## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
+- Lint: `yarn lint`
+- Format: `yarn format`
+- ESLint and Prettier configs are in `infra/`
 
-## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
+## Deployment Notes
+- Production Docker images are built from `frontend/Dockerfile` and `backend/Dockerfile`.
+- Set all required environment variables in your deployment platform.
 
-## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+## Troubleshooting
+- Ensure `.env` is present and all required variables are set.
+- For Docker issues, check logs with `docker-compose logs`.
+- For workspace issues, try `yarn install --force`.

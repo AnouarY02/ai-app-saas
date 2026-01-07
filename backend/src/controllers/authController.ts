@@ -1,41 +1,42 @@
 import { Request, Response, NextFunction } from 'express';
-import { userService } from '../services/userService';
-import { sessionService } from '../services/sessionService';
-import { AuthResponse, RegisterRequest, LoginRequest, LogoutRequest } from '../types';
-import { logger } from '../shared/logger';
+import { z } from 'zod';
+import { findUserByEmail, validatePassword } from '../services/userService';
+import { generateJWT } from '../utils/jwt';
+import { logWithTimestamp } from '../utils/logger';
 
-export const authController = {
-  async register(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { email, password, name } = req.body as RegisterRequest;
-      const { user, token } = await userService.register(email, password, name);
-      logger.info(`User registered: ${user.id}`);
-      const response: AuthResponse = { user, token };
-      res.status(201).json(response);
-    } catch (err) {
-      next(err);
-    }
-  },
+const loginRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1)
+});
 
-  async login(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { email, password } = req.body as LoginRequest;
-      const { user, token } = await userService.login(email, password);
-      logger.info(`User logged in: ${user.id}`);
-      const response: AuthResponse = { user, token };
-      res.status(200).json(response);
-    } catch (err) {
-      next(err);
+export async function login(req: Request, res: Response, next: NextFunction) {
+  try {
+    const parsed = loginRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Invalid login payload' });
     }
-  },
-
-  async logout(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { token } = req.body as LogoutRequest;
-      await sessionService.logout(token);
-      res.status(200).json({ success: true });
-    } catch (err) {
-      next(err);
+    const { email, password } = parsed.data;
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
+    const valid = await validatePassword(password, user.passwordHash);
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const token = generateJWT(user);
+    logWithTimestamp(`User login: ${email}`);
+    res.json({ token, user: { id: user.id, email: user.email } });
+  } catch (err) {
+    next(err);
   }
-};
+}
+
+export async function logout(req: Request, res: Response, next: NextFunction) {
+  try {
+    // For stateless JWT, logout is handled client-side (token deletion)
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}

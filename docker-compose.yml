@@ -1,29 +1,34 @@
-version: '3.8'
 services:
   backend:
     build:
-      context: .
-      dockerfile: infra/Dockerfile.backend
-    env_file:
-      - .env
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/app/backend
-      - ./shared:/app/shared
-    depends_on: []
-    command: yarn workspace backend start
+      - "4000:4000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=4000
+      - JWT_SECRET=${JWT_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=${BACKEND_URL}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - DATABASE_URL=${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   frontend:
     build:
-      context: .
-      dockerfile: infra/Dockerfile.frontend
-    env_file:
-      - .env
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app/frontend
-      - ./shared:/app/shared
+      - "3000:80"
     depends_on:
-      - backend
-    command: yarn workspace frontend dev
+      backend:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=${BACKEND_URL}

@@ -1,14 +1,19 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import { Outlet, useLocation } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
 
 const MainLayout: React.FC = () => {
+  const location = useLocation();
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-      <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-8">
-        <Outlet />
-      </main>
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="flex-1 p-4 md:p-8">
+          <Outlet key={location.pathname} />
+        </main>
+      </div>
     </div>
   );
 };

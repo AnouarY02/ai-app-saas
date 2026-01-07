@@ -1,11 +1,10 @@
-import { Router } from 'express';
-import { authController } from '../controllers/authController';
-import { validateBody } from '../core/validate';
-import { registerRequestSchema, loginRequestSchema, logoutRequestSchema } from '../validators/authValidators';
-import { authMiddleware } from '../core/authMiddleware';
+import express from 'express';
+import { login, logout } from '../controllers/authController';
+import { requireAuth } from '../middleware/auth';
 
-export const authRouter = Router();
+const router = express.Router();
 
-authRouter.post('/register', validateBody(registerRequestSchema), authController.register);
-authRouter.post('/login', validateBody(loginRequestSchema), authController.login);
-authRouter.post('/logout', authMiddleware, validateBody(logoutRequestSchema), authController.logout);
+router.post('/login', login);
+router.post('/logout', requireAuth, logout);
+
+export default router;
