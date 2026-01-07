@@ -1,11 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { HomeIcon } from './icons/HomeIcon';
-import styles from './MainNavigation.module.css';
+
 
 const MainNavigation: React.FC = () => {
   return (
-    <nav className={styles.navbar}>
+    <nav className="">
       <NavLink
         to="/"
         className={({ isActive }) =>
@@ -13,7 +13,7 @@ const MainNavigation: React.FC = () => {
         }
         end
       >
-        <HomeIcon className={styles.icon} /> Home
+        <HomeIcon className="" /> Home
       </NavLink>
     </nav>
   );
