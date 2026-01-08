@@ -1,32 +1,15 @@
-// shared/src/validators.ts
-import { AppConfig } from './types';
+// Shared validators
 
 /**
- * Simple runtime validation for AppConfig objects.
+ * emptyObjectSchema: Validates that an object is empty (no own properties)
  * Throws an error if validation fails.
+ * Returns void if valid.
  */
-export function validateAppConfig(config: unknown): asserts config is AppConfig {
-  if (
-    typeof config !== 'object' ||
-    config === null ||
-    typeof (config as any).appName !== 'string' ||
-    typeof (config as any).version !== 'string'
-  ) {
-    throw new Error('Invalid AppConfig: Missing required fields appName or version');
+export function emptyObjectSchema(obj: unknown): void {
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+    throw new Error('Expected an empty object');
+  }
+  if (Object.keys(obj).length !== 0) {
+    throw new Error('Expected an empty object');
   }
 }
-
-/**
- * appConfigSchema: JSON schema for AppConfig (for use with validation libraries if needed).
- */
-export const appConfigSchema = {
-  type: 'object',
-  properties: {
-    appName: { type: 'string' },
-    version: { type: 'string' },
-    frontendUrl: { type: 'string', nullable: true },
-    backendUrl: { type: 'string', nullable: true }
-  },
-  required: ['appName', 'version'],
-  additionalProperties: false
-};

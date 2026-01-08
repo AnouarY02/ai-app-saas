@@ -1,15 +1,20 @@
-import React from 'react';
-import styles from './HomePage.module.css';
+import React from 'react'
+import InfoCard from '../components/InfoCard'
 
 const HomePage: React.FC = () => {
   return (
-    <section className={styles.hero}>
-      <h1 className={styles.title}>Welcome to AI App</h1>
-      <p className={styles.subtitle}>
-        This is your starting point for a modern SaaS application. Explore the monorepo structure, shared utilities, and more.
-      </p>
-    </section>
-  );
-};
+    <div className="flex flex-col items-center w-full">
+      <InfoCard title="Welcome to Test App">
+        <p className="mb-2">This is a minimal React + TypeScript starter app.</p>
+        <ul className="list-disc pl-6 text-sm text-gray-600">
+          <li>Monorepo structure (frontend, backend, shared, infra)</li>
+          <li>React SPA with routing</li>
+          <li>Reusable components</li>
+          <li>Simple, clean UI</li>
+        </ul>
+      </InfoCard>
+    </div>
+  )
+}
 
-export default HomePage;
+export default HomePage

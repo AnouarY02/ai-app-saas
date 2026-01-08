@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+dist
+frontend/node_modules
+backend/node_modules
+shared/node_modules
+infra/node_modules
+.env
+.git
+.gitignore
+Dockerfile
+*.tsbuildinfo

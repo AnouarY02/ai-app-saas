@@ -1,24 +1,16 @@
-// Shared utility functions for ai-app
+// Shared utility functions
 
 /**
- * isEmptyObject checks if the provided value is a plain empty object.
+ * Returns the current timestamp as ISO string
  */
-export function isEmptyObject(obj: unknown): obj is Record<string, never> {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    Object.keys(obj).length === 0 &&
-    obj.constructor === Object
-  );
+export function getIsoTimestamp(): string {
+  return new Date().toISOString();
 }
 
 /**
- * safeJsonParse attempts to parse a string as JSON, returning undefined if parsing fails.
+ * Simple logger for debugging (logs to console with timestamp)
  */
-export function safeJsonParse<T = unknown>(input: string): T | undefined {
-  try {
-    return JSON.parse(input) as T;
-  } catch {
-    return undefined;
-  }
+export function logWithTimestamp(...args: any[]): void {
+  // eslint-disable-next-line no-console
+  console.log(`[${getIsoTimestamp()}]`, ...args);
 }

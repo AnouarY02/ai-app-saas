@@ -1,5 +1,4 @@
-export interface HealthStatus {
+export interface HealthCheckResponse {
   status: string;
+  timestamp: string;
 }
-
-export type EmptyObject = Record<string, never>;

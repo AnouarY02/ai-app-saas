@@ -1,23 +1,33 @@
-import express from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
-import { apiRouter } from './routes/api';
-import { errorHandler, notFoundHandler } from './core/errorHandlers';
-import { loggerMiddleware } from './shared/logger';
+import morgan from 'morgan';
+import healthRouter from './routes/health';
+import { notFoundHandler, errorHandler } from './middleware/errorHandlers';
+import { logWithTimestamp } from './utils/logger';
 
-export const app = express();
+dotenvConfig();
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
-}));
+function dotenvConfig() {
+  // Only load dotenv if not already loaded (for testability)
+  if (!process.env.DOTENV_LOADED) {
+    require('dotenv').config();
+    process.env.DOTENV_LOADED = 'true';
+  }
+}
+
+const app: Application = express();
+
+// Middleware
+app.use(cors());
 app.use(express.json());
-app.use(loggerMiddleware);
+app.use(morgan('dev', { stream: { write: (msg) => logWithTimestamp(msg.trim()) } }));
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ ok: true, app: process.env.npm_package_name || 'ai-app', buildId: process.env.BUILD_ID || 'dev' });
-});
+// Routes
+app.use('/api/health', healthRouter);
 
-app.use('/api', apiRouter);
-
+// 404 handler
 app.use(notFoundHandler);
+// Error handler
 app.use(errorHandler);
+
+export default app;

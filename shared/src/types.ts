@@ -1,11 +1,8 @@
-// Shared type definitions for ai-app
+// Shared type definitions
 
 /**
- * HealthStatus represents the possible values for the health check endpoint.
+ * HealthCheckResponse: Contract for /api/health endpoint response
  */
-export type HealthStatus = 'ok' | 'error';
-
-/**
- * EmptyObject is used for endpoints that expect or return an empty object.
- */
-export type EmptyObject = Record<string, never>;
+export interface HealthCheckResponse {
+  status: string;
+}
