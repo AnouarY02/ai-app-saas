@@ -1,9 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
+
 import app from './app';
 import { logInfo, logError } from './utils/logger';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
+
 const server = app.listen(PORT, () => {
   logInfo(`Server listening on port ${PORT}`);
 });
@@ -14,6 +16,7 @@ function shutdown(signal: string) {
     logInfo('Server closed.');
     process.exit(0);
   });
+
   setTimeout(() => {
     logError('Force exiting after 10s.');
     process.exit(1);
