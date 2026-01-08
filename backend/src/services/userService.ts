@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { User, UserPublic } from '../types/user';
 
 interface UserRecord extends User {
