@@ -1,19 +1,18 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { HomeIcon } from './icons/HomeIcon';
-import styles from './MainNavigation.module.css';
 
 const MainNavigation: React.FC = () => {
   return (
-    <nav className={styles.navbar}>
+    <nav className="">
       <NavLink
         to="/"
         className={({ isActive }) =>
-          isActive ? styles.activeLink : styles.link
+          isActive ? "text-blue-600 font-bold" : "text-gray-600 hover:text-blue-600"
         }
         end
       >
-        <HomeIcon className={styles.icon} /> Home
+        <HomeIcon className="" /> Home
       </NavLink>
     </nav>
   );

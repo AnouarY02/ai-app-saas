@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { loginUser, registerUser, AuthResponse, UserPublic } from '../utils/apiClient'
+import { loginRequest, registerRequest, logoutRequest, getProfile, UserPublic } from '../utils/apiClient'
 
 interface AuthContextType {
   user: UserPublic | null
   token: string | null
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string, name: string) => Promise<void>
   logout: () => void
   loading: boolean
   error: string | null
@@ -19,53 +19,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token')
-    const storedUser = localStorage.getItem('user')
-    if (storedToken && storedUser) {
-      setToken(storedToken)
-      setUser(JSON.parse(storedUser))
-    }
-  }, [])
-
   const login = async (email: string, password: string) => {
-    setLoading(true)
-    setError(null)
     try {
-      const res: AuthResponse = await loginUser({ email, password })
-      setToken(res.token)
-      setUser(res.user)
-      localStorage.setItem('token', res.token)
-      localStorage.setItem('user', JSON.stringify(res.user))
-    } catch (e: any) {
-      setError(e.message || 'Login failed')
+      setLoading(true)
+      setError(null)
+      const response = await loginRequest(email, password)
+      setUser(response.user)
+      setToken(response.token)
+      localStorage.setItem('token', response.token)
+    } catch (err: any) {
+      setError(err.message || 'Login failed')
+      throw err
     } finally {
       setLoading(false)
     }
   }
 
-  const register = async (email: string, password: string) => {
-    setLoading(true)
-    setError(null)
+  const register = async (email: string, password: string, name: string) => {
     try {
-      const res: AuthResponse = await registerUser({ email, password })
-      setToken(res.token)
-      setUser(res.user)
-      localStorage.setItem('token', res.token)
-      localStorage.setItem('user', JSON.stringify(res.user))
-    } catch (e: any) {
-      setError(e.message || 'Registration failed')
+      setLoading(true)
+      setError(null)
+      const response = await registerRequest(email, password, name)
+      setUser(response.user)
+      setToken(response.token)
+      localStorage.setItem('token', response.token)
+    } catch (err: any) {
+      setError(err.message || 'Registration failed')
+      throw err
     } finally {
       setLoading(false)
     }
   }
 
   const logout = () => {
-    setToken(null)
     setUser(null)
+    setToken(null)
     localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    logoutRequest()
   }
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token')
+    if (storedToken) {
+      setToken(storedToken)
+      getProfile().then(setUser).catch(() => logout())
+    }
+  }, [])
 
   return (
     <AuthContext.Provider value={{ user, token, login, register, logout, loading, error }}>
@@ -75,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 }
 
 export const useAuth = () => {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
-  return ctx
+  const context = useContext(AuthContext)
+  if (!context) throw new Error('useAuth must be used within AuthProvider')
+  return context
 }

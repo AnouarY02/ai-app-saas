@@ -22,7 +22,7 @@ const RegisterPage: React.FC = () => {
       return
     }
     try {
-      await register(email, password)
+      await register(email, password, email.split("@")[0])
       navigate('/tasks')
     } catch (e: any) {
       setFormError(e.message || 'Registration failed')

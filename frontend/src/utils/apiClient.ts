@@ -1,125 +1,122 @@
-const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000'
+const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4000';
 
+// ============================================
+// TYPES
+// ============================================
 export interface UserPublic {
-  id: string
-  email: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface AuthResponse {
-  token: string
-  user: UserPublic
-}
-
-export interface RegisterUserRequest {
-  email: string
-  password: string
-}
-
-export interface LoginUserRequest {
-  email: string
-  password: string
+  id: string;
+  email: string;
+  name?: string;
+  createdAt?: string;
 }
 
 export interface Task {
-  id: string
-  userId: string
-  title: string
-  description?: string
-  status: 'pending' | 'in_progress' | 'completed'
-  dueDate?: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface TaskListResponse {
-  tasks: Task[]
+  id: string;
+  title: string;
+  description?: string;
+  status: 'pending' | 'in_progress' | 'completed';
+  priority?: 'low' | 'medium' | 'high';
+  dueDate?: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateTaskRequest {
-  title: string
-  description?: string
-  dueDate?: string
+  title: string;
+  description?: string;
+  status?: 'pending' | 'in_progress' | 'completed';
+  priority?: 'low' | 'medium' | 'high';
+  dueDate?: string;
 }
 
 export interface UpdateTaskRequest {
-  title?: string
-  description?: string
-  status?: 'pending' | 'in_progress' | 'completed'
-  dueDate?: string
+  title?: string;
+  description?: string;
+  status?: 'pending' | 'in_progress' | 'completed';
+  priority?: 'low' | 'medium' | 'high';
+  dueDate?: string;
 }
 
-export interface DeleteTaskResponse {
-  success: boolean
+export interface AuthResponse {
+  user: UserPublic;
+  token: string;
 }
 
-function getAuthHeaders(token?: string) {
-  return token ? { 'Authorization': `Bearer ${token}` } : {}
-}
-
-export async function loginUser(data: LoginUserRequest): Promise<AuthResponse> {
-  const res = await fetch(`${apiUrl}/api/auth/login`, {
+// ============================================
+// AUTH API
+// ============================================
+export const loginRequest = async (email: string, password: string): Promise<AuthResponse> => {
+  const response = await fetch(`${apiUrl}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  })
-  if (!res.ok) throw new Error((await res.json()).message || 'Login failed')
-  return res.json()
-}
+    body: JSON.stringify({ email, password })
+  });
+  return response.json();
+};
 
-export async function registerUser(data: RegisterUserRequest): Promise<AuthResponse> {
-  const res = await fetch(`${apiUrl}/api/auth/register`, {
+export const registerRequest = async (email: string, password: string, name: string): Promise<AuthResponse> => {
+  const response = await fetch(`${apiUrl}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  })
-  if (!res.ok) throw new Error((await res.json()).message || 'Registration failed')
-  return res.json()
-}
+    body: JSON.stringify({ email, password, name })
+  });
+  return response.json();
+};
 
-export async function fetchTasks(token: string): Promise<Task[]> {
-  const res = await fetch(`${apiUrl}/api/tasks`, {
-    headers: { ...getAuthHeaders(token) },
-  })
-  if (!res.ok) throw new Error((await res.json()).message || 'Failed to fetch tasks')
-  const data: TaskListResponse = await res.json()
-  return data.tasks
-}
+export const logoutRequest = async (): Promise<void> => {
+  await fetch(`${apiUrl}/auth/logout`, { method: 'POST' });
+};
 
-export async function fetchTask(token: string, taskId: string): Promise<Task> {
-  const res = await fetch(`${apiUrl}/api/tasks/${taskId}`, {
-    headers: { ...getAuthHeaders(token) },
-  })
-  if (!res.ok) throw new Error((await res.json()).message || 'Failed to fetch task')
-  return res.json()
-}
+export const getProfile = async (): Promise<UserPublic> => {
+  const response = await fetch(`${apiUrl}/auth/me`);
+  return response.json();
+};
 
-export async function createTask(token: string, data: CreateTaskRequest): Promise<Task> {
-  const res = await fetch(`${apiUrl}/api/tasks`, {
+// ============================================
+// TASKS API (with token)
+// ============================================
+export const fetchTasks = async (token: string): Promise<Task[]> => {
+  const response = await fetch(`${apiUrl}/tasks`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return response.json();
+};
+
+export const fetchTask = async (token: string, id: string): Promise<Task> => {
+  const response = await fetch(`${apiUrl}/tasks/${id}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return response.json();
+};
+
+export const createTask = async (token: string, data: CreateTaskRequest): Promise<Task> => {
+  const response = await fetch(`${apiUrl}/tasks`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeaders(token) },
-    body: JSON.stringify(data),
-  })
-  if (!res.ok) throw new Error((await res.json()).message || 'Failed to create task')
-  return res.json()
-}
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+};
 
-export async function updateTask(token: string, taskId: string, data: UpdateTaskRequest): Promise<Task> {
-  const res = await fetch(`${apiUrl}/api/tasks/${taskId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeaders(token) },
-    body: JSON.stringify(data),
-  })
-  if (!res.ok) throw new Error((await res.json()).message || 'Failed to update task')
-  return res.json()
-}
+export const updateTask = async (token: string, id: string, data: UpdateTaskRequest): Promise<Task> => {
+  const response = await fetch(`${apiUrl}/tasks/${id}`, {
+    method: 'PATCH',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+};
 
-export async function deleteTask(token: string, taskId: string): Promise<DeleteTaskResponse> {
-  const res = await fetch(`${apiUrl}/api/tasks/${taskId}`, {
+export const deleteTask = async (token: string, id: string): Promise<void> => {
+  await fetch(`${apiUrl}/tasks/${id}`, { 
     method: 'DELETE',
-    headers: { ...getAuthHeaders(token) },
-  })
-  if (!res.ok) throw new Error((await res.json()).message || 'Failed to delete task')
-  return res.json()
-}
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+};

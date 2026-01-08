@@ -73,7 +73,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ initial = {}, onSubmit, onCancel, l
           <select
             className="w-full border rounded px-3 py-2"
             value={status}
-            onChange={e => setStatus(e.target.value)}
+            onChange={e => setStatus(e.target.value as 'pending' | 'in_progress' | 'completed')}
             disabled={loading}
           >
             <option value="pending">Pending</option>
