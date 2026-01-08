@@ -1,6 +1,5 @@
-// Barrel export for shared layer
+// Main shared entrypoint
 export * from './types';
-export * from './validators/authSchemas';
-export * from './errorTypes';
-export * from './utils/logger';
-export * from './apiClient';
+export * from './validators';
+export * from './utils/dateUtils';
+export * from './errors';

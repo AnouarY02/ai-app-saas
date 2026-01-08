@@ -1,35 +1,39 @@
-// shared/src/types/api.ts
-import type { User } from './user';
-import type { AIRequest } from './aiRequest';
+// API contract types
+import type { UserPublic } from './user';
+import type { Task } from './task';
 
-export interface LoginRequest {
+export interface AuthResponse {
+  token: string;
+  user: UserPublic;
+}
+
+export interface RegisterUserRequest {
   email: string;
   password: string;
 }
 
-export interface LoginResponse {
-  token: string;
-  user: User;
+export interface LoginUserRequest {
+  email: string;
+  password: string;
 }
 
-export interface LogoutRequest {}
+export interface CreateTaskRequest {
+  title: string;
+  description?: string;
+  dueDate?: string; // ISO date string
+}
 
-export interface LogoutResponse {
+export interface UpdateTaskRequest {
+  title?: string;
+  description?: string;
+  status?: Task['status'];
+  dueDate?: string;
+}
+
+export interface TaskListResponse {
+  tasks: Task[];
+}
+
+export interface DeleteTaskResponse {
   success: boolean;
-}
-
-export interface UpdateSettingsRequest {
-  email?: string;
-  password?: string;
-}
-
-export interface PaginatedResult<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
-export interface AIRequestCreate {
-  input: string;
 }

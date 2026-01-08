@@ -1,10 +1,11 @@
-export const logger = {
-  info: (...args: any[]) => {
-    if (process.env.LOG_LEVEL !== 'error') {
-      console.log('[INFO]', ...args);
-    }
-  },
-  error: (...args: any[]) => {
-    console.error('[ERROR]', ...args);
-  }
-};
+function timestamp() {
+  return new Date().toISOString();
+}
+
+export function logInfo(...args: any[]) {
+  console.log(`[INFO] [${timestamp()}]`, ...args);
+}
+
+export function logError(...args: any[]) {
+  console.error(`[ERROR] [${timestamp()}]`, ...args);
+}

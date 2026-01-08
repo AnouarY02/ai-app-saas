@@ -1,46 +1,39 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../state/AuthContext';
-import './Header.css';
-
-const navItems = [
-  { label: 'Home', path: '/', icon: '🏠' },
-  { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-  { label: 'Settings', path: '/settings', icon: '⚙️' }
-];
+import React from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { FaList } from 'react-icons/fa'
 
 const Header: React.FC = () => {
-  const { user, logout } = useAuth();
-  const location = useLocation();
-  return (
-    <header className="header-root">
-      <div className="header-logo">
-        <Link to="/">AI App</Link>
-      </div>
-      <nav className="header-nav">
-        {navItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={
-              location.pathname === item.path ? 'nav-link active' : 'nav-link'
-            }
-          >
-            <span className="nav-icon">{item.icon}</span> {item.label}
-          </Link>
-        ))}
-      </nav>
-      <div className="header-actions">
-        {user ? (
-          <button className="logout-btn" onClick={logout}>
-            Logout
-          </button>
-        ) : (
-          <Link to="/login" className="login-btn">Login</Link>
-        )}
-      </div>
-    </header>
-  );
-};
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
-export default Header;
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
+  return (
+    <header className="flex items-center justify-between px-6 py-4 bg-white shadow">
+      <div className="flex items-center gap-2">
+        <FaList className="text-blue-600" />
+        <Link to="/" className="text-xl font-bold text-blue-700">Task Manager Pro</Link>
+      </div>
+      <nav className="flex items-center gap-4">
+        <Link to="/tasks" className="text-gray-700 hover:text-blue-600">Tasks</Link>
+        {user ? (
+          <>
+            <span className="text-gray-500 text-sm">{user.email}</span>
+            <button onClick={handleLogout} className="ml-2 px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700">Logout</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700">Login</Link>
+            <Link to="/register" className="px-3 py-1 rounded bg-gray-200 text-blue-700 hover:bg-gray-300">Register</Link>
+          </>
+        )}
+      </nav>
+    </header>
+  )
+}
+
+export default Header

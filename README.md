@@ -1,91 +1,95 @@
-# ai-app
+# Task Manager Pro
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+Task Manager Pro is a full-stack SaaS application for managing tasks, built with React (frontend), Node.js/Express (backend), and PostgreSQL (database). The monorepo structure enables shared types and utilities across the stack.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` – React + TypeScript UI
+- `backend/` – Express + TypeScript REST API
+- `shared/` – Shared types and utilities
+- `infra/` – Infrastructure, tooling, and configuration
 
 ## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
+- [Node.js](https://nodejs.org/) (v16+ recommended)
+- [pnpm](https://pnpm.io/) (v8+ recommended)
 - [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
 ## Environment Variables
 Copy `.env.example` to `.env` and fill in the required values:
 
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
+```
+cp .env.example .env
+```
 
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
+- `NODE_ENV` (required)
+- `PORT` (required)
+- `JWT_SECRET` (required)
+- `DATABASE_URL` (required)
+- `FRONTEND_URL` (optional)
+- `BACKEND_URL` (optional)
+- `CORS_ORIGIN` (optional)
+- `LOG_LEVEL` (optional)
 
-## Local Development
+## Installation
+Install dependencies for all packages using pnpm:
 
-### With Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Run:
-   ```sh
-   yarn install
-   yarn start
-   ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
+```
+pnpm install
+```
 
-### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Install dependencies:
-   ```sh
-   yarn install
-   ```
-3. In one terminal, run:
-   ```sh
-   yarn dev
-   ```
-   This starts both frontend and backend concurrently.
+## Running Locally (Dev)
+Start all apps in development mode:
+
+```
+pnpm dev
+```
+
+Or run frontend/backend individually:
+
+```
+pnpm --filter frontend dev
+pnpm --filter backend dev
+```
+
+## Building for Production
+Build all packages:
+
+```
+pnpm build
+```
+
+## Running with Docker
+Build and run the full stack using Docker Compose:
+
+```
+docker-compose up --build
+```
+
+The frontend will be available at [http://localhost:3000](http://localhost:3000), backend at [http://localhost:4000](http://localhost:4000).
 
 ## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
+- `pnpm dev` – Start all packages in development mode
+- `pnpm build` – Build all packages
+- `pnpm start` – Start all packages in production mode
+- `pnpm lint` – Lint all packages
+- `pnpm format` – Format all packages
+- `pnpm test` – Run tests for all packages
 
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
+## API Overview
+The backend exposes a REST API for task management. See `backend/README.md` for endpoint documentation.
 
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
-
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
+## Shared Types & Contracts
+Shared TypeScript types and utilities are located in the `shared/` package for type-safe communication between frontend and backend.
 
 ## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
+- ESLint and Prettier are configured for consistent code style.
+- Run `pnpm lint` and `pnpm format` at the root to check/format codebase-wide.
 
-## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
+## Contributing
+1. Fork the repo and create a feature branch.
+2. Make your changes and add tests.
+3. Run lint and format scripts before submitting a PR.
+4. Submit a pull request for review.
 
-## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+## License
+MIT

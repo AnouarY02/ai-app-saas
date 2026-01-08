@@ -1,29 +1,54 @@
-version: '3.8'
 services:
   backend:
     build:
-      context: .
-      dockerfile: infra/Dockerfile.backend
-    env_file:
-      - .env
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/app/backend
-      - ./shared:/app/shared
-    depends_on: []
-    command: yarn workspace backend start
+      - "4000:4000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=4000
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - LOG_LEVEL=${LOG_LEVEL}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
   frontend:
     build:
-      context: .
-      dockerfile: infra/Dockerfile.frontend
-    env_file:
-      - .env
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app/frontend
-      - ./shared:/app/shared
+      - "3000:80"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=80
+      - REACT_APP_BACKEND_URL=${BACKEND_URL}
+      - REACT_APP_FRONTEND_URL=${FRONTEND_URL}
     depends_on:
-      - backend
-    command: yarn workspace frontend dev
+      backend:
+        condition: service_healthy
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=taskmanager
+      - POSTGRES_USER=taskuser
+      - POSTGRES_PASSWORD=taskpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskuser -d taskmanager"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  db_data:

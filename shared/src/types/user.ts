@@ -1,15 +1,15 @@
+// User domain types
 export interface User {
   id: string;
   email: string;
-  passwordHash?: string; // Only on backend
-  name: string;
-  createdAt: string; // ISO string
-  updatedAt: string; // ISO string
+  passwordHash: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
 }
 
-export interface UserProfile {
+export interface UserPublic {
   id: string;
   email: string;
-  name: string;
-  createdAt: string; // ISO string
+  createdAt: string;
+  updatedAt: string;
 }

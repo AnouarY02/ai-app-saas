@@ -1,8 +1,10 @@
-import { Router } from 'express';
-import { authRouter } from './auth';
-import { userRouter } from './user';
+import express from 'express';
+import authRouter from './auth';
+import tasksRouter from './tasks';
 
-export const apiRouter = Router();
+const router = express.Router();
 
-apiRouter.use('/auth', authRouter);
-apiRouter.use('/users', userRouter);
+router.use('/auth', authRouter);
+router.use('/tasks', tasksRouter);
+
+export default router;

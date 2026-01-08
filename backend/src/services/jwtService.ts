@@ -1,21 +1,13 @@
 import jwt from 'jsonwebtoken';
-import { Request } from 'express';
+import { User } from '../types/user';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
-const JWT_EXPIRY = '2h';
+const JWT_EXPIRES_IN = '7d';
 
-export const jwtService = {
-  sign(payload: object): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY });
-  },
-  verify(token: string): any {
-    return jwt.verify(token, JWT_SECRET);
-  },
-  extractToken(req: Request): string | null {
-    const auth = req.headers['authorization'];
-    if (!auth) return null;
-    const [type, token] = auth.split(' ');
-    if (type !== 'Bearer' || !token) return null;
-    return token;
-  }
-};
+export function generateToken(user: User): string {
+  return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+}
+
+export function verifyToken(token: string): { id: string; email: string } {
+  return jwt.verify(token, JWT_SECRET) as { id: string; email: string };
+}
