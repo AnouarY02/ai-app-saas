@@ -1,12 +1,10 @@
 const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000';
 
-// Types
 export interface UserPublic {
   id: string;
   email: string;
 }
 
-// Auth API functions
 export const loginRequest = async (email: string, password: string) => {
   const response = await fetch(`${apiUrl}/auth/login`, {
     method: 'POST',
@@ -16,17 +14,20 @@ export const loginRequest = async (email: string, password: string) => {
   return response.json();
 };
 
-export const registerRequest = async (email: string, password: string) => {
+export const registerRequest = async (email: string, password: string, name: string) => {
   const response = await fetch(`${apiUrl}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, password, name })
   });
   return response.json();
 };
 
-export const logoutRequest = async () => {
-  const response = await fetch(`${apiUrl}/auth/logout`, { method: 'POST' });
+export const logoutRequest = async (token: string) => {
+  const response = await fetch(`${apiUrl}/auth/logout`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
   return response.json();
 };
 
