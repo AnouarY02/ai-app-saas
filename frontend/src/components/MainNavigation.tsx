@@ -9,7 +9,7 @@ const MainNavigation: React.FC = () => {
       <NavLink
         to="/"
         className={({ isActive }) =>
-          isActive ? styles.activeLink : styles.link
+          ""
         }
         end
       >
