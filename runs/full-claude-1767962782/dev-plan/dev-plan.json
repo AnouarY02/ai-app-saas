@@ -1,0 +1,802 @@
+{
+  "_raw": {
+    "headers": {
+      "host": "localhost:5678",
+      "user-agent": "curl/8.16.0",
+      "accept": "*/*",
+      "content-type": "application/json",
+      "content-length": "190"
+    },
+    "params": {},
+    "query": {},
+    "body": {
+      "appName": "Task Manager Pro",
+      "appDescription": "Professional task management with teams, projects, and deadlines",
+      "buildId": "full-claude-1767962782",
+      "tier": "saas"
+    },
+    "webhookUrl": "http://localhost:5678/webhook/af/core/build",
+    "executionMode": "production"
+  },
+  "buildId": "full-claude-1767962782",
+  "appName": "Task Manager Pro",
+  "appDescription": "Professional task management with teams, projects, and deadlines",
+  "client": null,
+  "tier": "saas",
+  "blueprintId": "default-blueprint",
+  "config": {},
+  "userInput": "Professional task management with teams, projects, and deadlines",
+  "hasMeaningfulInput": true,
+  "description": "Professional task management with teams, projects, and deadlines",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "Alle UI gebruikt shadcn/ui, styling via Tailwind. API via Next.js route handlers. Geen externe database, eenvoudige in-memory store voor MVP."
+  },
+  "domains": [
+    {
+      "name": "User",
+      "description": "Gebruikers van het platform, kunnen teams en taken beheren.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Een geregistreerde gebruiker.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke gebruikers-ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Volledige naam"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "E-mailadres"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Team",
+      "description": "Teams van gebruikers die samenwerken aan projecten.",
+      "entities": [
+        {
+          "name": "Team",
+          "description": "Een team van gebruikers.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke team-ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Teamnaam"
+            },
+            {
+              "name": "memberIds",
+              "type": "string[]",
+              "required": true,
+              "description": "Lijst van user IDs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Project",
+      "description": "Projecten binnen teams, bevatten taken.",
+      "entities": [
+        {
+          "name": "Project",
+          "description": "Een project binnen een team.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke project-ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Projectnaam"
+            },
+            {
+              "name": "teamId",
+              "type": "string",
+              "required": true,
+              "description": "ID van het team"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Beschrijving van het project"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Task",
+      "description": "Taken binnen projecten, met deadlines en toewijzing.",
+      "entities": [
+        {
+          "name": "Task",
+          "description": "Een taak binnen een project.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke taak-ID"
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "description": "Titel van de taak"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Beschrijving van de taak"
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "required": true,
+              "description": "ID van het project"
+            },
+            {
+              "name": "assigneeId",
+              "type": "string",
+              "required": false,
+              "description": "ID van toegewezen gebruiker"
+            },
+            {
+              "name": "dueDate",
+              "type": "string",
+              "required": false,
+              "description": "Deadline (ISO string)"
+            },
+            {
+              "name": "completed",
+              "type": "boolean",
+              "required": true,
+              "description": "Status van de taak"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Dashboard met overzicht van projecten en taken.",
+      "file": "app/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/teams",
+      "type": "page",
+      "description": "Overzicht en beheer van teams.",
+      "file": "app/teams/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/projects",
+      "type": "page",
+      "description": "Overzicht en beheer van projecten.",
+      "file": "app/projects/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/projects/[projectId]",
+      "type": "page",
+      "description": "Detailpagina van een project met takenlijst.",
+      "file": "app/projects/[projectId]/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/tasks/[taskId]",
+      "type": "page",
+      "description": "Detailpagina van een taak.",
+      "file": "app/tasks/[taskId]/page.tsx",
+      "layout": "app/(dashboard)/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Loginpagina voor gebruikers.",
+      "file": "app/login/page.tsx",
+      "layout": null
+    },
+    {
+      "path": "/register",
+      "type": "page",
+      "description": "Registratiepagina voor nieuwe gebruikers.",
+      "file": "app/register/page.tsx",
+      "layout": null
+    },
+    {
+      "path": "/",
+      "type": "layout",
+      "description": "Root layout voor de app.",
+      "file": "app/layout.tsx",
+      "layout": null
+    },
+    {
+      "path": "/(dashboard)",
+      "type": "layout",
+      "description": "Dashboard layout met navigatie en header.",
+      "file": "app/(dashboard)/layout.tsx",
+      "layout": null
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "app/api/auth/login/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Login endpoint voor gebruikersauthenticatie."
+    },
+    {
+      "path": "app/api/auth/register/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Registratie endpoint voor nieuwe gebruikers."
+    },
+    {
+      "path": "app/api/teams/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en aanmaken van teams."
+    },
+    {
+      "path": "app/api/teams/[teamId]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en verwijderen van een team."
+    },
+    {
+      "path": "app/api/projects/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en aanmaken van projecten."
+    },
+    {
+      "path": "app/api/projects/[projectId]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en verwijderen van een project."
+    },
+    {
+      "path": "app/api/tasks/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en aanmaken van taken."
+    },
+    {
+      "path": "app/api/tasks/[taskId]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en verwijderen van een taak."
+    }
+  ],
+  "components": [
+    {
+      "name": "SidebarNav",
+      "description": "Navigatie zijbalk voor dashboard routes.",
+      "file": "components/sidebar-nav.tsx",
+      "usedOn": [
+        "app/(dashboard)/layout.tsx"
+      ]
+    },
+    {
+      "name": "ProjectList",
+      "description": "Lijstweergave van projecten.",
+      "file": "components/projects/project-list.tsx",
+      "usedOn": [
+        "app/page.tsx",
+        "app/projects/page.tsx"
+      ]
+    },
+    {
+      "name": "TeamList",
+      "description": "Lijstweergave van teams.",
+      "file": "components/teams/team-list.tsx",
+      "usedOn": [
+        "app/teams/page.tsx"
+      ]
+    },
+    {
+      "name": "TaskList",
+      "description": "Lijstweergave van taken binnen een project.",
+      "file": "components/tasks/task-list.tsx",
+      "usedOn": [
+        "app/projects/[projectId]/page.tsx"
+      ]
+    },
+    {
+      "name": "TaskDetail",
+      "description": "Detailweergave van een taak.",
+      "file": "components/tasks/task-detail.tsx",
+      "usedOn": [
+        "app/tasks/[taskId]/page.tsx"
+      ]
+    },
+    {
+      "name": "ProjectForm",
+      "description": "Formulier voor het aanmaken/bewerken van projecten.",
+      "file": "components/projects/project-form.tsx",
+      "usedOn": [
+        "app/projects/page.tsx",
+        "app/projects/[projectId]/page.tsx"
+      ]
+    },
+    {
+      "name": "TaskForm",
+      "description": "Formulier voor het aanmaken/bewerken van taken.",
+      "file": "components/tasks/task-form.tsx",
+      "usedOn": [
+        "app/projects/[projectId]/page.tsx",
+        "app/tasks/[taskId]/page.tsx"
+      ]
+    },
+    {
+      "name": "TeamForm",
+      "description": "Formulier voor het aanmaken/bewerken van teams.",
+      "file": "components/teams/team-form.tsx",
+      "usedOn": [
+        "app/teams/page.tsx"
+      ]
+    },
+    {
+      "name": "UserAvatar",
+      "description": "Avatar van de ingelogde gebruiker.",
+      "file": "components/user-avatar.tsx",
+      "usedOn": [
+        "app/(dashboard)/layout.tsx"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React state + server actions",
+    "notes": "Client-side state voor formulieren en UI, server actions voor data-mutaties via API-routes. Geen externe state library nodig voor MVP."
+  },
+  "dataLayer": {
+    "strategy": "in-memory store",
+    "notes": "Alle data wordt in-memory opgeslagen op de server (API-routes). Geen persistente database in MVP; eenvoudig te vervangen door een echte database in een latere fase."
+  },
+  "repoMeta": {
+    "name": "task-manager-pro-saas",
+    "description": "AI-Fabriek app: Task Manager Pro",
+    "private": true
+  },
+  "plan": {
+    "appName": "Task Manager Pro",
+    "description": "Professional task management with teams, projects, and deadlines",
+    "stack": {
+      "framework": "Next.js 14 App Router",
+      "language": "TypeScript",
+      "styling": [
+        "Tailwind CSS",
+        "shadcn/ui"
+      ],
+      "api": [
+        "Next.js Route Handlers (app/api)"
+      ],
+      "notes": "Alle UI gebruikt shadcn/ui, styling via Tailwind. API via Next.js route handlers. Geen externe database, eenvoudige in-memory store voor MVP."
+    },
+    "domains": [
+      {
+        "name": "User",
+        "description": "Gebruikers van het platform, kunnen teams en taken beheren.",
+        "entities": [
+          {
+            "name": "User",
+            "description": "Een geregistreerde gebruiker.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke gebruikers-ID"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Volledige naam"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "required": true,
+                "description": "E-mailadres"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Team",
+        "description": "Teams van gebruikers die samenwerken aan projecten.",
+        "entities": [
+          {
+            "name": "Team",
+            "description": "Een team van gebruikers.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke team-ID"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Teamnaam"
+              },
+              {
+                "name": "memberIds",
+                "type": "string[]",
+                "required": true,
+                "description": "Lijst van user IDs"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Project",
+        "description": "Projecten binnen teams, bevatten taken.",
+        "entities": [
+          {
+            "name": "Project",
+            "description": "Een project binnen een team.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke project-ID"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Projectnaam"
+              },
+              {
+                "name": "teamId",
+                "type": "string",
+                "required": true,
+                "description": "ID van het team"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "required": false,
+                "description": "Beschrijving van het project"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Task",
+        "description": "Taken binnen projecten, met deadlines en toewijzing.",
+        "entities": [
+          {
+            "name": "Task",
+            "description": "Een taak binnen een project.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke taak-ID"
+              },
+              {
+                "name": "title",
+                "type": "string",
+                "required": true,
+                "description": "Titel van de taak"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "required": false,
+                "description": "Beschrijving van de taak"
+              },
+              {
+                "name": "projectId",
+                "type": "string",
+                "required": true,
+                "description": "ID van het project"
+              },
+              {
+                "name": "assigneeId",
+                "type": "string",
+                "required": false,
+                "description": "ID van toegewezen gebruiker"
+              },
+              {
+                "name": "dueDate",
+                "type": "string",
+                "required": false,
+                "description": "Deadline (ISO string)"
+              },
+              {
+                "name": "completed",
+                "type": "boolean",
+                "required": true,
+                "description": "Status van de taak"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "path": "/",
+        "type": "page",
+        "description": "Dashboard met overzicht van projecten en taken.",
+        "file": "app/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/teams",
+        "type": "page",
+        "description": "Overzicht en beheer van teams.",
+        "file": "app/teams/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/projects",
+        "type": "page",
+        "description": "Overzicht en beheer van projecten.",
+        "file": "app/projects/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/projects/[projectId]",
+        "type": "page",
+        "description": "Detailpagina van een project met takenlijst.",
+        "file": "app/projects/[projectId]/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/tasks/[taskId]",
+        "type": "page",
+        "description": "Detailpagina van een taak.",
+        "file": "app/tasks/[taskId]/page.tsx",
+        "layout": "app/(dashboard)/layout.tsx"
+      },
+      {
+        "path": "/login",
+        "type": "page",
+        "description": "Loginpagina voor gebruikers.",
+        "file": "app/login/page.tsx",
+        "layout": null
+      },
+      {
+        "path": "/register",
+        "type": "page",
+        "description": "Registratiepagina voor nieuwe gebruikers.",
+        "file": "app/register/page.tsx",
+        "layout": null
+      },
+      {
+        "path": "/",
+        "type": "layout",
+        "description": "Root layout voor de app.",
+        "file": "app/layout.tsx",
+        "layout": null
+      },
+      {
+        "path": "/(dashboard)",
+        "type": "layout",
+        "description": "Dashboard layout met navigatie en header.",
+        "file": "app/(dashboard)/layout.tsx",
+        "layout": null
+      }
+    ],
+    "apiRoutes": [
+      {
+        "path": "app/api/auth/login/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Login endpoint voor gebruikersauthenticatie."
+      },
+      {
+        "path": "app/api/auth/register/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Registratie endpoint voor nieuwe gebruikers."
+      },
+      {
+        "path": "app/api/teams/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en aanmaken van teams."
+      },
+      {
+        "path": "app/api/teams/[teamId]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en verwijderen van een team."
+      },
+      {
+        "path": "app/api/projects/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en aanmaken van projecten."
+      },
+      {
+        "path": "app/api/projects/[projectId]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en verwijderen van een project."
+      },
+      {
+        "path": "app/api/tasks/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en aanmaken van taken."
+      },
+      {
+        "path": "app/api/tasks/[taskId]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en verwijderen van een taak."
+      }
+    ],
+    "components": [
+      {
+        "name": "SidebarNav",
+        "description": "Navigatie zijbalk voor dashboard routes.",
+        "file": "components/sidebar-nav.tsx",
+        "usedOn": [
+          "app/(dashboard)/layout.tsx"
+        ]
+      },
+      {
+        "name": "ProjectList",
+        "description": "Lijstweergave van projecten.",
+        "file": "components/projects/project-list.tsx",
+        "usedOn": [
+          "app/page.tsx",
+          "app/projects/page.tsx"
+        ]
+      },
+      {
+        "name": "TeamList",
+        "description": "Lijstweergave van teams.",
+        "file": "components/teams/team-list.tsx",
+        "usedOn": [
+          "app/teams/page.tsx"
+        ]
+      },
+      {
+        "name": "TaskList",
+        "description": "Lijstweergave van taken binnen een project.",
+        "file": "components/tasks/task-list.tsx",
+        "usedOn": [
+          "app/projects/[projectId]/page.tsx"
+        ]
+      },
+      {
+        "name": "TaskDetail",
+        "description": "Detailweergave van een taak.",
+        "file": "components/tasks/task-detail.tsx",
+        "usedOn": [
+          "app/tasks/[taskId]/page.tsx"
+        ]
+      },
+      {
+        "name": "ProjectForm",
+        "description": "Formulier voor het aanmaken/bewerken van projecten.",
+        "file": "components/projects/project-form.tsx",
+        "usedOn": [
+          "app/projects/page.tsx",
+          "app/projects/[projectId]/page.tsx"
+        ]
+      },
+      {
+        "name": "TaskForm",
+        "description": "Formulier voor het aanmaken/bewerken van taken.",
+        "file": "components/tasks/task-form.tsx",
+        "usedOn": [
+          "app/projects/[projectId]/page.tsx",
+          "app/tasks/[taskId]/page.tsx"
+        ]
+      },
+      {
+        "name": "TeamForm",
+        "description": "Formulier voor het aanmaken/bewerken van teams.",
+        "file": "components/teams/team-form.tsx",
+        "usedOn": [
+          "app/teams/page.tsx"
+        ]
+      },
+      {
+        "name": "UserAvatar",
+        "description": "Avatar van de ingelogde gebruiker.",
+        "file": "components/user-avatar.tsx",
+        "usedOn": [
+          "app/(dashboard)/layout.tsx"
+        ]
+      }
+    ],
+    "stateManagement": {
+      "strategy": "React state + server actions",
+      "notes": "Client-side state voor formulieren en UI, server actions voor data-mutaties via API-routes. Geen externe state library nodig voor MVP."
+    },
+    "dataLayer": {
+      "strategy": "in-memory store",
+      "notes": "Alle data wordt in-memory opgeslagen op de server (API-routes). Geen persistente database in MVP; eenvoudig te vervangen door een echte database in een latere fase."
+    }
+  }
+}
