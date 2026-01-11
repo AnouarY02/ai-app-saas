@@ -1,50 +1,14 @@
-import axios from 'axios';
+// API client abstraction for future use
+const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000'
 
-const API_BASE = '/api';
+// Example interface for future API responses
+// export interface ExampleResponse { message: string }
 
-export interface User {
-  id: string;
-  email: string;
-  name?: string;
-  createdAt: string;
-}
+// Example API call (not used yet)
+// export async function fetchExample(): Promise<ExampleResponse> {
+//   const res = await fetch(`${apiUrl}/api/example`)
+//   if (!res.ok) throw new Error('Failed to fetch')
+//   return res.json()
+// }
 
-export interface AuthResponse {
-  user: User;
-  token: string;
-}
-
-export async function loginRequest(email: string, password: string): Promise<AuthResponse> {
-  const res = await axios.post(`${API_BASE}/auth/login`, { email, password });
-  return res.data;
-}
-
-export async function registerRequest(email: string, password: string, name?: string): Promise<AuthResponse> {
-  const res = await axios.post(`${API_BASE}/auth/register`, { email, password, name });
-  return res.data;
-}
-
-export async function logoutRequest(token: string): Promise<void> {
-  await axios.post(
-    `${API_BASE}/auth/logout`,
-    { token },
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-}
-
-export async function getProfile(token: string): Promise<User> {
-  const res = await axios.get(`${API_BASE}/users/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.data;
-}
-
-export async function updateProfile(
-  token: string,
-  data: { name?: string; email?: string; password?: string }
-): Promise<User> {
-  const res = await axios.put(`${API_BASE}/users/me`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.data;
-}
+export { apiUrl }

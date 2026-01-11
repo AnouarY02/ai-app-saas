@@ -1,10 +1,12 @@
 {
-  "name": "@ai-app/shared",
+  "name": "@ai-app-saas/shared",
   "version": "1.0.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "MIT",
-  "dependencies": {
-    "zod": "^3.22.2"
-  }
+  "description": "Shared types and utilities for Padel Club Manager (frontend & backend)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "license": "MIT"
 }

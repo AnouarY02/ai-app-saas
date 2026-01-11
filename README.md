@@ -1,91 +1,72 @@
-# ai-app
+# Padel Club Manager
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+Padel Club Manager is a monorepo SaaS application for managing padel clubs, built with React (TypeScript) for the frontend and Node.js/Express (TypeScript) for the backend. The project is structured for scalability, maintainability, and developer productivity.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` – React + TypeScript frontend
+- `backend/` – Node.js + Express + TypeScript backend
+- `shared/` – Shared TypeScript types and utilities
+- `infra/` – Infrastructure, linting, formatting, and configuration files
 
 ## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
-
-## Environment Variables
-Copy `.env.example` to `.env` and fill in the required values:
-
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
-
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
+- Node.js (>= 16.x recommended)
+- npm (>= 8.x recommended)
+- Docker & Docker Compose (for containerized workflow)
 
 ## Local Development
 
-### With Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Run:
-   ```sh
-   yarn install
-   yarn start
-   ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
-
 ### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Install dependencies:
+1. Install dependencies:
    ```sh
-   yarn install
+   npm install
    ```
-3. In one terminal, run:
+2. Start development servers for frontend and backend:
    ```sh
-   yarn dev
+   npm run dev
    ```
-   This starts both frontend and backend concurrently.
+   - Frontend: http://localhost:3000
+   - Backend: http://localhost:4000
 
-## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
+### With Docker
+1. Copy environment example:
+   ```sh
+   cp .env.example .env
+   ```
+2. Build and run services:
+   ```sh
+   docker-compose up --build
+   ```
+   - Frontend: http://localhost:3000
+   - Backend: http://localhost:4000
 
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
+## Available NPM Scripts
+- `npm run dev` – Start both frontend and backend in development mode
+- `npm run build` – Build all packages
+- `npm run lint` – Run ESLint across all packages
+- `npm run format` – Run Prettier formatting
+- `npm run start:frontend` – Start frontend service
+- `npm run start:backend` – Start backend service
 
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
+## Code Formatting and Linting
+- ESLint and Prettier are configured in `infra/`.
+- Run `npm run lint` to check code quality.
+- Run `npm run format` to auto-format code.
 
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
+## Project Configuration
+- **TypeScript:** Shared config in `infra/tsconfig.base.json`, extended by each package.
+- **ESLint:** See `infra/eslint.json`.
+- **Prettier:** See `infra/prettier.json`.
 
-## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
-
-## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
+## Docker & Containerized Workflow
+- Docker Compose orchestrates the frontend and backend containers.
+- Dockerfiles are located in `frontend/` and `backend/` directories.
+- To rebuild containers, use:
+  ```sh
+  docker-compose build
+  ```
 
 ## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+- If ports 3000 or 4000 are in use, stop conflicting services or update the ports in `docker-compose.yml`.
+- If you encounter dependency issues, run `npm install` from the root.
+- For further questions, see infra/README.md or contact the maintainers.

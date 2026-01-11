@@ -1,41 +1,26 @@
-// Main Express server bootstrap
-import express from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import apiRouter from './routes/api';
-import { errorHandler, notFoundHandler } from './middleware/errorHandlers';
-import { logger } from './utils/logger';
+import { notFoundHandler, errorHandler } from './middleware/errorHandler';
 
-const app = express();
+dotenv.config();
 
-// CORS setup (allow all origins for dev, restrict via env if needed)
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
-}));
+export function createServer(): Application {
+  const app = express();
 
-// JSON body parser
-app.use(express.json());
+  app.use(cors());
+  app.use(express.json());
 
-// Simple request logger
-app.use(logger);
+  app.use('/api', apiRouter);
 
-// Health check endpoint
-app.get('/health', (_req, res) => {
-  res.status(200).json({ ok: true, appName: process.env.APP_NAME || 'ai-app', buildId: process.env.BUILD_ID || 'quicktest' });
-});
+  // Health endpoint at root
+  app.get('/health', (req, res) => {
+    res.json({ ok: true, timestamp: new Date().toISOString() });
+  });
 
-// API routes (none defined, but placeholder)
-app.use('/api', apiRouter);
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
-// 404 handler
-app.use(notFoundHandler);
-
-// Error handler
-app.use(errorHandler);
-
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`[ai-app] Backend listening on port ${PORT}`);
-});
+  return app;
+}
