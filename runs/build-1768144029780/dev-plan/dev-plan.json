@@ -1,0 +1,967 @@
+{
+  "_raw": {
+    "headers": {
+      "accept": "application/json,text/*;q=0.99",
+      "content-type": "application/json",
+      "user-agent": "axios/1.12.0",
+      "content-length": "298",
+      "accept-encoding": "gzip, compress, deflate, br",
+      "host": "localhost:5678",
+      "connection": "close"
+    },
+    "params": {},
+    "query": {},
+    "body": {
+      "appName": "Padel Club Manager",
+      "appDescription": "A multi-tenant SaaS platform for managing padel clubs with member management, court bookings, and wallet credits",
+      "tier": "medium",
+      "buildId": "build-1768144029780",
+      "repoOwner": "AnouarY02",
+      "repoName": "ai-app-saas",
+      "branch": "build-build-1768144029780"
+    },
+    "webhookUrl": "http://localhost:5678/webhook/af/core/build",
+    "executionMode": "production"
+  },
+  "buildId": "build-1768144029780",
+  "appName": "Padel Club Manager",
+  "appDescription": "A multi-tenant SaaS platform for managing padel clubs with member management, court bookings, and wallet credits",
+  "client": null,
+  "tier": "medium",
+  "blueprintId": "default-blueprint",
+  "config": {},
+  "userInput": "A multi-tenant SaaS platform for managing padel clubs with member management, court bookings, and wallet credits",
+  "hasMeaningfulInput": true,
+  "description": "A multi-tenant SaaS platform for managing padel clubs with member management, court bookings, and wallet credits.",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "Alle UI gebruikt shadcn/ui componenten, styling via Tailwind. API endpoints via Next.js route handlers. Multi-tenancy wordt op club-niveau afgedwongen."
+  },
+  "domains": [
+    {
+      "name": "Club",
+      "description": "Padel clubs die het platform gebruiken.",
+      "entities": [
+        {
+          "name": "Club",
+          "description": "Een padel club organisatie.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke club identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van de club"
+            },
+            {
+              "name": "address",
+              "type": "string",
+              "required": false,
+              "description": "Adres van de club"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Member",
+      "description": "Leden van een club.",
+      "entities": [
+        {
+          "name": "Member",
+          "description": "Gebruiker/lid van een club.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke member identifier"
+            },
+            {
+              "name": "clubId",
+              "type": "string",
+              "required": true,
+              "description": "Club waartoe het lid behoort"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van het lid"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Email van het lid"
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "required": true,
+              "description": "Rol (admin, member)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Court",
+      "description": "Padelbanen van een club.",
+      "entities": [
+        {
+          "name": "Court",
+          "description": "Padelbaan binnen een club.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke court identifier"
+            },
+            {
+              "name": "clubId",
+              "type": "string",
+              "required": true,
+              "description": "Club waartoe de baan behoort"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam/nummer van de baan"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Booking",
+      "description": "Reserveringen van banen door leden.",
+      "entities": [
+        {
+          "name": "Booking",
+          "description": "Reservering van een baan door een lid.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke booking identifier"
+            },
+            {
+              "name": "clubId",
+              "type": "string",
+              "required": true,
+              "description": "Club van de reservering"
+            },
+            {
+              "name": "courtId",
+              "type": "string",
+              "required": true,
+              "description": "Gereserveerde baan"
+            },
+            {
+              "name": "memberId",
+              "type": "string",
+              "required": true,
+              "description": "Lid dat reserveert"
+            },
+            {
+              "name": "startTime",
+              "type": "string",
+              "required": true,
+              "description": "Starttijd (ISO string)"
+            },
+            {
+              "name": "endTime",
+              "type": "string",
+              "required": true,
+              "description": "Eindtijd (ISO string)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wallet",
+      "description": "Wallet credits van leden.",
+      "entities": [
+        {
+          "name": "Wallet",
+          "description": "Wallet van een lid.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke wallet identifier"
+            },
+            {
+              "name": "memberId",
+              "type": "string",
+              "required": true,
+              "description": "Lid waartoe de wallet behoort"
+            },
+            {
+              "name": "balance",
+              "type": "number",
+              "required": true,
+              "description": "Wallet saldo in credits"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Landing/dashboard pagina na login, toont cluboverzicht of clubdashboard.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/clubs",
+      "type": "page",
+      "description": "Overzicht van clubs (voor admin of multi-tenant beheer).",
+      "file": "app/clubs/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/clubs/[clubId]",
+      "type": "page",
+      "description": "Dashboard van een specifieke club.",
+      "file": "app/clubs/[clubId]/page.tsx",
+      "layout": "app/clubs/[clubId]/layout.tsx"
+    },
+    {
+      "path": "/clubs/[clubId]/members",
+      "type": "page",
+      "description": "Ledenbeheer van een club.",
+      "file": "app/clubs/[clubId]/members/page.tsx",
+      "layout": "app/clubs/[clubId]/layout.tsx"
+    },
+    {
+      "path": "/clubs/[clubId]/courts",
+      "type": "page",
+      "description": "Overzicht en beheer van banen van een club.",
+      "file": "app/clubs/[clubId]/courts/page.tsx",
+      "layout": "app/clubs/[clubId]/layout.tsx"
+    },
+    {
+      "path": "/clubs/[clubId]/bookings",
+      "type": "page",
+      "description": "Overzicht en beheer van boekingen van een club.",
+      "file": "app/clubs/[clubId]/bookings/page.tsx",
+      "layout": "app/clubs/[clubId]/layout.tsx"
+    },
+    {
+      "path": "/clubs/[clubId]/wallets",
+      "type": "page",
+      "description": "Walletoverzicht van leden binnen een club.",
+      "file": "app/clubs/[clubId]/wallets/page.tsx",
+      "layout": "app/clubs/[clubId]/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Loginpagina voor gebruikers.",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/register",
+      "type": "page",
+      "description": "Registratiepagina voor nieuwe leden.",
+      "file": "app/register/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/clubs/[clubId]",
+      "type": "layout",
+      "description": "Layout voor clubspecifieke pagina's.",
+      "file": "app/clubs/[clubId]/layout.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/",
+      "type": "layout",
+      "description": "Hoofdapplicatie layout (navigatie, notificaties, etc).",
+      "file": "app/layout.tsx",
+      "layout": null
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "app/api/clubs/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en aanmaken van clubs."
+    },
+    {
+      "path": "app/api/clubs/[clubId]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en verwijderen van een club."
+    },
+    {
+      "path": "app/api/clubs/[clubId]/members/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en toevoegen van leden aan een club."
+    },
+    {
+      "path": "app/api/clubs/[clubId]/members/[memberId]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en verwijderen van een lid."
+    },
+    {
+      "path": "app/api/clubs/[clubId]/courts/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en toevoegen van banen aan een club."
+    },
+    {
+      "path": "app/api/clubs/[clubId]/courts/[courtId]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en verwijderen van een baan."
+    },
+    {
+      "path": "app/api/clubs/[clubId]/bookings/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Ophalen en aanmaken van boekingen."
+    },
+    {
+      "path": "app/api/clubs/[clubId]/bookings/[bookingId]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Details, bijwerken en verwijderen van een boeking."
+    },
+    {
+      "path": "app/api/clubs/[clubId]/wallets/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "description": "Ophalen van alle wallets binnen een club."
+    },
+    {
+      "path": "app/api/clubs/[clubId]/wallets/[walletId]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "description": "Details en bijwerken van een wallet (bijv. credits toevoegen)."
+    },
+    {
+      "path": "app/api/auth/login/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Login endpoint."
+    },
+    {
+      "path": "app/api/auth/register/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "description": "Registratie endpoint."
+    }
+  ],
+  "components": [
+    {
+      "name": "ClubList",
+      "description": "Toont een lijst van clubs.",
+      "file": "components/clubs/club-list.tsx",
+      "usedOn": [
+        "/clubs",
+        "/"
+      ]
+    },
+    {
+      "name": "MemberList",
+      "description": "Toont een lijst van leden binnen een club.",
+      "file": "components/members/member-list.tsx",
+      "usedOn": [
+        "/clubs/[clubId]/members"
+      ]
+    },
+    {
+      "name": "CourtList",
+      "description": "Toont een lijst van banen binnen een club.",
+      "file": "components/courts/court-list.tsx",
+      "usedOn": [
+        "/clubs/[clubId]/courts"
+      ]
+    },
+    {
+      "name": "BookingCalendar",
+      "description": "Toont een kalender met boekingen voor een club.",
+      "file": "components/bookings/booking-calendar.tsx",
+      "usedOn": [
+        "/clubs/[clubId]/bookings"
+      ]
+    },
+    {
+      "name": "WalletList",
+      "description": "Toont een lijst van wallets en saldi van leden.",
+      "file": "components/wallets/wallet-list.tsx",
+      "usedOn": [
+        "/clubs/[clubId]/wallets"
+      ]
+    },
+    {
+      "name": "LoginForm",
+      "description": "Login formulier voor gebruikers.",
+      "file": "components/auth/login-form.tsx",
+      "usedOn": [
+        "/login"
+      ]
+    },
+    {
+      "name": "RegisterForm",
+      "description": "Registratieformulier voor nieuwe leden.",
+      "file": "components/auth/register-form.tsx",
+      "usedOn": [
+        "/register"
+      ]
+    },
+    {
+      "name": "ClubSidebar",
+      "description": "Navigatie zijbalk voor clubspecifieke pagina's.",
+      "file": "components/clubs/club-sidebar.tsx",
+      "usedOn": [
+        "/clubs/[clubId]",
+        "/clubs/[clubId]/members",
+        "/clubs/[clubId]/courts",
+        "/clubs/[clubId]/bookings",
+        "/clubs/[clubId]/wallets"
+      ]
+    },
+    {
+      "name": "AppNavbar",
+      "description": "Hoofdnavigatiebalk voor de app.",
+      "file": "components/layout/app-navbar.tsx",
+      "usedOn": [
+        "/",
+        "/clubs",
+        "/clubs/[clubId]"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React state + server actions + context voor auth",
+    "notes": "Client-side state voor UI, server actions voor mutaties, context voor authenticatie en clubselectie."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store (per server instance, mock voor MVP)",
+    "notes": "Alle data wordt in-memory opgeslagen voor MVP; eenvoudig te vervangen door een database. Multi-tenancy via clubId enforced in API handlers."
+  },
+  "repoMeta": {
+    "name": "padel-club-manager-medium",
+    "description": "AI-Fabriek app: Padel Club Manager",
+    "private": true
+  },
+  "plan": {
+    "appName": "Padel Club Manager",
+    "description": "A multi-tenant SaaS platform for managing padel clubs with member management, court bookings, and wallet credits.",
+    "stack": {
+      "framework": "Next.js 14 App Router",
+      "language": "TypeScript",
+      "styling": [
+        "Tailwind CSS",
+        "shadcn/ui"
+      ],
+      "api": [
+        "Next.js Route Handlers (app/api)"
+      ],
+      "notes": "Alle UI gebruikt shadcn/ui componenten, styling via Tailwind. API endpoints via Next.js route handlers. Multi-tenancy wordt op club-niveau afgedwongen."
+    },
+    "domains": [
+      {
+        "name": "Club",
+        "description": "Padel clubs die het platform gebruiken.",
+        "entities": [
+          {
+            "name": "Club",
+            "description": "Een padel club organisatie.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke club identifier"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Naam van de club"
+              },
+              {
+                "name": "address",
+                "type": "string",
+                "required": false,
+                "description": "Adres van de club"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Member",
+        "description": "Leden van een club.",
+        "entities": [
+          {
+            "name": "Member",
+            "description": "Gebruiker/lid van een club.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke member identifier"
+              },
+              {
+                "name": "clubId",
+                "type": "string",
+                "required": true,
+                "description": "Club waartoe het lid behoort"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Naam van het lid"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "required": true,
+                "description": "Email van het lid"
+              },
+              {
+                "name": "role",
+                "type": "string",
+                "required": true,
+                "description": "Rol (admin, member)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Court",
+        "description": "Padelbanen van een club.",
+        "entities": [
+          {
+            "name": "Court",
+            "description": "Padelbaan binnen een club.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke court identifier"
+              },
+              {
+                "name": "clubId",
+                "type": "string",
+                "required": true,
+                "description": "Club waartoe de baan behoort"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Naam/nummer van de baan"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Booking",
+        "description": "Reserveringen van banen door leden.",
+        "entities": [
+          {
+            "name": "Booking",
+            "description": "Reservering van een baan door een lid.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke booking identifier"
+              },
+              {
+                "name": "clubId",
+                "type": "string",
+                "required": true,
+                "description": "Club van de reservering"
+              },
+              {
+                "name": "courtId",
+                "type": "string",
+                "required": true,
+                "description": "Gereserveerde baan"
+              },
+              {
+                "name": "memberId",
+                "type": "string",
+                "required": true,
+                "description": "Lid dat reserveert"
+              },
+              {
+                "name": "startTime",
+                "type": "string",
+                "required": true,
+                "description": "Starttijd (ISO string)"
+              },
+              {
+                "name": "endTime",
+                "type": "string",
+                "required": true,
+                "description": "Eindtijd (ISO string)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Wallet",
+        "description": "Wallet credits van leden.",
+        "entities": [
+          {
+            "name": "Wallet",
+            "description": "Wallet van een lid.",
+            "fields": [
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Unieke wallet identifier"
+              },
+              {
+                "name": "memberId",
+                "type": "string",
+                "required": true,
+                "description": "Lid waartoe de wallet behoort"
+              },
+              {
+                "name": "balance",
+                "type": "number",
+                "required": true,
+                "description": "Wallet saldo in credits"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "path": "/",
+        "type": "page",
+        "description": "Landing/dashboard pagina na login, toont cluboverzicht of clubdashboard.",
+        "file": "app/page.tsx",
+        "layout": "app/layout.tsx"
+      },
+      {
+        "path": "/clubs",
+        "type": "page",
+        "description": "Overzicht van clubs (voor admin of multi-tenant beheer).",
+        "file": "app/clubs/page.tsx",
+        "layout": "app/layout.tsx"
+      },
+      {
+        "path": "/clubs/[clubId]",
+        "type": "page",
+        "description": "Dashboard van een specifieke club.",
+        "file": "app/clubs/[clubId]/page.tsx",
+        "layout": "app/clubs/[clubId]/layout.tsx"
+      },
+      {
+        "path": "/clubs/[clubId]/members",
+        "type": "page",
+        "description": "Ledenbeheer van een club.",
+        "file": "app/clubs/[clubId]/members/page.tsx",
+        "layout": "app/clubs/[clubId]/layout.tsx"
+      },
+      {
+        "path": "/clubs/[clubId]/courts",
+        "type": "page",
+        "description": "Overzicht en beheer van banen van een club.",
+        "file": "app/clubs/[clubId]/courts/page.tsx",
+        "layout": "app/clubs/[clubId]/layout.tsx"
+      },
+      {
+        "path": "/clubs/[clubId]/bookings",
+        "type": "page",
+        "description": "Overzicht en beheer van boekingen van een club.",
+        "file": "app/clubs/[clubId]/bookings/page.tsx",
+        "layout": "app/clubs/[clubId]/layout.tsx"
+      },
+      {
+        "path": "/clubs/[clubId]/wallets",
+        "type": "page",
+        "description": "Walletoverzicht van leden binnen een club.",
+        "file": "app/clubs/[clubId]/wallets/page.tsx",
+        "layout": "app/clubs/[clubId]/layout.tsx"
+      },
+      {
+        "path": "/login",
+        "type": "page",
+        "description": "Loginpagina voor gebruikers.",
+        "file": "app/login/page.tsx",
+        "layout": "app/layout.tsx"
+      },
+      {
+        "path": "/register",
+        "type": "page",
+        "description": "Registratiepagina voor nieuwe leden.",
+        "file": "app/register/page.tsx",
+        "layout": "app/layout.tsx"
+      },
+      {
+        "path": "/clubs/[clubId]",
+        "type": "layout",
+        "description": "Layout voor clubspecifieke pagina's.",
+        "file": "app/clubs/[clubId]/layout.tsx",
+        "layout": "app/layout.tsx"
+      },
+      {
+        "path": "/",
+        "type": "layout",
+        "description": "Hoofdapplicatie layout (navigatie, notificaties, etc).",
+        "file": "app/layout.tsx",
+        "layout": null
+      }
+    ],
+    "apiRoutes": [
+      {
+        "path": "app/api/clubs/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en aanmaken van clubs."
+      },
+      {
+        "path": "app/api/clubs/[clubId]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en verwijderen van een club."
+      },
+      {
+        "path": "app/api/clubs/[clubId]/members/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en toevoegen van leden aan een club."
+      },
+      {
+        "path": "app/api/clubs/[clubId]/members/[memberId]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en verwijderen van een lid."
+      },
+      {
+        "path": "app/api/clubs/[clubId]/courts/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en toevoegen van banen aan een club."
+      },
+      {
+        "path": "app/api/clubs/[clubId]/courts/[courtId]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en verwijderen van een baan."
+      },
+      {
+        "path": "app/api/clubs/[clubId]/bookings/route.ts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Ophalen en aanmaken van boekingen."
+      },
+      {
+        "path": "app/api/clubs/[clubId]/bookings/[bookingId]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH",
+          "DELETE"
+        ],
+        "description": "Details, bijwerken en verwijderen van een boeking."
+      },
+      {
+        "path": "app/api/clubs/[clubId]/wallets/route.ts",
+        "methods": [
+          "GET"
+        ],
+        "description": "Ophalen van alle wallets binnen een club."
+      },
+      {
+        "path": "app/api/clubs/[clubId]/wallets/[walletId]/route.ts",
+        "methods": [
+          "GET",
+          "PATCH"
+        ],
+        "description": "Details en bijwerken van een wallet (bijv. credits toevoegen)."
+      },
+      {
+        "path": "app/api/auth/login/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Login endpoint."
+      },
+      {
+        "path": "app/api/auth/register/route.ts",
+        "methods": [
+          "POST"
+        ],
+        "description": "Registratie endpoint."
+      }
+    ],
+    "components": [
+      {
+        "name": "ClubList",
+        "description": "Toont een lijst van clubs.",
+        "file": "components/clubs/club-list.tsx",
+        "usedOn": [
+          "/clubs",
+          "/"
+        ]
+      },
+      {
+        "name": "MemberList",
+        "description": "Toont een lijst van leden binnen een club.",
+        "file": "components/members/member-list.tsx",
+        "usedOn": [
+          "/clubs/[clubId]/members"
+        ]
+      },
+      {
+        "name": "CourtList",
+        "description": "Toont een lijst van banen binnen een club.",
+        "file": "components/courts/court-list.tsx",
+        "usedOn": [
+          "/clubs/[clubId]/courts"
+        ]
+      },
+      {
+        "name": "BookingCalendar",
+        "description": "Toont een kalender met boekingen voor een club.",
+        "file": "components/bookings/booking-calendar.tsx",
+        "usedOn": [
+          "/clubs/[clubId]/bookings"
+        ]
+      },
+      {
+        "name": "WalletList",
+        "description": "Toont een lijst van wallets en saldi van leden.",
+        "file": "components/wallets/wallet-list.tsx",
+        "usedOn": [
+          "/clubs/[clubId]/wallets"
+        ]
+      },
+      {
+        "name": "LoginForm",
+        "description": "Login formulier voor gebruikers.",
+        "file": "components/auth/login-form.tsx",
+        "usedOn": [
+          "/login"
+        ]
+      },
+      {
+        "name": "RegisterForm",
+        "description": "Registratieformulier voor nieuwe leden.",
+        "file": "components/auth/register-form.tsx",
+        "usedOn": [
+          "/register"
+        ]
+      },
+      {
+        "name": "ClubSidebar",
+        "description": "Navigatie zijbalk voor clubspecifieke pagina's.",
+        "file": "components/clubs/club-sidebar.tsx",
+        "usedOn": [
+          "/clubs/[clubId]",
+          "/clubs/[clubId]/members",
+          "/clubs/[clubId]/courts",
+          "/clubs/[clubId]/bookings",
+          "/clubs/[clubId]/wallets"
+        ]
+      },
+      {
+        "name": "AppNavbar",
+        "description": "Hoofdnavigatiebalk voor de app.",
+        "file": "components/layout/app-navbar.tsx",
+        "usedOn": [
+          "/",
+          "/clubs",
+          "/clubs/[clubId]"
+        ]
+      }
+    ],
+    "stateManagement": {
+      "strategy": "React state + server actions + context voor auth",
+      "notes": "Client-side state voor UI, server actions voor mutaties, context voor authenticatie en clubselectie."
+    },
+    "dataLayer": {
+      "strategy": "In-memory store (per server instance, mock voor MVP)",
+      "notes": "Alle data wordt in-memory opgeslagen voor MVP; eenvoudig te vervangen door een database. Multi-tenancy via clubId enforced in API handlers."
+    }
+  }
+}
