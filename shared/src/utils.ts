@@ -1,24 +1,21 @@
-// Shared utility functions for ai-app
+// Shared utility functions for both frontend and backend
 
 /**
- * isEmptyObject checks if the provided value is a plain empty object.
+ * Returns true if the value is neither null nor undefined.
  */
-export function isEmptyObject(obj: unknown): obj is Record<string, never> {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    Object.keys(obj).length === 0 &&
-    obj.constructor === Object
-  );
+export function isDefined<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined;
 }
 
 /**
- * safeJsonParse attempts to parse a string as JSON, returning undefined if parsing fails.
+ * Returns a deep clone of the provided object.
+ * Note: Only works for JSON-serializable data.
  */
-export function safeJsonParse<T = unknown>(input: string): T | undefined {
-  try {
-    return JSON.parse(input) as T;
-  } catch {
-    return undefined;
-  }
+export function deepClone<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
 }
+
+/**
+ * No-op function, useful as a default callback.
+ */
+export function noop(): void {}

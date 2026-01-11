@@ -1,91 +1,58 @@
-# ai-app
+# Nieuw App Idee
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+Nieuw App Idee is a monorepo SaaS application scaffolded with a React (Vite) frontend, Node.js (Express) backend, and shared TypeScript libraries. This repository provides the foundation for rapid full-stack development and deployment.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` – React + Vite frontend app
+- `backend/` – Node.js + Express backend API
+- `shared/` – Shared TypeScript code and utilities
+- `infra/` – Tooling, configs, and base infrastructure
 
-## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
-
-## Environment Variables
-Copy `.env.example` to `.env` and fill in the required values:
-
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
-
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
-
-## Local Development
-
-### With Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Run:
+## Getting Started
+1. **Clone the repository**
    ```sh
-   yarn install
-   yarn start
+   git clone https://github.com/AnouarY02/ai-app-saas.git
+   cd ai-app-saas
    ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
-
-### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Install dependencies:
+2. **Install dependencies**
    ```sh
-   yarn install
+   npm install
    ```
-3. In one terminal, run:
+3. **Copy environment variables**
    ```sh
-   yarn dev
+   cp .env.example .env
    ```
-   This starts both frontend and backend concurrently.
 
-## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
+## Development Scripts
+- `npm run dev` – Start frontend and backend in development mode (concurrently)
+- `npm run start:frontend` – Start only the frontend
+- `npm run start:backend` – Start only the backend
+- `npm run lint` – Run ESLint across all packages
+- `npm run format` – Format codebase with Prettier
+- `npm run test` – Run Jest tests
 
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
+## Building the App
+- `npm run build` – Build all packages (frontend, backend, shared)
 
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
-
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
+## Running in Docker
+1. **Build and start containers**
+   ```sh
+   docker-compose up --build
+   ```
+2. **Frontend:** http://localhost:3000
+3. **Backend:** http://localhost:4000
 
 ## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
+- **Lint:** `npm run lint`
+- **Format:** `npm run format`
+- ESLint and Prettier configs are in `infra/`
 
-## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
+## Testing
+- **Run tests:** `npm run test`
+- Jest config is in `infra/`
 
-## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+## Future Development Notes
+- Add database and authentication services
+- Expand shared library usage
+- Set up CI/CD pipelines

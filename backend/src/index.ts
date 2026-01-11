@@ -1,11 +1,26 @@
-import { app } from './app';
-import { logger } from './shared/logger';
-import dotenv from 'dotenv';
+// Server bootstrap
+import app from './app'
 
-dotenv.config();
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
+const server = app.listen(PORT, () => {
+  const ts = new Date().toISOString()
+  console.log(`[${ts}] Backend server listening on port ${PORT}`)
+})
 
-app.listen(PORT, () => {
-  logger.info(`Backend listening on port ${PORT}`);
-});
+function shutdown(signal: string) {
+  const ts = new Date().toISOString()
+  console.log(`[${ts}] Received ${signal}, shutting down gracefully...`)
+  server.close(() => {
+    console.log(`[${ts}] Server closed. Exiting.`)
+    process.exit(0)
+  })
+  // Force exit after 10s
+  setTimeout(() => {
+    console.error(`[${ts}] Force exit after timeout.`)
+    process.exit(1)
+  }, 10000)
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'))
+process.on('SIGINT', () => shutdown('SIGINT'))

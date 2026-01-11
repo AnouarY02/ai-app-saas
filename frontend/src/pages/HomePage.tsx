@@ -1,15 +1,12 @@
-import React from 'react';
-import styles from './HomePage.module.css';
+import React from 'react'
 
 const HomePage: React.FC = () => {
   return (
-    <section className={styles.hero}>
-      <h1 className={styles.title}>Welcome to AI App</h1>
-      <p className={styles.subtitle}>
-        This is your starting point for a modern SaaS application. Explore the monorepo structure, shared utilities, and more.
-      </p>
-    </section>
-  );
-};
+    <div className="flex flex-col items-center justify-center min-h-[60vh]">
+      <h1 className="text-3xl font-bold mb-4">Welkom bij Nieuw App Idee</h1>
+      <p className="text-lg text-gray-600">De projectopzet is gereed. Er zijn nog geen features of gebruikersstromen gedefinieerd.</p>
+    </div>
+  )
+}
 
-export default HomePage;
+export default HomePage

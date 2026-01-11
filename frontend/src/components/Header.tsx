@@ -1,46 +1,19 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../state/AuthContext';
-import './Header.css';
-
-const navItems = [
-  { label: 'Home', path: '/', icon: '🏠' },
-  { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-  { label: 'Settings', path: '/settings', icon: '⚙️' }
-];
+import React from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { FaHome } from 'react-icons/fa'
 
 const Header: React.FC = () => {
-  const { user, logout } = useAuth();
-  const location = useLocation();
+  const { pathname } = useLocation()
   return (
-    <header className="header-root">
-      <div className="header-logo">
-        <Link to="/">AI App</Link>
-      </div>
-      <nav className="header-nav">
-        {navItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={
-              location.pathname === item.path ? 'nav-link active' : 'nav-link'
-            }
-          >
-            <span className="nav-icon">{item.icon}</span> {item.label}
-          </Link>
-        ))}
+    <header className="w-full bg-white shadow flex items-center px-6 py-3">
+      <nav className="flex gap-6 items-center">
+        <Link to="/" className={`flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors ${pathname === '/' ? 'font-bold text-blue-600' : ''}`}>
+          <FaHome className="text-xl" />
+          Home
+        </Link>
       </nav>
-      <div className="header-actions">
-        {user ? (
-          <button className="logout-btn" onClick={logout}>
-            Logout
-          </button>
-        ) : (
-          <Link to="/login" className="login-btn">Login</Link>
-        )}
-      </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

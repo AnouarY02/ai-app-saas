@@ -1,23 +1,27 @@
-import express from 'express';
-import cors from 'cors';
-import { apiRouter } from './routes/api';
-import { errorHandler, notFoundHandler } from './core/errorHandlers';
-import { loggerMiddleware } from './shared/logger';
+// Express app setup
+import express, { Application, Request, Response, NextFunction } from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import healthRouter from './routes/health'
+import { notFoundHandler, errorHandler } from './middleware/errorHandlers'
 
-export const app = express();
+dotenv.config()
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true
-}));
-app.use(express.json());
-app.use(loggerMiddleware);
+const app: Application = express()
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ ok: true, app: process.env.npm_package_name || 'ai-app', buildId: process.env.BUILD_ID || 'dev' });
-});
+// Enable CORS for all origins in development
+app.use(cors())
 
-app.use('/api', apiRouter);
+// JSON body parsing
+app.use(express.json())
 
-app.use(notFoundHandler);
-app.use(errorHandler);
+// Health check route
+app.use('/health', healthRouter)
+
+// 404 handler
+app.use(notFoundHandler)
+
+// Error handler
+app.use(errorHandler)
+
+export default app

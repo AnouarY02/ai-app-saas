@@ -1,6 +1,2 @@
-// Barrel export for shared layer
-export * from './types';
-export * from './validators/authSchemas';
-export * from './errorTypes';
-export * from './utils/logger';
-export * from './apiClient';
+// Barrel file for shared exports
+export * from './utils';
