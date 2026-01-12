@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "buildId": "build-1768230021616",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-build-1768230021616",
+    "appName": "Padel Club Manager"
+  },
+  "functionalitySpec": {
+    "stack": {},
+    "tenancy": {},
+    "roles": [],
+    "entities": [],
+    "permissions": [],
+    "api": [],
+    "pages": [],
+    "workflows": [],
+    "definitionOfDone": [],
+    "errorContract": {
+      "code": "WF25_FAILED",
+      "http": 500
+    }
+  }
+}
