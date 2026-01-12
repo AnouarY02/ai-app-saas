@@ -1,0 +1,121 @@
+{
+  "featurePrompt": "Generate core features for this application",
+  "generatedFiles": 19,
+  "files": [
+    {
+      "path": "app/dashboard/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Dashboard page showing club overview"
+    },
+    {
+      "path": "components/ClubOverview.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component displaying overview of clubs"
+    },
+    {
+      "path": "app/clubs/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Page for listing and managing clubs"
+    },
+    {
+      "path": "components/ClubList.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component to list clubs"
+    },
+    {
+      "path": "app/courts/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Page for listing and managing courts"
+    },
+    {
+      "path": "components/CourtList.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component to list courts"
+    },
+    {
+      "path": "app/bookings/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Page for viewing and creating bookings"
+    },
+    {
+      "path": "components/BookingCalendar.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component to display bookings in a calendar/list view"
+    },
+    {
+      "path": "components/BookingForm.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Form to create a new booking"
+    },
+    {
+      "path": "app/users/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Page for managing users"
+    },
+    {
+      "path": "components/UserList.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component to list users"
+    },
+    {
+      "path": "app/api/clubs/route.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "API route for listing and creating clubs"
+    },
+    {
+      "path": "lib/clubs/utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "In-memory club data and helpers"
+    },
+    {
+      "path": "app/api/courts/route.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "API route for listing and creating courts"
+    },
+    {
+      "path": "lib/courts/utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "In-memory court data and helpers"
+    },
+    {
+      "path": "app/api/bookings/route.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "API route for listing and creating bookings"
+    },
+    {
+      "path": "lib/bookings/utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "In-memory booking data and helpers"
+    },
+    {
+      "path": "app/api/users/route.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "API route for listing and creating users"
+    },
+    {
+      "path": "lib/users/utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "In-memory user data and helpers"
+    }
+  ],
+  "generatedAt": "2026-01-12T15:03:08.913Z"
+}
