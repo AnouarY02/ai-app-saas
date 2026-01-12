@@ -1,0 +1,440 @@
+{
+  "appName": "Padel Club Manager",
+  "description": "Multi-tenant SaaS for managing padel clubs",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "All UI uses shadcn/ui components styled with Tailwind. API is handled via Next.js route handlers. Multi-tenancy is handled at the club level."
+  },
+  "domains": [
+    {
+      "name": "User Management",
+      "description": "Handles authentication and user roles within clubs.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Represents a user of the platform.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique user identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Full name"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Email address"
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "required": true,
+              "description": "Hashed password"
+            },
+            {
+              "name": "role",
+              "type": "enum('admin','manager','member')",
+              "required": true,
+              "description": "Role within the club"
+            },
+            {
+              "name": "clubId",
+              "type": "string",
+              "required": true,
+              "description": "Associated club"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Club Management",
+      "description": "Core club entity and settings.",
+      "entities": [
+        {
+          "name": "Club",
+          "description": "Represents a padel club.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique club identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Club name"
+            },
+            {
+              "name": "address",
+              "type": "string",
+              "required": true,
+              "description": "Club address"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Creation date"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Court Management",
+      "description": "Manages padel courts within clubs.",
+      "entities": [
+        {
+          "name": "Court",
+          "description": "Represents a padel court.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique court identifier"
+            },
+            {
+              "name": "clubId",
+              "type": "string",
+              "required": true,
+              "description": "Associated club"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Court name or number"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Booking Management",
+      "description": "Handles court bookings.",
+      "entities": [
+        {
+          "name": "Booking",
+          "description": "Represents a court booking.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique booking identifier"
+            },
+            {
+              "name": "courtId",
+              "type": "string",
+              "required": true,
+              "description": "Booked court"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "User who booked"
+            },
+            {
+              "name": "clubId",
+              "type": "string",
+              "required": true,
+              "description": "Associated club"
+            },
+            {
+              "name": "startTime",
+              "type": "Date",
+              "required": true,
+              "description": "Booking start time"
+            },
+            {
+              "name": "endTime",
+              "type": "Date",
+              "required": true,
+              "description": "Booking end time"
+            },
+            {
+              "name": "status",
+              "type": "enum('pending','confirmed','cancelled')",
+              "required": true,
+              "description": "Booking status"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Landing page with login/register or dashboard redirect",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "page",
+      "description": "Main dashboard after login, shows club overview",
+      "file": "app/dashboard/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Login page",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/register",
+      "type": "page",
+      "description": "Registration page",
+      "file": "app/register/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/clubs",
+      "type": "page",
+      "description": "List and manage clubs (admin only)",
+      "file": "app/clubs/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/courts",
+      "type": "page",
+      "description": "List and manage courts for current club",
+      "file": "app/courts/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/bookings",
+      "type": "page",
+      "description": "View and manage bookings",
+      "file": "app/bookings/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/users",
+      "type": "page",
+      "description": "Manage users for current club (admin/manager)",
+      "file": "app/users/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "layout",
+      "description": "Dashboard layout with navigation",
+      "file": "app/dashboard/layout.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/",
+      "type": "layout",
+      "description": "Root layout for the app",
+      "file": "app/layout.tsx",
+      "layout": null
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "description": "Authenticate user and return session"
+    },
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ],
+      "description": "Register new user"
+    },
+    {
+      "path": "/api/auth/logout",
+      "methods": [
+        "POST"
+      ],
+      "description": "Logout user"
+    },
+    {
+      "path": "/api/clubs",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List clubs or create new club"
+    },
+    {
+      "path": "/api/clubs/[id]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a club"
+    },
+    {
+      "path": "/api/courts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List courts or create new court"
+    },
+    {
+      "path": "/api/courts/[id]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a court"
+    },
+    {
+      "path": "/api/bookings",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List bookings or create new booking"
+    },
+    {
+      "path": "/api/bookings/[id]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a booking"
+    },
+    {
+      "path": "/api/users",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List users or create new user (admin/manager)"
+    },
+    {
+      "path": "/api/users/[id]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a user"
+    }
+  ],
+  "components": [
+    {
+      "name": "Navbar",
+      "description": "Top navigation bar for dashboard",
+      "file": "components/Navbar.tsx",
+      "usedOn": [
+        "/dashboard",
+        "/clubs",
+        "/courts",
+        "/bookings",
+        "/users"
+      ]
+    },
+    {
+      "name": "Sidebar",
+      "description": "Sidebar navigation for dashboard",
+      "file": "components/Sidebar.tsx",
+      "usedOn": [
+        "/dashboard",
+        "/clubs",
+        "/courts",
+        "/bookings",
+        "/users"
+      ]
+    },
+    {
+      "name": "ClubList",
+      "description": "Displays list of clubs",
+      "file": "components/ClubList.tsx",
+      "usedOn": [
+        "/clubs"
+      ]
+    },
+    {
+      "name": "CourtList",
+      "description": "Displays list of courts",
+      "file": "components/CourtList.tsx",
+      "usedOn": [
+        "/courts"
+      ]
+    },
+    {
+      "name": "BookingCalendar",
+      "description": "Calendar view for bookings",
+      "file": "components/BookingCalendar.tsx",
+      "usedOn": [
+        "/bookings"
+      ]
+    },
+    {
+      "name": "UserList",
+      "description": "Displays list of users",
+      "file": "components/UserList.tsx",
+      "usedOn": [
+        "/users"
+      ]
+    },
+    {
+      "name": "LoginForm",
+      "description": "Form for user login",
+      "file": "components/LoginForm.tsx",
+      "usedOn": [
+        "/login"
+      ]
+    },
+    {
+      "name": "RegisterForm",
+      "description": "Form for user registration",
+      "file": "components/RegisterForm.tsx",
+      "usedOn": [
+        "/register"
+      ]
+    },
+    {
+      "name": "BookingForm",
+      "description": "Form to create or edit a booking",
+      "file": "components/BookingForm.tsx",
+      "usedOn": [
+        "/bookings"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React Context for auth/session, local component state for forms and UI, server state via API fetches",
+    "notes": "Auth state is managed globally with React Context. Data is fetched on demand from API routes and cached per page as needed."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store (singleton per server instance) for MVP; can be replaced with persistent DB later",
+    "notes": "All entities are stored in a simple in-memory JS object or Map. Multi-tenancy is enforced by clubId on all relevant entities."
+  }
+}
