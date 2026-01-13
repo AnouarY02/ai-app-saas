@@ -1,0 +1,37 @@
+{
+  "featurePrompt": "Build a padel club management system",
+  "generatedFiles": 5,
+  "files": [
+    {
+      "path": "app/(dashboard)/dashboard/management/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Management dashboard page for club admins to manage club, courts, users, and bookings."
+    },
+    {
+      "path": "components/management/club-overview.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Shows current club (tenant) info at the top of the management dashboard."
+    },
+    {
+      "path": "components/management/court-manager.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Manage courts: list, add, edit, delete courts for the club."
+    },
+    {
+      "path": "components/management/user-manager.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Manage users: list, add, edit, delete users for the club."
+    },
+    {
+      "path": "components/management/booking-manager.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Manage bookings: list, add, edit, delete bookings for the club."
+    }
+  ],
+  "generatedAt": "2026-01-13T14:28:14.290Z"
+}
