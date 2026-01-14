@@ -1,91 +1,92 @@
-# ai-app
+# Padel Club Manager
 
 ## Project Overview
-A modern AI SaaS monorepo featuring a React (Vite + TailwindCSS) frontend, a Node.js (Express + TypeScript) backend, and shared utilities. Built for strong typing, developer experience, and rapid iteration.
+Padel Club Manager is a modern SaaS platform for managing padel clubs, bookings, courts, and users. Built as a TypeScript monorepo with a Next.js frontend and an Express/Prisma backend.
 
 ## Monorepo Structure
-- `frontend/` – React app (Vite, TailwindCSS)
-- `backend/` – Node.js Express API (TypeScript)
-- `shared/` – Shared TypeScript utilities and types
-- `infra/` – Infrastructure, configuration, and tooling
+- `frontend/` – Next.js (React, TypeScript, Tailwind CSS) SPA
+- `backend/` – Node.js (Express, TypeScript, Prisma, PostgreSQL)
+- `shared/` – Shared types, utilities, and constants
+- `infra/` – Infrastructure scripts and automation
 
-## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (v1 or v3)
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
+## Tech Stack
+- **Frontend:** Next.js, React, TypeScript, Tailwind CSS
+- **Backend:** Node.js, Express, TypeScript, Prisma ORM, PostgreSQL
+- **Shared:** TypeScript types/utilities
+- **Infra:** Docker Compose, PostgreSQL, ESLint, Prettier, Jest
+
+## Getting Started
+1. **Clone the repo:**
+   ```sh
+   git clone https://github.com/AnouarY02/ai-app-saas.git
+   cd ai-app-saas
+   ```
+2. **Install dependencies:**
+   ```sh
+   yarn install
+   ```
+3. **Copy environment variables:**
+   ```sh
+   cp .env.example .env
+   ```
 
 ## Environment Variables
-Copy `.env.example` to `.env` and fill in the required values:
+See `.env.example` for all required and optional environment variables:
+- `DATABASE_URL` (required)
+- `JWT_SECRET` (required)
+- `NEXT_PUBLIC_API_URL` (required)
+- `PORT`, `NODE_ENV`, `LOG_LEVEL`, `FRONTEND_URL`, `ADMIN_EMAIL` (optional)
 
-**Required:**
-- `NODE_ENV` (e.g. development, production)
-- `JWT_SECRET` (your JWT signing secret)
-- `PORT` (backend port, default: 3000)
+## Running Locally (Dev)
+- Start both frontend and backend with hot reload:
+  ```sh
+  yarn dev
+  ```
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- Backend: [http://localhost:4000](http://localhost:4000)
 
-**Optional:**
-- `FRONTEND_URL` (default: http://localhost:5173)
-- `BACKEND_URL` (default: http://localhost:3000)
-- `LOG_LEVEL` (e.g. info, debug)
+## Running with Docker
+- Build and run all services (frontend, backend, db):
+  ```sh
+  yarn start
+  # or
+  docker-compose up --build
+  ```
+- Stop services:
+  ```sh
+  docker-compose down
+  ```
 
-## Local Development
+## Database Migrations
+- Run migrations (locally or in Docker):
+  ```sh
+  yarn migrate
+  # or
+  docker-compose exec backend yarn prisma migrate deploy
+  ```
 
-### With Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Run:
-   ```sh
-   yarn install
-   yarn start
-   ```
-3. Frontend: http://localhost:5173  
-   Backend: http://localhost:3000
-
-### Without Docker
-1. Copy `.env.example` to `.env` and edit as needed.
-2. Install dependencies:
-   ```sh
-   yarn install
-   ```
-3. In one terminal, run:
-   ```sh
-   yarn dev
-   ```
-   This starts both frontend and backend concurrently.
+## Testing
+- Run tests for all workspaces:
+  ```sh
+  yarn test
+  ```
 
 ## Scripts Reference
-- `yarn dev` – Start frontend & backend in dev mode (concurrently)
-- `yarn build` – Build both frontend and backend
-- `yarn lint` – Lint all code (TypeScript, React)
-- `yarn format` – Format codebase with Prettier
-- `yarn start` – Start all services via Docker Compose
-
-## Frontend Setup
-- Located in `frontend/`
-- Built with React, Vite, TailwindCSS
-- Dev server runs on port 5173
-- See `frontend/README.md` for details
-
-## Backend Setup
-- Located in `backend/`
-- Node.js, Express, TypeScript
-- Dev server runs on port 3000
-- See `backend/README.md` for details
-
-## Shared Utilities
-- Located in `shared/`
-- Common TypeScript types and utilities for both frontend and backend
-
-## Code Quality (Linting & Formatting)
-- ESLint config: `infra/.eslintrc.json`
-- Prettier config: `infra/.prettierrc`
-- Run `yarn lint` and `yarn format` at repo root
+| Script      | Description                                 |
+|-------------|---------------------------------------------|
+| dev         | Start frontend & backend in dev mode        |
+| build       | Build frontend & backend                    |
+| start       | Start all services via Docker Compose       |
+| test        | Run all tests (frontend & backend)          |
+| migrate     | Run backend DB migrations                   |
+| lint        | Lint all TypeScript/JavaScript code         |
 
 ## Deployment
-- Use Docker Compose for local or production deployment
-- Build images with `docker-compose build`
-- Start services with `docker-compose up -d`
+- Use `docker-compose` for production deployments.
+- See `infra/` for CI/CD and migration scripts.
 
-## Troubleshooting & FAQ
-- Ensure all required environment variables are set in `.env`
-- If ports are in use, change `PORT` and `FRONTEND_URL`/`BACKEND_URL`
-- For dependency issues, run `yarn install` at the repo root
-- For more, see infra/README.md
+## Contributing
+Pull requests and issues are welcome! Please lint and test your code before submitting.
+
+## License
+MIT
