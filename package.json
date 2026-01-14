@@ -1,5 +1,5 @@
 {
-  "name": "ai-app-monorepo",
+  "name": "padel-club-manager-monorepo",
   "private": true,
   "workspaces": [
     "frontend",
@@ -9,15 +9,15 @@
   "scripts": {
     "dev": "concurrently \"yarn workspace backend dev\" \"yarn workspace frontend dev\"",
     "build": "yarn workspace backend build && yarn workspace frontend build",
-    "lint": "eslint . --ext .ts,.tsx",
-    "format": "prettier --write .",
-    "start": "docker-compose up --build"
+    "start": "docker-compose up --build",
+    "test": "yarn workspace backend test && yarn workspace frontend test",
+    "migrate": "yarn workspace backend prisma migrate deploy",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "eslint": "^8.0.0",
-    "prettier": "^2.8.0",
-    "concurrently": "^8.0.0",
-    "cross-env": "^7.0.0"
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
   }
 }

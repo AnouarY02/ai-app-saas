@@ -1,11 +1,8 @@
 {
-  "extends": "./shared/tsconfig.json",
-  "compilerOptions": {
-    "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["shared/src/*"]
-    }
-  },
-  "include": ["frontend", "backend", "shared"]
+  "files": [],
+  "references": [
+    { "path": "./frontend" },
+    { "path": "./backend" },
+    { "path": "./shared" }
+  ]
 }

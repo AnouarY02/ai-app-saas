@@ -1,29 +1,56 @@
-version: '3.8'
 services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: padel_club_manager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
-      context: .
-      dockerfile: infra/Dockerfile.backend
-    env_file:
-      - .env
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=4000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
     ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/app/backend
-      - ./shared:/app/shared
-    depends_on: []
-    command: yarn workspace backend start
+      - "4000:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   frontend:
     build:
-      context: .
-      dockerfile: infra/Dockerfile.frontend
-    env_file:
-      - .env
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:4000} 
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app/frontend
-      - ./shared:/app/shared
+      - "3000:80"
     depends_on:
-      - backend
-    command: yarn workspace frontend dev
+      backend:
+        condition: service_healthy
+
+volumes:
+  db_data:
