@@ -1,0 +1,79 @@
+{
+  "featurePrompt": "Focus on court booking system with calendar view, member profiles with subscription management, tournament brackets, and integrated payment processing",
+  "generatedFiles": 12,
+  "files": [
+    {
+      "path": "app/bookings/calendar/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Pagina met kalenderweergave van alle court bookings"
+    },
+    {
+      "path": "components/bookings/CalendarView.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Kalendercomponent voor het tonen van bookings per court per dag"
+    },
+    {
+      "path": "lib/bookings/calendar-utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "Helper om kalender bookings met member-namen op te halen"
+    },
+    {
+      "path": "app/members/[id]/subscriptions/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Pagina voor het beheren van lidmaatschap/abonnement van een member"
+    },
+    {
+      "path": "components/members/SubscriptionManager.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component voor het tonen en togglen van lidmaatschapsstatus"
+    },
+    {
+      "path": "lib/members/subscription-utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "Helpers voor ophalen en aanpassen van member subscription status"
+    },
+    {
+      "path": "app/tournaments/[id]/bracket/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Pagina voor het tonen van het tournament bracket"
+    },
+    {
+      "path": "components/tournaments/BracketView.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component voor het tonen van een tournament bracket (elimination rounds)"
+    },
+    {
+      "path": "lib/tournaments/bracket-utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "Helper om tournament bracket data te genereren (single elimination)"
+    },
+    {
+      "path": "app/payments/new/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Pagina voor het invoeren van een nieuwe betaling"
+    },
+    {
+      "path": "components/payments/PaymentForm.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Formulier voor het invoeren van een nieuwe betaling"
+    },
+    {
+      "path": "lib/payments/payment-utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "Helper voor het aanmaken van een nieuwe betaling"
+    }
+  ],
+  "generatedAt": "2026-01-14T12:23:53.847Z"
+}

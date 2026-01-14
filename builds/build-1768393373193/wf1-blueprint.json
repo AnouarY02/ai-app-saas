@@ -1,0 +1,519 @@
+{
+  "appName": "Padel Club Manager",
+  "description": "A comprehensive management system for padel clubs to handle court bookings, member management, tournaments, and payments.",
+  "tier": "high",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "All UI uses shadcn/ui components styled with Tailwind. API endpoints are colocated under app/api. Data is stored in-memory for MVP."
+  },
+  "domains": [
+    {
+      "name": "Member Management",
+      "description": "Handles club members and their profiles.",
+      "entities": [
+        {
+          "name": "Member",
+          "description": "A registered club member.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Full name"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Email address"
+            },
+            {
+              "name": "phone",
+              "type": "string",
+              "required": false,
+              "description": "Phone number"
+            },
+            {
+              "name": "membershipStatus",
+              "type": "enum('active','inactive')",
+              "required": true,
+              "description": "Membership status"
+            },
+            {
+              "name": "joinedAt",
+              "type": "Date",
+              "required": true,
+              "description": "Date joined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Court Booking",
+      "description": "Manages padel court reservations.",
+      "entities": [
+        {
+          "name": "Court",
+          "description": "A padel court in the club.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Court name or number"
+            }
+          ]
+        },
+        {
+          "name": "Booking",
+          "description": "A reservation for a court.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier"
+            },
+            {
+              "name": "courtId",
+              "type": "string",
+              "required": true,
+              "description": "Court being booked"
+            },
+            {
+              "name": "memberId",
+              "type": "string",
+              "required": true,
+              "description": "Member who booked"
+            },
+            {
+              "name": "startTime",
+              "type": "Date",
+              "required": true,
+              "description": "Start time"
+            },
+            {
+              "name": "endTime",
+              "type": "Date",
+              "required": true,
+              "description": "End time"
+            },
+            {
+              "name": "status",
+              "type": "enum('confirmed','cancelled')",
+              "required": true,
+              "description": "Booking status"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tournaments",
+      "description": "Organizes tournaments and tracks participation.",
+      "entities": [
+        {
+          "name": "Tournament",
+          "description": "A padel tournament event.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Tournament name"
+            },
+            {
+              "name": "startDate",
+              "type": "Date",
+              "required": true,
+              "description": "Start date"
+            },
+            {
+              "name": "endDate",
+              "type": "Date",
+              "required": true,
+              "description": "End date"
+            }
+          ]
+        },
+        {
+          "name": "TournamentParticipant",
+          "description": "A member participating in a tournament.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier"
+            },
+            {
+              "name": "tournamentId",
+              "type": "string",
+              "required": true,
+              "description": "Tournament reference"
+            },
+            {
+              "name": "memberId",
+              "type": "string",
+              "required": true,
+              "description": "Member reference"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "description": "Tracks payments for bookings and memberships.",
+      "entities": [
+        {
+          "name": "Payment",
+          "description": "A payment made by a member.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier"
+            },
+            {
+              "name": "memberId",
+              "type": "string",
+              "required": true,
+              "description": "Member who paid"
+            },
+            {
+              "name": "amount",
+              "type": "number",
+              "required": true,
+              "description": "Payment amount"
+            },
+            {
+              "name": "date",
+              "type": "Date",
+              "required": true,
+              "description": "Payment date"
+            },
+            {
+              "name": "type",
+              "type": "enum('membership','booking','tournament')",
+              "required": true,
+              "description": "Payment type"
+            },
+            {
+              "name": "referenceId",
+              "type": "string",
+              "required": false,
+              "description": "Related booking or tournament id"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Dashboard overview with stats and quick links.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/members",
+      "type": "page",
+      "description": "List and manage members.",
+      "file": "app/members/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/members/new",
+      "type": "page",
+      "description": "Add a new member.",
+      "file": "app/members/new/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/members/[id]",
+      "type": "page",
+      "description": "View and edit member details.",
+      "file": "app/members/[id]/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/courts",
+      "type": "page",
+      "description": "List and manage courts.",
+      "file": "app/courts/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/bookings",
+      "type": "page",
+      "description": "View and manage court bookings.",
+      "file": "app/bookings/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/bookings/new",
+      "type": "page",
+      "description": "Create a new court booking.",
+      "file": "app/bookings/new/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/tournaments",
+      "type": "page",
+      "description": "List and manage tournaments.",
+      "file": "app/tournaments/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/tournaments/new",
+      "type": "page",
+      "description": "Create a new tournament.",
+      "file": "app/tournaments/new/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/tournaments/[id]",
+      "type": "page",
+      "description": "View and manage a specific tournament.",
+      "file": "app/tournaments/[id]/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/payments",
+      "type": "page",
+      "description": "View and manage payments.",
+      "file": "app/payments/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/settings",
+      "type": "page",
+      "description": "Application settings.",
+      "file": "app/settings/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/",
+      "type": "layout",
+      "description": "Root layout with navigation and global styles.",
+      "file": "app/layout.tsx",
+      "layout": null
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/members",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List all members or create a new member."
+    },
+    {
+      "path": "/api/members/[id]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific member."
+    },
+    {
+      "path": "/api/courts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List all courts or create a new court."
+    },
+    {
+      "path": "/api/bookings",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List all bookings or create a new booking."
+    },
+    {
+      "path": "/api/bookings/[id]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific booking."
+    },
+    {
+      "path": "/api/tournaments",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List all tournaments or create a new tournament."
+    },
+    {
+      "path": "/api/tournaments/[id]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific tournament."
+    },
+    {
+      "path": "/api/tournaments/[id]/participants",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or add participants for a tournament."
+    },
+    {
+      "path": "/api/payments",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List all payments or create a new payment."
+    }
+  ],
+  "components": [
+    {
+      "name": "SidebarNav",
+      "description": "Main navigation sidebar.",
+      "file": "components/SidebarNav.tsx",
+      "usedOn": [
+        "app/layout.tsx"
+      ]
+    },
+    {
+      "name": "Header",
+      "description": "Top header with app name and user info.",
+      "file": "components/Header.tsx",
+      "usedOn": [
+        "app/layout.tsx"
+      ]
+    },
+    {
+      "name": "MemberList",
+      "description": "Displays a list of members.",
+      "file": "components/MemberList.tsx",
+      "usedOn": [
+        "app/members/page.tsx"
+      ]
+    },
+    {
+      "name": "MemberForm",
+      "description": "Form for creating or editing a member.",
+      "file": "components/MemberForm.tsx",
+      "usedOn": [
+        "app/members/new/page.tsx",
+        "app/members/[id]/page.tsx"
+      ]
+    },
+    {
+      "name": "CourtList",
+      "description": "Displays a list of courts.",
+      "file": "components/CourtList.tsx",
+      "usedOn": [
+        "app/courts/page.tsx"
+      ]
+    },
+    {
+      "name": "BookingList",
+      "description": "Displays a list of bookings.",
+      "file": "components/BookingList.tsx",
+      "usedOn": [
+        "app/bookings/page.tsx"
+      ]
+    },
+    {
+      "name": "BookingForm",
+      "description": "Form for creating a booking.",
+      "file": "components/BookingForm.tsx",
+      "usedOn": [
+        "app/bookings/new/page.tsx"
+      ]
+    },
+    {
+      "name": "TournamentList",
+      "description": "Displays a list of tournaments.",
+      "file": "components/TournamentList.tsx",
+      "usedOn": [
+        "app/tournaments/page.tsx"
+      ]
+    },
+    {
+      "name": "TournamentForm",
+      "description": "Form for creating or editing a tournament.",
+      "file": "components/TournamentForm.tsx",
+      "usedOn": [
+        "app/tournaments/new/page.tsx",
+        "app/tournaments/[id]/page.tsx"
+      ]
+    },
+    {
+      "name": "ParticipantList",
+      "description": "Displays participants in a tournament.",
+      "file": "components/ParticipantList.tsx",
+      "usedOn": [
+        "app/tournaments/[id]/page.tsx"
+      ]
+    },
+    {
+      "name": "PaymentList",
+      "description": "Displays a list of payments.",
+      "file": "components/PaymentList.tsx",
+      "usedOn": [
+        "app/payments/page.tsx"
+      ]
+    },
+    {
+      "name": "DashboardStats",
+      "description": "Shows key statistics on the dashboard.",
+      "file": "components/DashboardStats.tsx",
+      "usedOn": [
+        "app/page.tsx"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "Local component state and React context for global state (e.g. user session, notifications).",
+    "notes": "Most data is fetched via API routes and managed per page. Global context is used for session and flash messages."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store (singleton per entity) for MVP; replaceable with persistent DB later.",
+    "notes": "Each entity has a simple in-memory array store, managed in app/api. Data is lost on server restart; suitable for MVP/demo."
+  }
+}
