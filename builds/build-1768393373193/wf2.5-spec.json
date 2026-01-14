@@ -1,0 +1,961 @@
+{
+  "meta": {
+    "buildId": "build-1768393373193",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-build-1768393373193",
+    "appName": "Padel Club Manager",
+    "baseBranch": "main"
+  },
+  "functionalitySpec": {
+    "stack": {
+      "framework": "Next.js 14 App Router",
+      "language": "TypeScript",
+      "styling": [
+        "Tailwind CSS",
+        "shadcn/ui"
+      ],
+      "api": [
+        "Next.js Route Handlers (app/api)"
+      ],
+      "stateManagement": "Local component state and React context for global state",
+      "dataLayer": "In-memory store (singleton per entity) for MVP"
+    },
+    "tenancy": {
+      "strategy": "single-tenant",
+      "isolationLevel": "none"
+    },
+    "roles": [
+      {
+        "name": "admin",
+        "permissions": [
+          "members:read",
+          "members:write",
+          "members:delete",
+          "courts:read",
+          "courts:write",
+          "bookings:read",
+          "bookings:write",
+          "bookings:delete",
+          "tournaments:read",
+          "tournaments:write",
+          "tournaments:delete",
+          "payments:read",
+          "payments:write"
+        ]
+      },
+      {
+        "name": "member",
+        "permissions": [
+          "members:read",
+          "courts:read",
+          "bookings:read",
+          "bookings:write",
+          "tournaments:read",
+          "payments:read"
+        ]
+      }
+    ],
+    "entities": [
+      {
+        "name": "Member",
+        "description": "A registered club member",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unique identifier"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true,
+            "description": "Full name"
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "required": true,
+            "description": "Email address"
+          },
+          {
+            "name": "phone",
+            "type": "string",
+            "required": false,
+            "description": "Phone number"
+          },
+          {
+            "name": "membershipStatus",
+            "type": "enum",
+            "enumValues": [
+              "active",
+              "inactive"
+            ],
+            "required": true,
+            "description": "Membership status"
+          },
+          {
+            "name": "joinedAt",
+            "type": "Date",
+            "required": true,
+            "description": "Date joined"
+          }
+        ],
+        "relations": [
+          {
+            "type": "hasMany",
+            "target": "Booking",
+            "foreignKey": "memberId"
+          },
+          {
+            "type": "hasMany",
+            "target": "TournamentParticipant",
+            "foreignKey": "memberId"
+          },
+          {
+            "type": "hasMany",
+            "target": "Payment",
+            "foreignKey": "memberId"
+          }
+        ]
+      },
+      {
+        "name": "Court",
+        "description": "A padel court in the club",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unique identifier"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true,
+            "description": "Court name or number"
+          }
+        ],
+        "relations": [
+          {
+            "type": "hasMany",
+            "target": "Booking",
+            "foreignKey": "courtId"
+          }
+        ]
+      },
+      {
+        "name": "Booking",
+        "description": "A reservation for a court",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unique identifier"
+          },
+          {
+            "name": "courtId",
+            "type": "string",
+            "required": true,
+            "description": "Court being booked"
+          },
+          {
+            "name": "memberId",
+            "type": "string",
+            "required": true,
+            "description": "Member who booked"
+          },
+          {
+            "name": "startTime",
+            "type": "Date",
+            "required": true,
+            "description": "Start time"
+          },
+          {
+            "name": "endTime",
+            "type": "Date",
+            "required": true,
+            "description": "End time"
+          },
+          {
+            "name": "status",
+            "type": "enum",
+            "enumValues": [
+              "confirmed",
+              "cancelled"
+            ],
+            "required": true,
+            "description": "Booking status"
+          }
+        ],
+        "relations": [
+          {
+            "type": "belongsTo",
+            "target": "Court",
+            "foreignKey": "courtId"
+          },
+          {
+            "type": "belongsTo",
+            "target": "Member",
+            "foreignKey": "memberId"
+          }
+        ]
+      },
+      {
+        "name": "Tournament",
+        "description": "A padel tournament event",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unique identifier"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true,
+            "description": "Tournament name"
+          },
+          {
+            "name": "startDate",
+            "type": "Date",
+            "required": true,
+            "description": "Start date"
+          },
+          {
+            "name": "endDate",
+            "type": "Date",
+            "required": true,
+            "description": "End date"
+          }
+        ],
+        "relations": [
+          {
+            "type": "hasMany",
+            "target": "TournamentParticipant",
+            "foreignKey": "tournamentId"
+          }
+        ]
+      },
+      {
+        "name": "TournamentParticipant",
+        "description": "A member participating in a tournament",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unique identifier"
+          },
+          {
+            "name": "tournamentId",
+            "type": "string",
+            "required": true,
+            "description": "Tournament reference"
+          },
+          {
+            "name": "memberId",
+            "type": "string",
+            "required": true,
+            "description": "Member reference"
+          }
+        ],
+        "relations": [
+          {
+            "type": "belongsTo",
+            "target": "Tournament",
+            "foreignKey": "tournamentId"
+          },
+          {
+            "type": "belongsTo",
+            "target": "Member",
+            "foreignKey": "memberId"
+          }
+        ]
+      },
+      {
+        "name": "Payment",
+        "description": "A payment made by a member",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unique identifier"
+          },
+          {
+            "name": "memberId",
+            "type": "string",
+            "required": true,
+            "description": "Member who paid"
+          },
+          {
+            "name": "amount",
+            "type": "number",
+            "required": true,
+            "description": "Payment amount"
+          },
+          {
+            "name": "date",
+            "type": "Date",
+            "required": true,
+            "description": "Payment date"
+          },
+          {
+            "name": "type",
+            "type": "enum",
+            "enumValues": [
+              "membership",
+              "booking",
+              "tournament"
+            ],
+            "required": true,
+            "description": "Payment type"
+          },
+          {
+            "name": "referenceId",
+            "type": "string",
+            "required": false,
+            "description": "Related booking or tournament id"
+          }
+        ],
+        "relations": [
+          {
+            "type": "belongsTo",
+            "target": "Member",
+            "foreignKey": "memberId"
+          }
+        ]
+      }
+    ],
+    "permissions": [
+      {
+        "resource": "members",
+        "actions": [
+          "read",
+          "write",
+          "delete"
+        ],
+        "roles": [
+          "admin"
+        ]
+      },
+      {
+        "resource": "members",
+        "actions": [
+          "read"
+        ],
+        "roles": [
+          "member"
+        ]
+      },
+      {
+        "resource": "courts",
+        "actions": [
+          "read",
+          "write"
+        ],
+        "roles": [
+          "admin"
+        ]
+      },
+      {
+        "resource": "courts",
+        "actions": [
+          "read"
+        ],
+        "roles": [
+          "member"
+        ]
+      },
+      {
+        "resource": "bookings",
+        "actions": [
+          "read",
+          "write",
+          "delete"
+        ],
+        "roles": [
+          "admin"
+        ]
+      },
+      {
+        "resource": "bookings",
+        "actions": [
+          "read",
+          "write"
+        ],
+        "roles": [
+          "member"
+        ]
+      },
+      {
+        "resource": "tournaments",
+        "actions": [
+          "read",
+          "write",
+          "delete"
+        ],
+        "roles": [
+          "admin"
+        ]
+      },
+      {
+        "resource": "tournaments",
+        "actions": [
+          "read"
+        ],
+        "roles": [
+          "member"
+        ]
+      },
+      {
+        "resource": "payments",
+        "actions": [
+          "read",
+          "write"
+        ],
+        "roles": [
+          "admin"
+        ]
+      },
+      {
+        "resource": "payments",
+        "actions": [
+          "read"
+        ],
+        "roles": [
+          "member"
+        ]
+      }
+    ],
+    "api": [
+      {
+        "path": "/api/members",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "List all members or create a new member",
+        "auth": false,
+        "input": {
+          "GET": {},
+          "POST": {
+            "name": "string",
+            "email": "string",
+            "phone": "string?",
+            "membershipStatus": "enum(active,inactive)"
+          }
+        },
+        "output": {
+          "GET": "Member[]",
+          "POST": "Member"
+        }
+      },
+      {
+        "path": "/api/members/[id]",
+        "methods": [
+          "GET",
+          "PUT",
+          "DELETE"
+        ],
+        "description": "Get, update, or delete a specific member",
+        "auth": false,
+        "input": {
+          "GET": {},
+          "PUT": {
+            "name": "string?",
+            "email": "string?",
+            "phone": "string?",
+            "membershipStatus": "enum(active,inactive)?"
+          },
+          "DELETE": {}
+        },
+        "output": {
+          "GET": "Member",
+          "PUT": "Member",
+          "DELETE": "{ success: boolean }"
+        }
+      },
+      {
+        "path": "/api/courts",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "List all courts or create a new court",
+        "auth": false,
+        "input": {
+          "GET": {},
+          "POST": {
+            "name": "string"
+          }
+        },
+        "output": {
+          "GET": "Court[]",
+          "POST": "Court"
+        }
+      },
+      {
+        "path": "/api/bookings",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "List all bookings or create a new booking",
+        "auth": false,
+        "input": {
+          "GET": {},
+          "POST": {
+            "courtId": "string",
+            "memberId": "string",
+            "startTime": "Date",
+            "endTime": "Date",
+            "status": "enum(confirmed,cancelled)"
+          }
+        },
+        "output": {
+          "GET": "Booking[]",
+          "POST": "Booking"
+        }
+      },
+      {
+        "path": "/api/bookings/[id]",
+        "methods": [
+          "GET",
+          "PUT",
+          "DELETE"
+        ],
+        "description": "Get, update, or delete a specific booking",
+        "auth": false,
+        "input": {
+          "GET": {},
+          "PUT": {
+            "courtId": "string?",
+            "memberId": "string?",
+            "startTime": "Date?",
+            "endTime": "Date?",
+            "status": "enum(confirmed,cancelled)?"
+          },
+          "DELETE": {}
+        },
+        "output": {
+          "GET": "Booking",
+          "PUT": "Booking",
+          "DELETE": "{ success: boolean }"
+        }
+      },
+      {
+        "path": "/api/tournaments",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "List all tournaments or create a new tournament",
+        "auth": false,
+        "input": {
+          "GET": {},
+          "POST": {
+            "name": "string",
+            "startDate": "Date",
+            "endDate": "Date"
+          }
+        },
+        "output": {
+          "GET": "Tournament[]",
+          "POST": "Tournament"
+        }
+      },
+      {
+        "path": "/api/tournaments/[id]",
+        "methods": [
+          "GET",
+          "PUT",
+          "DELETE"
+        ],
+        "description": "Get, update, or delete a specific tournament",
+        "auth": false,
+        "input": {
+          "GET": {},
+          "PUT": {
+            "name": "string?",
+            "startDate": "Date?",
+            "endDate": "Date?"
+          },
+          "DELETE": {}
+        },
+        "output": {
+          "GET": "Tournament",
+          "PUT": "Tournament",
+          "DELETE": "{ success: boolean }"
+        }
+      },
+      {
+        "path": "/api/tournaments/[id]/participants",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "List or add participants for a tournament",
+        "auth": false,
+        "input": {
+          "GET": {},
+          "POST": {
+            "memberId": "string"
+          }
+        },
+        "output": {
+          "GET": "TournamentParticipant[]",
+          "POST": "TournamentParticipant"
+        }
+      },
+      {
+        "path": "/api/payments",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "List all payments or create a new payment",
+        "auth": false,
+        "input": {
+          "GET": {},
+          "POST": {
+            "memberId": "string",
+            "amount": "number",
+            "type": "enum(membership,booking,tournament)",
+            "referenceId": "string?"
+          }
+        },
+        "output": {
+          "GET": "Payment[]",
+          "POST": "Payment"
+        }
+      }
+    ],
+    "pages": [
+      {
+        "path": "/",
+        "title": "Dashboard",
+        "description": "Dashboard overview with stats and quick links",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "DashboardStats",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/members",
+        "title": "Members",
+        "description": "List and manage members",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "MemberList",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/members/new",
+        "title": "Add Member",
+        "description": "Add a new member",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "MemberForm",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/members/[id]",
+        "title": "Edit Member",
+        "description": "View and edit member details",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "MemberForm",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/courts",
+        "title": "Courts",
+        "description": "List and manage courts",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "CourtList",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/bookings",
+        "title": "Bookings",
+        "description": "View and manage court bookings",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "BookingList",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/bookings/new",
+        "title": "New Booking",
+        "description": "Create a new court booking",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "BookingForm",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/tournaments",
+        "title": "Tournaments",
+        "description": "List and manage tournaments",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "TournamentList",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/tournaments/new",
+        "title": "New Tournament",
+        "description": "Create a new tournament",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "TournamentForm",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/tournaments/[id]",
+        "title": "Tournament Details",
+        "description": "View and manage a specific tournament",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "TournamentForm",
+          "ParticipantList",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/payments",
+        "title": "Payments",
+        "description": "View and manage payments",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "PaymentList",
+          "Header",
+          "SidebarNav"
+        ]
+      },
+      {
+        "path": "/settings",
+        "title": "Settings",
+        "description": "Application settings",
+        "auth": false,
+        "layout": "default",
+        "components": [
+          "Header",
+          "SidebarNav"
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "name": "Create Member",
+        "description": "Register a new club member",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Navigate to /members/new",
+            "actor": "admin"
+          },
+          {
+            "step": 2,
+            "action": "Fill member form with name, email, phone, status",
+            "actor": "admin"
+          },
+          {
+            "step": 3,
+            "action": "Submit form to POST /api/members",
+            "actor": "system"
+          },
+          {
+            "step": 4,
+            "action": "Redirect to /members on success",
+            "actor": "system"
+          }
+        ]
+      },
+      {
+        "name": "Create Booking",
+        "description": "Book a court for a member",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Navigate to /bookings/new",
+            "actor": "member"
+          },
+          {
+            "step": 2,
+            "action": "Select court, member, time slot, and status",
+            "actor": "member"
+          },
+          {
+            "step": 3,
+            "action": "Submit form to POST /api/bookings",
+            "actor": "system"
+          },
+          {
+            "step": 4,
+            "action": "Redirect to /bookings on success",
+            "actor": "system"
+          }
+        ]
+      },
+      {
+        "name": "Create Tournament",
+        "description": "Organize a new tournament",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Navigate to /tournaments/new",
+            "actor": "admin"
+          },
+          {
+            "step": 2,
+            "action": "Fill tournament form with name and dates",
+            "actor": "admin"
+          },
+          {
+            "step": 3,
+            "action": "Submit form to POST /api/tournaments",
+            "actor": "system"
+          },
+          {
+            "step": 4,
+            "action": "Redirect to /tournaments/[id] on success",
+            "actor": "system"
+          }
+        ]
+      },
+      {
+        "name": "Add Tournament Participant",
+        "description": "Register a member for a tournament",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Navigate to /tournaments/[id]",
+            "actor": "admin"
+          },
+          {
+            "step": 2,
+            "action": "Select member from participant form",
+            "actor": "admin"
+          },
+          {
+            "step": 3,
+            "action": "Submit to POST /api/tournaments/[id]/participants",
+            "actor": "system"
+          },
+          {
+            "step": 4,
+            "action": "Refresh participant list on success",
+            "actor": "system"
+          }
+        ]
+      },
+      {
+        "name": "Record Payment",
+        "description": "Log a payment from a member",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Navigate to /payments",
+            "actor": "admin"
+          },
+          {
+            "step": 2,
+            "action": "Fill payment form with member, amount, type, reference",
+            "actor": "admin"
+          },
+          {
+            "step": 3,
+            "action": "Submit form to POST /api/payments",
+            "actor": "system"
+          },
+          {
+            "step": 4,
+            "action": "Refresh payment list on success",
+            "actor": "system"
+          }
+        ]
+      }
+    ],
+    "definitionOfDone": [
+      "All 6 entities (Member, Court, Booking, Tournament, TournamentParticipant, Payment) are defined with TypeScript interfaces",
+      "All 9 API routes are implemented with proper HTTP methods and return correct data structures",
+      "All 12 pages are created with proper routing and layouts",
+      "All 12 shadcn/ui components are implemented and styled with Tailwind CSS",
+      "In-memory data stores are implemented for all entities with CRUD operations",
+      "Navigation sidebar and header are functional across all pages",
+      "Forms validate required fields and display error messages",
+      "Dashboard displays statistics for members, bookings, tournaments, and payments",
+      "Member list displays all members with status indicators",
+      "Booking list shows court, member, time, and status for each booking",
+      "Tournament detail page shows participants and allows adding new ones",
+      "Payment list displays all payments with type and amount",
+      "All pages are responsive and work on mobile, tablet, and desktop",
+      "TypeScript strict mode is enabled with no type errors",
+      "Application builds successfully with 'npm run build'",
+      "Application runs without errors with 'npm run dev'"
+    ],
+    "errorContract": {
+      "code": "SUCCESS",
+      "http": 200,
+      "errors": {
+        "VALIDATION_ERROR": {
+          "code": "VALIDATION_ERROR",
+          "http": 400,
+          "message": "Invalid input data"
+        },
+        "NOT_FOUND": {
+          "code": "NOT_FOUND",
+          "http": 404,
+          "message": "Resource not found"
+        },
+        "CONFLICT": {
+          "code": "CONFLICT",
+          "http": 409,
+          "message": "Resource conflict (e.g., booking time overlap)"
+        },
+        "INTERNAL_ERROR": {
+          "code": "INTERNAL_ERROR",
+          "http": 500,
+          "message": "Internal server error"
+        }
+      }
+    }
+  }
+}
