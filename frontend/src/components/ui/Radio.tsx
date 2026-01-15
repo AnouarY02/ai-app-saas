@@ -1,23 +1,42 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cva } from 'class-variance-authority';
 
-export interface RadioProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+type RadioProps = {
+  name: string;
+  options: { label: string; value: string }[];
+  selectedValue: string;
+  onChange: (value: string) => void;
+};
 
-export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <input
-        ref={ref}
-        type="radio"
-        className={cn(
-          "form-radio h-5 w-5 text-[#ed7544]",
-          "transition-all duration-300 ease-smooth",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#ed7544]",
-          className
-        )}
-        {...props}
-      />
-    );
-  }
-);
-Radio.displayName = "Radio";
+const radioStyles = cva('form-radio h-4 w-4 text-primary-700', {
+  variants: {
+    checked: {
+      true: 'bg-primary-600',
+      false: 'bg-white',
+    },
+  },
+});
+
+export const Radio: React.FC<RadioProps> = ({ name, options, selectedValue, onChange }) => {
+  return (
+    <div>
+      {options.map((option) => (
+        <div key={option.value} className="flex items-center">
+          <input
+            id={`${name}-${option.value}`}
+            type="radio"
+            name={name}
+            value={option.value}
+            checked={selectedValue === option.value}
+            onChange={() => onChange(option.value)}
+            className={radioStyles({ checked: selectedValue === option.value })}
+            aria-checked={selectedValue === option.value}
+          />
+          <label htmlFor={`${name}-${option.value}`} className="ml-2 text-primary-700">
+            {option.label}
+          </label>
+        </div>
+      ))}
+    </div>
+  );
+};

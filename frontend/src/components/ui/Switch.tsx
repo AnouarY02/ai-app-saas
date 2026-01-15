@@ -1,37 +1,41 @@
-import React, { useState } from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cva } from 'class-variance-authority';
 
-export interface SwitchProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  checked?: boolean;
-}
+type SwitchProps = {
+  isOn: boolean;
+  onToggle: () => void;
+  id: string;
+};
 
-export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
-  ({ className, checked = false, ...props }, ref) => {
-    const [isChecked, setIsChecked] = useState(checked);
+const switchStyles = cva('relative inline-flex items-center h-6 rounded-full w-11', {
+  variants: {
+    on: {
+      true: 'bg-primary-600',
+      false: 'bg-gray-200',
+    },
+  },
+});
 
-    return (
-      <button
-        ref={ref}
-        role="switch"
-        aria-checked={isChecked}
-        onClick={() => setIsChecked(!isChecked)}
-        className={cn(
-          "relative inline-flex items-center h-6 rounded-full w-11",
-          "transition-all duration-300 ease-smooth",
-          isChecked ? "bg-[#ed7544]" : "bg-gray-200",
-          className
-        )}
-        {...props}
-      >
-        <span
-          className={cn(
-            "inline-block w-4 h-4 transform bg-white rounded-full",
-            "transition-transform duration-300 ease-smooth",
-            isChecked ? "translate-x-6" : "translate-x-1"
-          )}
-        />
-      </button>
-    );
-  }
-);
-Switch.displayName = "Switch";
+const switchButtonStyles = cva('inline-block w-4 h-4 transform bg-white rounded-full', {
+  variants: {
+    on: {
+      true: 'translate-x-6',
+      false: 'translate-x-1',
+    },
+  },
+});
+
+export const Switch: React.FC<SwitchProps> = ({ isOn, onToggle, id }) => {
+  return (
+    <button
+      id={id}
+      type="button"
+      role="switch"
+      aria-checked={isOn}
+      onClick={onToggle}
+      className={switchStyles({ on: isOn })}
+    >
+      <span className={switchButtonStyles({ on: isOn })} />
+    </button>
+  );
+};

@@ -1,32 +1,27 @@
-import React from "react";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface DialogProps extends React.HTMLAttributes<HTMLDivElement> {
-  open: boolean;
+  isOpen: boolean;
   onClose: () => void;
 }
 
 export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
-  ({ className, open, onClose, children, ...props }, ref) => {
+  ({ className, isOpen, onClose, children, ...props }, ref) => {
+    if (!isOpen) return null;
+
     return (
       <div
-        ref={ref}
-        className={cn(
-          "fixed inset-0 z-50 flex items-center justify-center",
-          "transition-opacity duration-300 ease-smooth",
-          open ? "opacity-100" : "opacity-0 pointer-events-none",
-          className
-        )}
-        role="dialog"
-        aria-modal="true"
-        {...props}
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        onClick={onClose}
       >
         <div
-          className="fixed inset-0 bg-black opacity-50"
-          onClick={onClose}
-        ></div>
-        <div
-          className="bg-white rounded-lg shadow-lg overflow-hidden z-10"
+          ref={ref}
+          role="dialog"
+          aria-modal="true"
+          className={cn("bg-white rounded-lg p-6", className)}
+          onClick={(e) => e.stopPropagation()}
+          {...props}
         >
           {children}
         </div>
