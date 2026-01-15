@@ -1,34 +1,38 @@
 # Padel Club Manager Design System
 
-🎨 **A sophisticated design system that embodies the energy and precision of padel sports through warm terracotta tones and dynamic interactions. Every element reflects the premium club experience with refined typography, purposeful spacing, and smooth animations that feel both athletic and elegant.**
+🎨 **A sophisticated sports management aesthetic that captures the energy and precision of padel through tennis court green and warm terracotta clay tones. The design emphasizes professionalism while maintaining the dynamic, athletic spirit of the sport.**
+
+## Stats
+- Components: 18
+- Layouts: 3
+- Files: 28
+- Quality: 9.5/10
 
 ## Colors
-- Primary: #ed7544
-- Secondary: #64748b
+- Primary: #2d9d5f
+- Secondary: #d2691e
 
-## Components (15)
-- **Button**: A versatile button component with multiple variants and sizes.
-- **Input**: An accessible input component with support for different sizes and states.
-- **Card**: A card component for displaying content in a structured format.
-- **Badge**: A badge component for displaying status or counts.
-- **Alert**: An alert component for displaying important messages.
-- **Dialog**: A dialog component for modal interactions.
-- **Dropdown**: A dropdown component for displaying a list of options.
-- **Tabs**: A tabs component for switching between different views.
-- **Tooltip**: A tooltip component for displaying additional information.
-- **Switch**: A switch component for toggling between on and off states.
-- **Checkbox**: A checkbox component for selecting multiple options.
-- **Radio**: A radio button component for selecting a single option from a list.
-- **Progress**: A progress bar component for indicating progress.
-- **Spinner**: A spinner component for indicating loading state.
-- **Avatar**: An avatar component for displaying user images.
+## Components
+1. **Spinner** - A loading spinner component for indicating loading states.
+2. **Skeleton** - A skeleton component for displaying loading placeholders.
+3. **Button** - A button component with loading states, icons, and variants.
+4. **Input** - A text input component with error states and size variants.
+5. **Card** - A card component with shadow and hover effects.
+6. **Badge** - A badge component for displaying status indicators.
+7. **Checkbox** - Component
+8. **Radio** - Component
+9. **Select** - Component
+10. **Textarea** - Component
+11. **Switch** - Component
+12. **Label** - Component
+13. **Alert** - Alert component for displaying success, error, warning, and info messages with appropriate icons.
+14. **Dialog** - Modal dialog component with backdrop, close button, header, content, and footer.
+15. **Tooltip** - Tooltip component that appears on hover with smart positioning.
+16. **Progress** - Progress bar component with percentage display.
+17. **Avatar** - Avatar component that displays a user image with fallback to initials.
+18. **Toast** - Toast notification component with auto-dismiss and close button.
 
-## Usage
-
-```tsx
-import { Button, Card } from '@/components/ui';
-
-function App() {
-  return <Card><Button variant="primary">Click me</Button></Card>;
-}
-```
+## Layouts
+1. **DashboardLayout** - A layout with a collapsible sidebar, top header with a hamburger menu, breadcrumbs navigation, and a main content area.
+2. **AuthLayout** - A centered card layout with a logo area, form content area, footer with links, and a gradient background.
+3. **SettingsLayout** - A layout with a fixed-width left sidebar navigation, scrollable content area, and save/cancel footer buttons.

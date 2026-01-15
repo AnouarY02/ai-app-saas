@@ -1,23 +1,24 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cva } from 'class-variance-authority';
 
-export interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+}
 
-export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <input
-        ref={ref}
-        type="checkbox"
-        className={cn(
-          "form-checkbox h-5 w-5 text-[#ed7544] rounded",
-          "transition-all duration-300 ease-smooth",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#ed7544]",
-          className
-        )}
-        {...props}
-      />
-    );
+const checkboxStyles = cva('form-checkbox h-4 w-4 text-primary-700', {
+  variants: {
+    checked: {
+      true: 'bg-primary-600',
+      false: 'bg-white'
+    }
   }
-);
-Checkbox.displayName = "Checkbox";
+});
+
+export const Checkbox: React.FC<CheckboxProps> = ({ label, checked, ...props }) => {
+  return (
+    <label className="inline-flex items-center">
+      <input type="checkbox" className={checkboxStyles({ checked })} checked={checked} {...props} />
+      <span className="ml-2 text-primary-700">{label}</span>
+    </label>
+  );
+};

@@ -1,79 +1,103 @@
 /**
- * Design Tokens - Padel Club Manager
- * A sophisticated design system that embodies the energy and precision of padel sports through warm terracotta tones and dynamic interactions. Every element reflects the premium club experience with refined typography, purposeful spacing, and smooth animations that feel both athletic and elegant.
- * Generated: 2026-01-15T16:41:06.867Z
+ * Padel Club Manager Design Tokens
+ * A sophisticated sports management aesthetic that captures the energy and precision of padel through tennis court green and warm terracotta clay tones. The design emphasizes professionalism while maintaining the dynamic, athletic spirit of the sport.
  */
 
 export const designTokens = {
   "colors": {
     "brand": {
       "primary": {
-        "50": "#fef7f0",
-        "100": "#fdeee0",
-        "200": "#fad9c1",
-        "300": "#f6be96",
-        "400": "#f19969",
-        "500": "#ed7544",
-        "600": "#de5a2c",
-        "700": "#b94622",
-        "800": "#933a22",
-        "900": "#76321f",
-        "950": "#40180f"
+        "50": "#f0f9f4",
+        "100": "#dcf2e4",
+        "200": "#bce5cd",
+        "300": "#8dd3aa",
+        "400": "#57bb80",
+        "500": "#2d9d5f",
+        "600": "#228049",
+        "700": "#1d653c",
+        "800": "#1a5132",
+        "900": "#16432a",
+        "950": "#0a2516"
       },
       "secondary": {
-        "50": "#f8fafc",
-        "100": "#f1f5f9",
-        "200": "#e2e8f0",
-        "300": "#cbd5e1",
-        "400": "#94a3b8",
-        "500": "#64748b",
-        "600": "#475569",
-        "700": "#334155",
-        "800": "#1e293b",
-        "900": "#0f172a",
-        "950": "#020617"
+        "50": "#fdf6f0",
+        "100": "#faeadb",
+        "200": "#f4d2b7",
+        "300": "#ecb388",
+        "400": "#e28d57",
+        "500": "#d2691e",
+        "600": "#c4541a",
+        "700": "#a34017",
+        "800": "#823318",
+        "900": "#6a2c16",
+        "950": "#391509"
+      },
+      "accent": {
+        "50": "#fefdf2",
+        "100": "#fefbe8",
+        "200": "#fef7c3",
+        "300": "#feee8e",
+        "400": "#fde047",
+        "500": "#eab308",
+        "600": "#ca8a04",
+        "700": "#a16207",
+        "800": "#854d0e",
+        "900": "#713f12",
+        "950": "#422006"
       }
     },
     "neutral": {
-      "50": "#fafaf9",
-      "100": "#f5f5f4",
-      "200": "#e7e5e4",
-      "300": "#d6d3d1",
-      "400": "#a8a29e",
-      "500": "#78716c",
-      "600": "#57534e",
-      "700": "#44403c",
-      "800": "#292524",
-      "900": "#1c1917",
-      "950": "#0c0a09"
+      "50": "#fafafa",
+      "100": "#f4f4f5",
+      "200": "#e4e4e7",
+      "300": "#d4d4d8",
+      "400": "#a1a1aa",
+      "500": "#71717a",
+      "600": "#52525b",
+      "700": "#3f3f46",
+      "800": "#27272a",
+      "900": "#18181b",
+      "950": "#09090b"
     },
     "semantic": {
       "success": {
         "50": "#f0fdf4",
+        "100": "#dcfce7",
         "500": "#22c55e",
-        "700": "#15803d"
+        "600": "#16a34a",
+        "700": "#15803d",
+        "900": "#14532d"
       },
       "warning": {
         "50": "#fffbeb",
+        "100": "#fef3c7",
         "500": "#f59e0b",
-        "700": "#b45309"
+        "600": "#d97706",
+        "700": "#b45309",
+        "900": "#78350f"
       },
       "error": {
         "50": "#fef2f2",
+        "100": "#fee2e2",
         "500": "#ef4444",
-        "700": "#b91c1c"
+        "600": "#dc2626",
+        "700": "#b91c1c",
+        "900": "#7f1d1d"
       },
       "info": {
-        "50": "#eff6ff",
-        "500": "#3b82f6",
-        "700": "#1d4ed8"
+        "50": "#f0f9ff",
+        "100": "#e0f2fe",
+        "500": "#0891b2",
+        "600": "#0e7490",
+        "700": "#155e75",
+        "900": "#164e63"
       }
     }
   },
   "typography": {
     "fonts": {
       "sans": "Inter",
-      "serif": "Merriweather",
+      "display": "Outfit",
       "mono": "JetBrains Mono"
     },
     "scale": {
@@ -85,18 +109,29 @@ export const designTokens = {
       "2xl": "1.5rem",
       "3xl": "1.875rem",
       "4xl": "2.25rem",
-      "5xl": "3rem"
+      "5xl": "3rem",
+      "6xl": "3.75rem",
+      "7xl": "4.5rem"
+    },
+    "lineHeight": {
+      "tight": "1.25",
+      "snug": "1.375",
+      "normal": "1.5",
+      "relaxed": "1.625",
+      "loose": "2"
     },
     "weights": {
+      "light": 300,
       "normal": 400,
       "medium": 500,
       "semibold": 600,
-      "bold": 700
+      "bold": 700,
+      "extrabold": 800
     }
   },
   "spacing": {
     "scale": {
-      "0": "0",
+      "0": "0rem",
       "1": "0.25rem",
       "2": "0.5rem",
       "3": "0.75rem",
@@ -109,35 +144,51 @@ export const designTokens = {
       "16": "4rem",
       "20": "5rem",
       "24": "6rem",
-      "32": "8rem"
+      "32": "8rem",
+      "40": "10rem",
+      "48": "12rem",
+      "56": "14rem",
+      "64": "16rem",
+      "72": "18rem",
+      "80": "20rem",
+      "96": "24rem"
     }
   },
   "radius": {
-    "none": "0",
+    "none": "0rem",
     "sm": "0.125rem",
+    "base": "0.25rem",
     "md": "0.375rem",
     "lg": "0.5rem",
     "xl": "0.75rem",
     "2xl": "1rem",
-    "full": "9999px"
+    "3xl": "1.5rem",
+    "full": "9999rem"
   },
   "shadows": {
-    "sm": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-    "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-    "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-    "xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+    "xs": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    "sm": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+    "md": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+    "lg": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    "xl": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+    "2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+    "inner": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)"
   },
   "animations": {
     "durations": {
+      "instant": "0ms",
       "fast": "150ms",
       "normal": "300ms",
-      "slow": "500ms"
+      "slow": "500ms",
+      "slower": "750ms"
     },
     "easings": {
       "smooth": "cubic-bezier(0.4, 0, 0.2, 1)",
-      "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+      "snappy": "cubic-bezier(0.4, 0, 1, 1)",
+      "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+      "elastic": "cubic-bezier(0.175, 0.885, 0.32, 1.275)"
     }
   }
-};
+} as const;
 
 export const { colors, typography, spacing, radius, shadows, animations } = designTokens;

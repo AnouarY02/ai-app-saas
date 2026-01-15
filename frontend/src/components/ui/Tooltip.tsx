@@ -1,33 +1,33 @@
-import React, { useState } from "react";
+import * as React from "react";
 import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
 
-export interface TooltipProps extends React.HTMLAttributes<HTMLDivElement> {
-  content: string;
-}
+const tooltipVariants = cva("absolute p-2 text-sm rounded-md bg-black text-white", {
+  variants: {
+    position: {
+      top: "bottom-full mb-2",
+      right: "left-full ml-2",
+      bottom: "top-full mt-2",
+      left: "right-full mr-2"
+    }
+  },
+  defaultVariants: {
+    position: "top"
+  }
+});
+
+export interface TooltipProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof tooltipVariants> {}
 
 export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
-  ({ className, content, children, ...props }, ref) => {
-    const [visible, setVisible] = useState(false);
-
-    return (
-      <div
-        ref={ref}
-        className={cn("relative inline-block", className)}
-        onMouseEnter={() => setVisible(true)}
-        onMouseLeave={() => setVisible(false)}
-        {...props}
-      >
-        {children}
-        {visible && (
-          <div
-            className="absolute z-10 p-2 text-sm text-white bg-black rounded-md shadow-lg"
-            style={{ bottom: "100%", left: "50%", transform: "translateX(-50%)" }}
-          >
-            {content}
-          </div>
-        )}
-      </div>
-    );
-  }
+  ({ className, position, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      role="tooltip"
+      className={cn(tooltipVariants({ position }), className)}
+      {...props}
+    >
+      {children}
+    </div>
+  )
 );
 Tooltip.displayName = "Tooltip";

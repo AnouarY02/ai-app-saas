@@ -1,26 +1,33 @@
-import React from "react";
+import * as React from "react";
 import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  size?: "sm" | "md" | "lg";
-  error?: boolean;
-}
+const inputVariants = cva("block w-full rounded-md border focus:outline-none focus:ring-2 focus:ring-offset-2", {
+  variants: {
+    size: {
+      sm: "px-2 py-1 text-sm",
+      md: "px-3 py-2",
+      lg: "px-4 py-3 text-lg"
+    },
+    error: {
+      true: "border-error focus:ring-error",
+      false: "border-gray-300 focus:ring-primary-600"
+    }
+  },
+  defaultVariants: {
+    size: "md",
+    error: false
+  }
+});
+
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement>, VariantProps<typeof inputVariants> {}
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, size = "md", error, ...props }, ref) => {
+  ({ className, size, error, ...props }, ref) => {
     return (
       <input
         ref={ref}
-        className={cn(
-          "block w-full rounded-md border transition-all duration-300 ease-smooth",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
-          error ? "border-red-500 focus-visible:ring-red-500" : "border-gray-300 focus-visible:ring-[#ed7544]",
-          size === "sm" && "h-8 px-2 text-sm",
-          size === "md" && "h-10 px-3 text-base",
-          size === "lg" && "h-12 px-4 text-lg",
-          className
-        )}
+        className={cn(inputVariants({ size, error }), className)}
         {...props}
       />
     );

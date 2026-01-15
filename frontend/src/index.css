@@ -4,45 +4,14 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: #ed7544;
-    --primary-foreground: 210 40% 98%;
-    --secondary: #64748b;
-    --secondary-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --ring: #ed7544;
+    --primary: #2d9d5f;
+    --secondary: #d2691e;
     --radius: 0.5rem;
   }
-  
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-  }
-  
-  * {
-    @apply border-border;
-  }
-  
+  * { @apply border-border; }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  
-  /* Smooth scrolling */
-  html {
-    scroll-behavior: smooth;
-  }
-  
-  /* Focus styles */
-  *:focus-visible {
-    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+  *:focus-visible { @apply outline-none ring-2 ring-primary-500; }
 }

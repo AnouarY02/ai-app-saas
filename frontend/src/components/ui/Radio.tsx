@@ -1,23 +1,25 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cva } from 'class-variance-authority';
 
-export interface RadioProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface RadioProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  name: string;
+}
 
-export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <input
-        ref={ref}
-        type="radio"
-        className={cn(
-          "form-radio h-5 w-5 text-[#ed7544]",
-          "transition-all duration-300 ease-smooth",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#ed7544]",
-          className
-        )}
-        {...props}
-      />
-    );
+const radioStyles = cva('form-radio h-4 w-4 text-primary-700', {
+  variants: {
+    checked: {
+      true: 'bg-primary-600',
+      false: 'bg-white'
+    }
   }
-);
-Radio.displayName = "Radio";
+});
+
+export const Radio: React.FC<RadioProps> = ({ label, name, checked, ...props }) => {
+  return (
+    <label className="inline-flex items-center">
+      <input type="radio" name={name} className={radioStyles({ checked })} checked={checked} {...props} />
+      <span className="ml-2 text-primary-700">{label}</span>
+    </label>
+  );
+};
