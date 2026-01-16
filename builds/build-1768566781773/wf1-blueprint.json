@@ -1,0 +1,760 @@
+{
+  "appName": "FitTrack Pro",
+  "description": "Professional fitness tracking and workout planning platform with social features, meal planning, and comprehensive progress analytics.",
+  "tier": "premium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "All UI uses shadcn/ui components styled with Tailwind. API endpoints are colocated in app/api. Data is stored in-memory for MVP, with clear entity separation."
+  },
+  "domains": [
+    {
+      "name": "User",
+      "description": "Represents a registered user of the platform.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Platform user with profile and authentication details.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique user identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Full name"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Email address"
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "required": true,
+              "description": "Hashed password"
+            },
+            {
+              "name": "avatarUrl",
+              "type": "string",
+              "required": false,
+              "description": "Profile picture URL"
+            },
+            {
+              "name": "bio",
+              "type": "string",
+              "required": false,
+              "description": "Short user bio"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Workout",
+      "description": "Workout plans and logs for users.",
+      "entities": [
+        {
+          "name": "WorkoutPlan",
+          "description": "A user's planned workout routine.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique plan identifier"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Owner user id"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Plan name"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Plan description"
+            },
+            {
+              "name": "exercises",
+              "type": "ExerciseInstance[]",
+              "required": true,
+              "description": "List of exercises in the plan"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Creation date"
+            }
+          ]
+        },
+        {
+          "name": "WorkoutLog",
+          "description": "A user's completed workout session.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique log identifier"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "User who completed the workout"
+            },
+            {
+              "name": "planId",
+              "type": "string",
+              "required": false,
+              "description": "Related workout plan id"
+            },
+            {
+              "name": "date",
+              "type": "Date",
+              "required": true,
+              "description": "Date of workout"
+            },
+            {
+              "name": "exercises",
+              "type": "ExerciseLog[]",
+              "required": true,
+              "description": "Exercises performed in the session"
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "required": false,
+              "description": "User notes"
+            }
+          ]
+        },
+        {
+          "name": "ExerciseInstance",
+          "description": "An exercise as part of a workout plan.",
+          "fields": [
+            {
+              "name": "exerciseId",
+              "type": "string",
+              "required": true,
+              "description": "Reference to Exercise"
+            },
+            {
+              "name": "sets",
+              "type": "number",
+              "required": true,
+              "description": "Number of sets"
+            },
+            {
+              "name": "reps",
+              "type": "number",
+              "required": true,
+              "description": "Number of reps per set"
+            },
+            {
+              "name": "weight",
+              "type": "number",
+              "required": false,
+              "description": "Suggested weight"
+            }
+          ]
+        },
+        {
+          "name": "ExerciseLog",
+          "description": "An exercise performed during a workout session.",
+          "fields": [
+            {
+              "name": "exerciseId",
+              "type": "string",
+              "required": true,
+              "description": "Reference to Exercise"
+            },
+            {
+              "name": "sets",
+              "type": "number",
+              "required": true,
+              "description": "Number of sets performed"
+            },
+            {
+              "name": "reps",
+              "type": "number",
+              "required": true,
+              "description": "Number of reps per set"
+            },
+            {
+              "name": "weight",
+              "type": "number",
+              "required": false,
+              "description": "Actual weight used"
+            }
+          ]
+        },
+        {
+          "name": "Exercise",
+          "description": "Master list of exercises.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique exercise identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Exercise name"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Exercise description"
+            },
+            {
+              "name": "muscleGroup",
+              "type": "string",
+              "required": true,
+              "description": "Primary muscle group"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Meal",
+      "description": "Meal planning and nutrition tracking.",
+      "entities": [
+        {
+          "name": "MealPlan",
+          "description": "A user's meal plan for a day.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique meal plan id"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Owner user id"
+            },
+            {
+              "name": "date",
+              "type": "Date",
+              "required": true,
+              "description": "Date for meal plan"
+            },
+            {
+              "name": "meals",
+              "type": "MealEntry[]",
+              "required": true,
+              "description": "Meals for the day"
+            }
+          ]
+        },
+        {
+          "name": "MealEntry",
+          "description": "A single meal entry in a meal plan.",
+          "fields": [
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Meal name"
+            },
+            {
+              "name": "foods",
+              "type": "FoodItem[]",
+              "required": true,
+              "description": "Foods in the meal"
+            }
+          ]
+        },
+        {
+          "name": "FoodItem",
+          "description": "A food item with nutritional info.",
+          "fields": [
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Food name"
+            },
+            {
+              "name": "calories",
+              "type": "number",
+              "required": true,
+              "description": "Calories"
+            },
+            {
+              "name": "protein",
+              "type": "number",
+              "required": false,
+              "description": "Protein (g)"
+            },
+            {
+              "name": "carbs",
+              "type": "number",
+              "required": false,
+              "description": "Carbohydrates (g)"
+            },
+            {
+              "name": "fat",
+              "type": "number",
+              "required": false,
+              "description": "Fat (g)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Social",
+      "description": "Social features for user engagement.",
+      "entities": [
+        {
+          "name": "Post",
+          "description": "User-generated social post.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique post id"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Author user id"
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "required": true,
+              "description": "Post content"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Creation date"
+            },
+            {
+              "name": "likes",
+              "type": "string[]",
+              "required": false,
+              "description": "User ids who liked"
+            }
+          ]
+        },
+        {
+          "name": "Comment",
+          "description": "Comment on a post.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique comment id"
+            },
+            {
+              "name": "postId",
+              "type": "string",
+              "required": true,
+              "description": "Associated post id"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Comment author"
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "required": true,
+              "description": "Comment content"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Creation date"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "description": "Progress and analytics for users.",
+      "entities": [
+        {
+          "name": "ProgressEntry",
+          "description": "User's progress measurement entry.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique entry id"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "User id"
+            },
+            {
+              "name": "date",
+              "type": "Date",
+              "required": true,
+              "description": "Measurement date"
+            },
+            {
+              "name": "weight",
+              "type": "number",
+              "required": false,
+              "description": "Body weight (kg)"
+            },
+            {
+              "name": "bodyFat",
+              "type": "number",
+              "required": false,
+              "description": "Body fat (%)"
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "required": false,
+              "description": "Optional notes"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Landing page with app overview and login/register CTA.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "page",
+      "description": "User dashboard with summary of workouts, meals, analytics, and social feed.",
+      "file": "app/dashboard/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/workouts",
+      "type": "page",
+      "description": "Workout plans list and management.",
+      "file": "app/workouts/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/workouts/[id]",
+      "type": "page",
+      "description": "Detail view for a specific workout plan.",
+      "file": "app/workouts/[id]/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/meals",
+      "type": "page",
+      "description": "Meal plans list and management.",
+      "file": "app/meals/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/meals/[id]",
+      "type": "page",
+      "description": "Detail view for a specific meal plan.",
+      "file": "app/meals/[id]/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/analytics",
+      "type": "page",
+      "description": "User progress analytics and charts.",
+      "file": "app/analytics/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/social",
+      "type": "page",
+      "description": "Social feed with posts and comments.",
+      "file": "app/social/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/profile",
+      "type": "page",
+      "description": "User profile and settings.",
+      "file": "app/profile/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "User login page.",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/register",
+      "type": "page",
+      "description": "User registration page.",
+      "file": "app/register/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "layout",
+      "description": "Dashboard layout with navigation sidebar.",
+      "file": "app/dashboard/layout.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/",
+      "type": "layout",
+      "description": "Root layout for public pages.",
+      "file": "app/layout.tsx",
+      "layout": null
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "description": "Authenticate user and return session token."
+    },
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ],
+      "description": "Register new user."
+    },
+    {
+      "path": "/api/auth/logout",
+      "methods": [
+        "POST"
+      ],
+      "description": "Logout user and clear session."
+    },
+    {
+      "path": "/api/user/me",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "description": "Get or update current user's profile."
+    },
+    {
+      "path": "/api/workouts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create workout plans for current user."
+    },
+    {
+      "path": "/api/workouts/[id]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific workout plan."
+    },
+    {
+      "path": "/api/workout-logs",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create workout logs for current user."
+    },
+    {
+      "path": "/api/meals",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create meal plans for current user."
+    },
+    {
+      "path": "/api/meals/[id]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific meal plan."
+    },
+    {
+      "path": "/api/social/posts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create social posts."
+    },
+    {
+      "path": "/api/social/posts/[id]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific post."
+    },
+    {
+      "path": "/api/social/posts/[id]/comments",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or add comments to a post."
+    },
+    {
+      "path": "/api/analytics/progress",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or add progress entries for current user."
+    }
+  ],
+  "components": [
+    {
+      "name": "Navbar",
+      "description": "Top navigation bar for authenticated users.",
+      "file": "components/Navbar.tsx",
+      "usedOn": [
+        "app/dashboard/layout.tsx"
+      ]
+    },
+    {
+      "name": "Sidebar",
+      "description": "Sidebar navigation for dashboard.",
+      "file": "components/Sidebar.tsx",
+      "usedOn": [
+        "app/dashboard/layout.tsx"
+      ]
+    },
+    {
+      "name": "WorkoutPlanList",
+      "description": "Displays list of user's workout plans.",
+      "file": "components/WorkoutPlanList.tsx",
+      "usedOn": [
+        "app/workouts/page.tsx"
+      ]
+    },
+    {
+      "name": "WorkoutPlanDetail",
+      "description": "Detail view for a workout plan.",
+      "file": "components/WorkoutPlanDetail.tsx",
+      "usedOn": [
+        "app/workouts/[id]/page.tsx"
+      ]
+    },
+    {
+      "name": "MealPlanList",
+      "description": "Displays list of user's meal plans.",
+      "file": "components/MealPlanList.tsx",
+      "usedOn": [
+        "app/meals/page.tsx"
+      ]
+    },
+    {
+      "name": "MealPlanDetail",
+      "description": "Detail view for a meal plan.",
+      "file": "components/MealPlanDetail.tsx",
+      "usedOn": [
+        "app/meals/[id]/page.tsx"
+      ]
+    },
+    {
+      "name": "AnalyticsOverview",
+      "description": "Charts and analytics for user progress.",
+      "file": "components/AnalyticsOverview.tsx",
+      "usedOn": [
+        "app/analytics/page.tsx"
+      ]
+    },
+    {
+      "name": "SocialFeed",
+      "description": "Displays social posts and comments.",
+      "file": "components/SocialFeed.tsx",
+      "usedOn": [
+        "app/social/page.tsx"
+      ]
+    },
+    {
+      "name": "ProfileForm",
+      "description": "User profile edit form.",
+      "file": "components/ProfileForm.tsx",
+      "usedOn": [
+        "app/profile/page.tsx"
+      ]
+    },
+    {
+      "name": "LoginForm",
+      "description": "User login form.",
+      "file": "components/LoginForm.tsx",
+      "usedOn": [
+        "app/login/page.tsx"
+      ]
+    },
+    {
+      "name": "RegisterForm",
+      "description": "User registration form.",
+      "file": "components/RegisterForm.tsx",
+      "usedOn": [
+        "app/register/page.tsx"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React context for auth/user state, local component state for forms, server state fetched via API routes.",
+    "notes": "Auth state is managed globally via React context/provider. All domain data is fetched via API routes and cached per page as needed. No external state libraries for MVP."
+  },
+  "dataLayer": {
+    "strategy": "In-memory data stores (singleton JS/TS objects) per domain, managed in API route handlers.",
+    "notes": "Each API route handler manages its own in-memory store for the relevant entity. Data is not persisted across server restarts in MVP. Entities are separated by domain for clarity and future extensibility."
+  }
+}
