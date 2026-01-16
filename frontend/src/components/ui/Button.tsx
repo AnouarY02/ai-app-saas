@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Spinner } from "./Spinner";
 
-const buttonVariants = cva("inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2", {
+const buttonVariants = cva("inline-flex items-center justify-center font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2", {
   variants: {
     variant: {
       primary: "bg-primary-600 text-white hover:bg-primary-700",
@@ -25,10 +25,11 @@ const buttonVariants = cva("inline-flex items-center justify-center rounded-md f
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
+  icon?: React.ReactNode;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, isLoading, children, ...props }, ref) => {
+  ({ className, variant, size, isLoading, icon, children, ...props }, ref) => {
     return (
       <button
         ref={ref}
@@ -37,6 +38,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {isLoading && <Spinner className="mr-2" />}
+        {icon && !isLoading && <span className="mr-2">{icon}</span>}
         {children}
       </button>
     );

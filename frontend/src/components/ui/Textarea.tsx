@@ -2,27 +2,32 @@ import React from 'react';
 import { cva } from 'class-variance-authority';
 
 type TextareaProps = {
+  id: string;
   value: string;
   onChange: (value: string) => void;
-  id: string;
-  rows?: number;
+  placeholder?: string;
 };
 
-const textareaStyles = cva('form-textarea text-primary-700', {
+const textareaStyles = cva('form-textarea text-primary-700 bg-white', {
   variants: {
-    base: 'bg-white border border-primary-600',
+    filled: {
+      true: 'bg-primary-600',
+      false: 'bg-white',
+    },
   },
 });
 
-export const Textarea: React.FC<TextareaProps> = ({ value, onChange, id, rows = 4 }) => {
+const Textarea: React.FC<TextareaProps> = ({ id, value, onChange, placeholder }) => {
   return (
     <textarea
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      rows={rows}
-      className={textareaStyles()}
-      aria-labelledby={id}
+      placeholder={placeholder}
+      className={textareaStyles({ filled: !!value })}
+      aria-required="true"
     />
   );
 };
+
+export default Textarea;

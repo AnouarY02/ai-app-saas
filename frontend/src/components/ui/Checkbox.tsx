@@ -2,10 +2,10 @@ import React from 'react';
 import { cva } from 'class-variance-authority';
 
 type CheckboxProps = {
+  id: string;
+  label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
-  label: string;
-  id: string;
 };
 
 const checkboxStyles = cva('form-checkbox h-4 w-4 text-primary-700', {
@@ -17,7 +17,7 @@ const checkboxStyles = cva('form-checkbox h-4 w-4 text-primary-700', {
   },
 });
 
-export const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange, label, id }) => {
+const Checkbox: React.FC<CheckboxProps> = ({ id, label, checked, onChange }) => {
   return (
     <div className="flex items-center">
       <input
@@ -34,3 +34,5 @@ export const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange, label, id
     </div>
   );
 };
+
+export default Checkbox;

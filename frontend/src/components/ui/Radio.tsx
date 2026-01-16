@@ -10,14 +10,14 @@ type RadioProps = {
 
 const radioStyles = cva('form-radio h-4 w-4 text-primary-700', {
   variants: {
-    checked: {
+    selected: {
       true: 'bg-primary-600',
       false: 'bg-white',
     },
   },
 });
 
-export const Radio: React.FC<RadioProps> = ({ name, options, selectedValue, onChange }) => {
+const Radio: React.FC<RadioProps> = ({ name, options, selectedValue, onChange }) => {
   return (
     <div>
       {options.map((option) => (
@@ -29,7 +29,7 @@ export const Radio: React.FC<RadioProps> = ({ name, options, selectedValue, onCh
             value={option.value}
             checked={selectedValue === option.value}
             onChange={() => onChange(option.value)}
-            className={radioStyles({ checked: selectedValue === option.value })}
+            className={radioStyles({ selected: selectedValue === option.value })}
             aria-checked={selectedValue === option.value}
           />
           <label htmlFor={`${name}-${option.value}`} className="ml-2 text-primary-700">
@@ -40,3 +40,5 @@ export const Radio: React.FC<RadioProps> = ({ name, options, selectedValue, onCh
     </div>
   );
 };
+
+export default Radio;

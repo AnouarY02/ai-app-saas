@@ -2,11 +2,11 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface AvatarProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  fallback: string;
+  fallback?: string;
 }
 
 export const Avatar = React.forwardRef<HTMLImageElement, AvatarProps>(
-  ({ className, src, fallback, alt, ...props }, ref) => (
+  ({ className, src, alt, fallback, ...props }, ref) => (
     <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-200">
       {src ? (
         <img
@@ -17,7 +17,7 @@ export const Avatar = React.forwardRef<HTMLImageElement, AvatarProps>(
           {...props}
         />
       ) : (
-        <span className="flex items-center justify-center h-full text-lg font-semibold text-gray-700">
+        <span className="flex items-center justify-center w-full h-full text-gray-500">
           {fallback}
         </span>
       )}

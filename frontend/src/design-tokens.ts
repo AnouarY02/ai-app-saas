@@ -1,6 +1,6 @@
 /**
  * FitTrack Pro Design Tokens
- * FitTrack Pro embodies energy, strength, and vitality through a dynamic color palette that motivates users to achieve their fitness goals. The design combines energetic orange tones representing action and enthusiasm with deep forest greens symbolizing growth and endurance, creating a professional yet inspiring fitness experience.
+ * FitTrack Pro embodies energy, strength, and vitality through a dynamic color palette that motivates users to achieve their fitness goals. The design combines the intensity of athletic orange with the balance of forest green, creating a professional yet energizing visual identity that reflects both performance and wellness.
  */
 
 export const designTokens = {

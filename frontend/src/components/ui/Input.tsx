@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
-const inputVariants = cva("block w-full rounded-md border focus:outline-none focus:ring-2 focus:ring-offset-2", {
+const inputVariants = cva("block w-full rounded-md shadow-sm focus:ring-primary-600 focus:border-primary-600", {
   variants: {
     size: {
       sm: "px-2 py-1 text-sm",
@@ -10,8 +10,8 @@ const inputVariants = cva("block w-full rounded-md border focus:outline-none foc
       lg: "px-4 py-3 text-lg"
     },
     error: {
-      true: "border-error focus:ring-error",
-      false: "border-gray-300 focus:ring-primary-600"
+      true: "border-red-600",
+      false: "border-gray-300"
     }
   },
   defaultVariants: {
@@ -28,6 +28,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         ref={ref}
         className={cn(inputVariants({ size, error }), className)}
+        aria-invalid={error}
         {...props}
       />
     );
