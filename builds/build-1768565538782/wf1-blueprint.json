@@ -1,0 +1,252 @@
+{
+  "appName": "AI App",
+  "description": "Een eenvoudige SaaS-app waarmee gebruikers AI-taken kunnen beheren. Gebruikers kunnen zich registreren, inloggen en hun eigen AI-taken aanmaken, bekijken en verwijderen.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "Alle UI-componenten worden gebouwd met shadcn/ui en gestyled met Tailwind. API-routes worden afgehandeld via Next.js route handlers. Data wordt in-memory opgeslagen voor MVP."
+  },
+  "domains": [
+    {
+      "name": "User",
+      "description": "Beheer van gebruikersaccounts en authenticatie.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Een geregistreerde gebruiker van de app.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de gebruiker."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "E-mailadres van de gebruiker."
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "required": true,
+              "description": "Gehasht wachtwoord van de gebruiker."
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Datum van registratie."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AITask",
+      "description": "AI-taken die door gebruikers worden aangemaakt en beheerd.",
+      "entities": [
+        {
+          "name": "AITask",
+          "description": "Een AI-taak die door een gebruiker is aangemaakt.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de taak."
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "ID van de gebruiker die de taak heeft aangemaakt."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "description": "Titel van de AI-taak."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Optionele beschrijving van de taak."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "Status van de taak (bijv. pending, completed)."
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Aanmaakdatum van de taak."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Homepagina met uitleg en call-to-action.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Loginpagina voor bestaande gebruikers.",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/register",
+      "type": "page",
+      "description": "Registratiepagina voor nieuwe gebruikers.",
+      "file": "app/register/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "layout",
+      "description": "Dashboardlayout voor ingelogde gebruikers.",
+      "file": "app/dashboard/layout.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "page",
+      "description": "Overzicht van AI-taken van de gebruiker.",
+      "file": "app/dashboard/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/dashboard/tasks/new",
+      "type": "page",
+      "description": "Pagina voor het aanmaken van een nieuwe AI-taak.",
+      "file": "app/dashboard/tasks/new/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    },
+    {
+      "path": "/dashboard/tasks/[id]",
+      "type": "page",
+      "description": "Detailpagina van een specifieke AI-taak.",
+      "file": "app/dashboard/tasks/[id]/page.tsx",
+      "layout": "app/dashboard/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ],
+      "description": "Registreer een nieuwe gebruiker."
+    },
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "description": "Log een bestaande gebruiker in."
+    },
+    {
+      "path": "/api/auth/logout",
+      "methods": [
+        "POST"
+      ],
+      "description": "Log de gebruiker uit."
+    },
+    {
+      "path": "/api/tasks",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "Haal alle AI-taken op of maak een nieuwe taak aan voor de ingelogde gebruiker."
+    },
+    {
+      "path": "/api/tasks/[id]",
+      "methods": [
+        "GET",
+        "DELETE"
+      ],
+      "description": "Haal details op van een specifieke taak of verwijder deze."
+    }
+  ],
+  "components": [
+    {
+      "name": "Navbar",
+      "description": "Navigatiebalk bovenaan de app.",
+      "file": "components/Navbar.tsx",
+      "usedOn": [
+        "app/layout.tsx"
+      ]
+    },
+    {
+      "name": "TaskList",
+      "description": "Lijstweergave van AI-taken.",
+      "file": "components/TaskList.tsx",
+      "usedOn": [
+        "app/dashboard/page.tsx"
+      ]
+    },
+    {
+      "name": "TaskCard",
+      "description": "Kaartweergave van een enkele AI-taak.",
+      "file": "components/TaskCard.tsx",
+      "usedOn": [
+        "components/TaskList.tsx",
+        "app/dashboard/tasks/[id]/page.tsx"
+      ]
+    },
+    {
+      "name": "TaskForm",
+      "description": "Formulier voor het aanmaken of bewerken van een AI-taak.",
+      "file": "components/TaskForm.tsx",
+      "usedOn": [
+        "app/dashboard/tasks/new/page.tsx"
+      ]
+    },
+    {
+      "name": "LoginForm",
+      "description": "Formulier voor gebruikerslogin.",
+      "file": "components/LoginForm.tsx",
+      "usedOn": [
+        "app/login/page.tsx"
+      ]
+    },
+    {
+      "name": "RegisterForm",
+      "description": "Formulier voor gebruikersregistratie.",
+      "file": "components/RegisterForm.tsx",
+      "usedOn": [
+        "app/register/page.tsx"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "Server-side session management via HTTP-only cookies, client-side context voor UI-state.",
+    "notes": "Authenticatie wordt afgehandeld via cookies. Voor eenvoudige UI-state (zoals modals of notificaties) wordt React context gebruikt."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store (singleton pattern) voor gebruikers en taken.",
+    "notes": "Alle data wordt in-memory opgeslagen voor MVP. In productie kan eenvoudig een database worden aangesloten."
+  }
+}
