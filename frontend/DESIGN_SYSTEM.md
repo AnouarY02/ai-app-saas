@@ -1,6 +1,6 @@
 # FitTrack Pro Design System
 
-🎨 **FitTrack Pro embodies energy, strength, and vitality through a dynamic color palette that motivates users to achieve their fitness goals. The design combines energetic orange tones representing action and enthusiasm with deep forest greens symbolizing growth and endurance, creating a professional yet inspiring fitness experience.**
+🎨 **FitTrack Pro embodies strength and vitality through an energetic orange primary that motivates action, balanced with deep forest green representing growth and endurance. The design system emphasizes performance and achievement with bold contrasts and dynamic color relationships that inspire users to reach their fitness goals.**
 
 ## Stats
 - Components: 18
@@ -13,18 +13,18 @@
 - Secondary: #22c55e
 
 ## Components
-1. **Spinner** - A loading spinner component to indicate loading states.
-2. **Skeleton** - A skeleton component to serve as a placeholder while content is loading.
-3. **Button** - A button component with loading state, icons, and multiple variants.
-4. **Input** - A text input component with error states and size variants.
-5. **Card** - A card component with shadow and hover effects.
-6. **Badge** - A badge component for displaying status with different variants.
-7. **Checkbox** - Component
-8. **Radio** - Component
-9. **Select** - Component
-10. **Textarea** - Component
-11. **Switch** - Component
-12. **Label** - Component
+1. **Spinner** - A loading spinner component.
+2. **Skeleton** - A loading placeholder component.
+3. **Button** - A button component with loading state, icons, and variants.
+4. **Input** - A text input component with error states and sizes.
+5. **Card** - A card container component with shadow and hover effects.
+6. **Badge** - A status badge component with various variants.
+7. **Checkbox** - Accessible checkbox with checked state
+8. **Radio** - Radio button with groups
+9. **Select** - Dropdown select with options
+10. **Textarea** - Multi-line text input
+11. **Switch** - Toggle switch (on/off)
+12. **Label** - Form label with required indicator
 13. **Alert** - Alert component for displaying success, error, warning, and info messages with appropriate icons.
 14. **Dialog** - Dialog component for displaying modal dialogs with a backdrop, close button, header, content, and footer.
 15. **Tooltip** - Tooltip component for displaying additional information on hover with smart positioning.
@@ -33,6 +33,6 @@
 18. **Toast** - Toast component for displaying notification messages with auto-dismiss and close button.
 
 ## Layouts
-1. **DashboardLayout** - A layout with a collapsible sidebar, top header with hamburger menu, breadcrumbs navigation, and main content area. Designed for dashboards.
-2. **AuthLayout** - A centered card layout with a logo area, form content area, and footer links. Features a gradient background.
+1. **DashboardLayout** - A layout with a collapsible sidebar, top header with a hamburger menu, breadcrumbs navigation, and a main content area.
+2. **AuthLayout** - A centered card design layout with a logo area, form content area, footer with links, and a gradient background.
 3. **SettingsLayout** - A layout with a fixed-width left sidebar navigation, scrollable content area, and save/cancel footer buttons.

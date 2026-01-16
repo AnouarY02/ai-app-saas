@@ -1,36 +1,24 @@
 import React from 'react';
 import { cva } from 'class-variance-authority';
 
-type CheckboxProps = {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
+interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  id: string;
-};
+}
 
-const checkboxStyles = cva('form-checkbox h-4 w-4 text-primary-700', {
+const checkboxStyles = cva('form-checkbox h-5 w-5 text-primary-700', {
   variants: {
     checked: {
       true: 'bg-primary-600',
-      false: 'bg-white',
-    },
-  },
+      false: 'bg-white'
+    }
+  }
 });
 
-export const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange, label, id }) => {
+export const Checkbox: React.FC<CheckboxProps> = ({ label, checked, ...props }) => {
   return (
-    <div className="flex items-center">
-      <input
-        id={id}
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className={checkboxStyles({ checked })}
-        aria-checked={checked}
-      />
-      <label htmlFor={id} className="ml-2 text-primary-700">
-        {label}
-      </label>
-    </div>
+    <label className="flex items-center space-x-2">
+      <input type="checkbox" className={checkboxStyles({ checked })} checked={checked} {...props} />
+      <span>{label}</span>
+    </label>
   );
 };

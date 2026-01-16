@@ -10,7 +10,6 @@ export interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
   ({ className, value, min = 0, max = 100, ...props }, ref) => {
     const percentage = ((value - min) / (max - min)) * 100;
-
     return (
       <div
         ref={ref}
@@ -22,7 +21,7 @@ export const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
         {...props}
       >
         <div
-          className="bg-success-600 h-4 rounded-full"
+          className="bg-blue-600 h-4 rounded-full"
           style={{ width: `${percentage}%` }}
         />
       </div>
