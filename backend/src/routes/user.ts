@@ -1,12 +1,11 @@
-import { Router } from 'express';
-import { getMe, list, update, remove } from '../controllers/userController';
-import { requireAuth, requireAdminOrSelf } from '../middleware/auth';
+import express from 'express';
+import { getMe, updateMe } from '../controllers/userController';
+import { authMiddleware } from '../middleware/authMiddleware';
+import { validateUpdateUser } from '../utils/validators';
 
-const router = Router();
+const router = express.Router();
 
-router.get('/me', requireAuth, getMe);
-router.get('/', requireAuth, list);
-router.patch('/:id', requireAuth, requireAdminOrSelf, update);
-router.delete('/:id', requireAuth, requireAdminOrSelf, remove);
+router.get('/me', authMiddleware, getMe);
+router.put('/me', authMiddleware, validateUpdateUser, updateMe);
 
 export default router;

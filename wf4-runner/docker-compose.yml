@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  wf4-runner:
+    build:
+      context: ./wf4-runner
+      dockerfile: Dockerfile
+    container_name: wf4-runner
+    ports:
+      - "8787:8787"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PORT=8787
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    restart: unless-stopped
+    networks:
+      - ai-fabriek
+
+networks:
+  ai-fabriek:
+    name: ai-fabriek
+    driver: bridge

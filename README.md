@@ -1,19 +1,19 @@
-# Padel Club Manager
+# AI App
 
 ## Project Overview
-Padel Club Manager is a modern SaaS platform for managing padel clubs, bookings, courts, and users. Built as a TypeScript monorepo with a Next.js frontend and an Express/Prisma backend.
+A modern AI SaaS application built as a TypeScript-first monorepo, featuring a Next.js frontend, Express backend, and PostgreSQL database. Designed for scalability, developer experience, and strong typing across the stack.
 
 ## Monorepo Structure
-- `frontend/` – Next.js (React, TypeScript, Tailwind CSS) SPA
-- `backend/` – Node.js (Express, TypeScript, Prisma, PostgreSQL)
-- `shared/` – Shared types, utilities, and constants
-- `infra/` – Infrastructure scripts and automation
+- `frontend/` — Next.js (React, TypeScript, TailwindCSS) client
+- `backend/` — Node.js (Express, TypeScript, PostgreSQL) API server
+- `shared/` — Shared types and utilities
+- `infra/` — Infrastructure scripts and configs
 
 ## Tech Stack
-- **Frontend:** Next.js, React, TypeScript, Tailwind CSS
-- **Backend:** Node.js, Express, TypeScript, Prisma ORM, PostgreSQL
-- **Shared:** TypeScript types/utilities
-- **Infra:** Docker Compose, PostgreSQL, ESLint, Prettier, Jest
+- **Frontend:** Next.js, React, TypeScript, TailwindCSS
+- **Backend:** Node.js, Express, TypeScript, PostgreSQL
+- **Infra:** Docker Compose, PostgreSQL
+- **Dev Tools:** ESLint, Prettier, TypeScript, Zod, dotenv
 
 ## Getting Started
 1. **Clone the repo:**
@@ -25,68 +25,67 @@ Padel Club Manager is a modern SaaS platform for managing padel clubs, bookings,
    ```sh
    yarn install
    ```
-3. **Copy environment variables:**
+3. **Set up environment variables:**
    ```sh
    cp .env.example .env
+   # Edit .env as needed
    ```
 
 ## Environment Variables
-See `.env.example` for all required and optional environment variables:
+See `.env.example` for all required and optional variables:
 - `DATABASE_URL` (required)
 - `JWT_SECRET` (required)
+- `SESSION_SECRET` (required)
 - `NEXT_PUBLIC_API_URL` (required)
-- `PORT`, `NODE_ENV`, `LOG_LEVEL`, `FRONTEND_URL`, `ADMIN_EMAIL` (optional)
+- `PORT`, `NODE_ENV`, `LOG_LEVEL` (optional)
 
-## Running Locally (Dev)
-- Start both frontend and backend with hot reload:
-  ```sh
-  yarn dev
-  ```
+## Local Development (with Docker)
+To start the full stack locally (frontend, backend, and database):
+```sh
+yarn start
+# or
+NODE_ENV=development docker-compose up --build
+```
 - Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend: [http://localhost:4000](http://localhost:4000)
+- Backend API: [http://localhost:4000](http://localhost:4000)
+- PostgreSQL: localhost:5432 (user: postgres, password: postgres)
 
-## Running with Docker
-- Build and run all services (frontend, backend, db):
-  ```sh
-  yarn start
-  # or
-  docker-compose up --build
-  ```
-- Stop services:
-  ```sh
-  docker-compose down
-  ```
+## Running Migrations
+Run backend DB migrations (from project root):
+```sh
+yarn db:migrate
+```
 
-## Database Migrations
-- Run migrations (locally or in Docker):
-  ```sh
-  yarn migrate
-  # or
-  docker-compose exec backend yarn prisma migrate deploy
-  ```
+## Available Scripts
+- `yarn dev` — Start frontend & backend in dev mode
+- `yarn build` — Build frontend & backend
+- `yarn start` — Start all services via Docker Compose
+- `yarn lint` — Lint all TypeScript/JavaScript files
+- `yarn typecheck` — Run TypeScript project references typecheck
+- `yarn db:migrate` — Run backend DB migrations
 
-## Testing
-- Run tests for all workspaces:
-  ```sh
-  yarn test
-  ```
+## API Endpoints Overview
+See backend `src/routes/` for available endpoints:
+- `/api/*` — AI and app APIs
+- `/auth/*` — Authentication endpoints
+- `/user/*` — User management
 
-## Scripts Reference
-| Script      | Description                                 |
-|-------------|---------------------------------------------|
-| dev         | Start frontend & backend in dev mode        |
-| build       | Build frontend & backend                    |
-| start       | Start all services via Docker Compose       |
-| test        | Run all tests (frontend & backend)          |
-| migrate     | Run backend DB migrations                   |
-| lint        | Lint all TypeScript/JavaScript code         |
+## Authentication & Security
+- JWT-based authentication
+- Session secrets and secure cookie handling
+- Environment-based configuration
 
-## Deployment
-- Use `docker-compose` for production deployments.
-- See `infra/` for CI/CD and migration scripts.
+## Deployment Notes
+- Use Docker Compose for local and staging deployments
+- Set all required environment variables in production
+- See `infra/` for infra scripts and DB initialization
 
 ## Contributing
-Pull requests and issues are welcome! Please lint and test your code before submitting.
+1. Fork the repo
+2. Create a feature branch
+3. Open a PR with clear description
 
-## License
-MIT
+## Troubleshooting
+- Ensure Docker is running for local dev
+- Check `.env` values if services fail to start
+- Use `docker-compose logs` for debugging
