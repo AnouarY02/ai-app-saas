@@ -1,91 +1,84 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import DashboardPage from './pages/DashboardPage'
-import BookingsPage from './pages/BookingsPage'
-import CourtsPage from './pages/CourtsPage'
-import AdminPage from './pages/AdminPage'
+import SettingsPage from './pages/SettingsPage'
 import LandingPage from './pages/LandingPage'
-import Header from './components/Header'
+import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
+import Footer from './components/Footer'
 
-function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
+function PublicLayout() {
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-50">
+      <Navbar />
+      <main className="flex-1 flex flex-col items-center justify-center">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+function AuthLayout() {
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-50">
+      <main className="flex-1 flex flex-col items-center justify-center">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+function AppLayout() {
+  return (
+    <div className="flex min-h-screen bg-slate-50">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Navbar />
+        <main className="flex-1 p-4">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  )
+}
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>
+  if (loading) return <div className="flex justify-center items-center h-screen"><span>Loading...</span></div>
   if (!user) return <Navigate to="/login" replace />
-  if (adminOnly && user.role !== 'admin') return <Navigate to="/dashboard" replace />
   return <>{children}</>
 }
 
-export default function App() {
+function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Header />
-                <div className="flex min-h-screen">
-                  <Sidebar />
-                  <main className="flex-1 p-6 bg-gray-50">
-                    <DashboardPage />
-                  </main>
-                </div>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/bookings"
-            element={
-              <ProtectedRoute>
-                <Header />
-                <div className="flex min-h-screen">
-                  <Sidebar />
-                  <main className="flex-1 p-6 bg-gray-50">
-                    <BookingsPage />
-                  </main>
-                </div>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/courts"
-            element={
-              <ProtectedRoute>
-                <Header />
-                <div className="flex min-h-screen">
-                  <Sidebar />
-                  <main className="flex-1 p-6 bg-gray-50">
-                    <CourtsPage />
-                  </main>
-                </div>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute adminOnly>
-                <Header />
-                <div className="flex min-h-screen">
-                  <Sidebar />
-                  <main className="flex-1 p-6 bg-gray-50">
-                    <AdminPage />
-                  </main>
-                </div>
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" />} />
+          {/* Public landing page */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<LandingPage />} />
+          </Route>
+          {/* Auth pages */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
+          {/* Protected app pages */}
+          <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Route>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
   )
 }
+
+export default App

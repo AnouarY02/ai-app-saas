@@ -1,0 +1,13 @@
+// shared/types/errorTypes.ts
+// Centralized error codes for API and UI
+
+export enum ApiErrorCode {
+  INVALID_INPUT = 'INVALID_INPUT',
+  AUTH_FAILED = 'AUTH_FAILED',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  NOT_FOUND = 'NOT_FOUND',
+  INTERNAL_ERROR = 'INTERNAL_ERROR',
+  EMAIL_IN_USE = 'EMAIL_IN_USE',
+  SESSION_EXPIRED = 'SESSION_EXPIRED',
+  FORBIDDEN = 'FORBIDDEN',
+}

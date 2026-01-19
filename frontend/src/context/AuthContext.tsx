@@ -1,73 +1,86 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { getSession, login as apiLogin, signup as apiSignup, logout as apiLogout, UserPublic } from '../utils/apiClient'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { User, AuthResponse } from '../utils/apiClient'
+import { getMe, login as apiLogin, signup as apiSignup, logout as apiLogout } from '../utils/apiClient'
 
 interface AuthContextType {
-  user: UserPublic | null
+  user: User | null
   loading: boolean
   error: string | null
-  login: (email: string, password: string) => Promise<boolean>
-  signup: (name: string, email: string, password: string) => Promise<boolean>
-  logout: () => void
+  login: (email: string, password: string) => Promise<void>
+  signup: (email: string, password: string, name?: string) => Promise<void>
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserPublic | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const checkSession = async () => {
-      setLoading(true)
+    // Try to fetch current user on mount
+    (async () => {
       try {
-        const u = await getSession()
-        setUser(u)
+        setLoading(true)
+        const me = await getMe()
+        setUser(me)
       } catch {
         setUser(null)
       } finally {
         setLoading(false)
       }
-    }
-    checkSession()
+    })()
   }, [])
 
   const login = async (email: string, password: string) => {
     setLoading(true)
     setError(null)
     try {
-      const { user, token } = await apiLogin(email, password)
-      localStorage.setItem('token', token)
-      setUser(user)
+      const res = await apiLogin({ email, password })
+      setUser(res.user)
+      localStorage.setItem('token', res.token)
+    } catch (err: any) {
+      setError(err.message || 'Login failed')
+      setUser(null)
+      throw err
+    } finally {
       setLoading(false)
-      return true
-    } catch (e: any) {
-      setError(e.message || 'Login failed')
-      setLoading(false)
-      return false
     }
   }
 
-  const signup = async (name: string, email: string, password: string) => {
+  const signup = async (email: string, password: string, name?: string) => {
     setLoading(true)
     setError(null)
     try {
-      const { user, token } = await apiSignup(name, email, password)
-      localStorage.setItem('token', token)
-      setUser(user)
+      const res = await apiSignup({ email, password, name })
+      setUser(res.user)
+      localStorage.setItem('token', res.token)
+    } catch (err: any) {
+      setError(err.message || 'Signup failed')
+      setUser(null)
+      throw err
+    } finally {
       setLoading(false)
-      return true
-    } catch (e: any) {
-      setError(e.message || 'Signup failed')
-      setLoading(false)
-      return false
     }
   }
 
-  const logout = () => {
-    localStorage.removeItem('token')
-    setUser(null)
-    apiLogout()
+  const logout = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const token = localStorage.getItem('token')
+      if (token) {
+        await apiLogout(token)
+      }
+      setUser(null)
+      localStorage.removeItem('token')
+    } catch (err: any) {
+      setError(err.message || 'Logout failed')
+      throw err
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

@@ -1,56 +1,48 @@
 services:
   db:
-    image: postgres:15-alpine
+    image: postgres:15
     restart: unless-stopped
     environment:
-      POSTGRES_DB: padel_club_manager
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ai_app
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=4000
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
       - LOG_LEVEL=${LOG_LEVEL:-info}
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-    ports:
-      - "4000:4000"
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_started
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
       interval: 10s
       timeout: 5s
       retries: 5
-
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:4000} 
     ports:
       - "3000:80"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     depends_on:
       backend:
         condition: service_healthy
-
 volumes:
   db_data:
