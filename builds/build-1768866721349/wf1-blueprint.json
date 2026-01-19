@@ -1,0 +1,662 @@
+{
+  "appName": "TaskMaster Pro",
+  "description": "Modern task management with team collaboration, kanban boards, analytics, and real-time notifications. Includes project tracking and productivity metrics.",
+  "tier": "premium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "All UI uses shadcn/ui components styled with Tailwind. API endpoints are colocated under app/api. Data is kept in-memory for MVP but can be swapped for a persistent store."
+  },
+  "domains": [
+    {
+      "name": "User Management",
+      "description": "Handles user authentication, profiles, and team membership.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Represents an individual user.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique user identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Full name"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Email address"
+            },
+            {
+              "name": "avatarUrl",
+              "type": "string",
+              "required": false,
+              "description": "Profile picture URL"
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "required": true,
+              "description": "Role in the team (admin, member)"
+            }
+          ]
+        },
+        {
+          "name": "Team",
+          "description": "A group of users collaborating on projects.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique team identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Team name"
+            },
+            {
+              "name": "members",
+              "type": "User[]",
+              "required": true,
+              "description": "List of team members"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Project & Task Management",
+      "description": "Projects, tasks, kanban boards, and task comments.",
+      "entities": [
+        {
+          "name": "Project",
+          "description": "A collection of tasks and boards.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique project identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Project name"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Project description"
+            },
+            {
+              "name": "teamId",
+              "type": "string",
+              "required": true,
+              "description": "Owning team"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Creation timestamp"
+            }
+          ]
+        },
+        {
+          "name": "Board",
+          "description": "Kanban board for a project.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique board identifier"
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "required": true,
+              "description": "Associated project"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Board name"
+            },
+            {
+              "name": "columns",
+              "type": "Column[]",
+              "required": true,
+              "description": "Columns in the board"
+            }
+          ]
+        },
+        {
+          "name": "Column",
+          "description": "Column in a kanban board.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique column identifier"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Column name"
+            },
+            {
+              "name": "taskIds",
+              "type": "string[]",
+              "required": true,
+              "description": "Ordered list of task IDs"
+            }
+          ]
+        },
+        {
+          "name": "Task",
+          "description": "A task within a project board.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique task identifier"
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "description": "Task title"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Task details"
+            },
+            {
+              "name": "assigneeId",
+              "type": "string",
+              "required": false,
+              "description": "Assigned user"
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "Task status (todo, in-progress, done)"
+            },
+            {
+              "name": "dueDate",
+              "type": "Date",
+              "required": false,
+              "description": "Due date"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Creation timestamp"
+            },
+            {
+              "name": "comments",
+              "type": "Comment[]",
+              "required": false,
+              "description": "Task comments"
+            }
+          ]
+        },
+        {
+          "name": "Comment",
+          "description": "Comment on a task.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique comment identifier"
+            },
+            {
+              "name": "taskId",
+              "type": "string",
+              "required": true,
+              "description": "Associated task"
+            },
+            {
+              "name": "authorId",
+              "type": "string",
+              "required": true,
+              "description": "Comment author"
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "required": true,
+              "description": "Comment text"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Creation timestamp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Analytics & Notifications",
+      "description": "Productivity metrics and real-time notifications.",
+      "entities": [
+        {
+          "name": "Notification",
+          "description": "Real-time notification for users.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique notification identifier"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Recipient user"
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "required": true,
+              "description": "Notification type (task-assigned, comment, etc.)"
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "required": true,
+              "description": "Notification message"
+            },
+            {
+              "name": "read",
+              "type": "boolean",
+              "required": true,
+              "description": "Read status"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Creation timestamp"
+            }
+          ]
+        },
+        {
+          "name": "Metric",
+          "description": "Aggregated productivity metrics.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique metric identifier"
+            },
+            {
+              "name": "teamId",
+              "type": "string",
+              "required": true,
+              "description": "Associated team"
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "required": true,
+              "description": "Metric type (tasks-completed, avg-completion-time, etc.)"
+            },
+            {
+              "name": "value",
+              "type": "number",
+              "required": true,
+              "description": "Metric value"
+            },
+            {
+              "name": "period",
+              "type": "string",
+              "required": true,
+              "description": "Metric period (daily, weekly, monthly)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "layout",
+      "description": "Root app layout with navigation and notifications",
+      "file": "app/layout.tsx",
+      "layout": null
+    },
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Dashboard landing page with project overview and metrics",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "User login page",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/projects",
+      "type": "page",
+      "description": "List of all projects for the current team",
+      "file": "app/projects/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/projects/[projectId]",
+      "type": "page",
+      "description": "Project detail page with kanban board and tasks",
+      "file": "app/projects/[projectId]/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/projects/[projectId]/settings",
+      "type": "page",
+      "description": "Project settings page",
+      "file": "app/projects/[projectId]/settings/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/teams",
+      "type": "page",
+      "description": "Team management page",
+      "file": "app/teams/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/analytics",
+      "type": "page",
+      "description": "Productivity analytics dashboard",
+      "file": "app/analytics/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/notifications",
+      "type": "page",
+      "description": "User notifications center",
+      "file": "app/notifications/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/profile",
+      "type": "page",
+      "description": "User profile and settings",
+      "file": "app/profile/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "description": "Authenticate user and return session"
+    },
+    {
+      "path": "/api/auth/logout",
+      "methods": [
+        "POST"
+      ],
+      "description": "Logout user and destroy session"
+    },
+    {
+      "path": "/api/users/me",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "description": "Get or update current user profile"
+    },
+    {
+      "path": "/api/teams",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List teams or create new team"
+    },
+    {
+      "path": "/api/teams/[teamId]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a team"
+    },
+    {
+      "path": "/api/projects",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List projects or create new project"
+    },
+    {
+      "path": "/api/projects/[projectId]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a project"
+    },
+    {
+      "path": "/api/projects/[projectId]/boards",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create boards for a project"
+    },
+    {
+      "path": "/api/boards/[boardId]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a board"
+    },
+    {
+      "path": "/api/tasks",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create tasks"
+    },
+    {
+      "path": "/api/tasks/[taskId]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a task"
+    },
+    {
+      "path": "/api/tasks/[taskId]/comments",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or add comments to a task"
+    },
+    {
+      "path": "/api/notifications",
+      "methods": [
+        "GET"
+      ],
+      "description": "List notifications for current user"
+    },
+    {
+      "path": "/api/notifications/[notificationId]/read",
+      "methods": [
+        "POST"
+      ],
+      "description": "Mark notification as read"
+    },
+    {
+      "path": "/api/metrics",
+      "methods": [
+        "GET"
+      ],
+      "description": "Get productivity metrics for a team"
+    }
+  ],
+  "components": [
+    {
+      "name": "Navbar",
+      "description": "Top navigation bar with links and user menu",
+      "file": "components/Navbar.tsx",
+      "usedOn": [
+        "/",
+        "/projects",
+        "/projects/[projectId]",
+        "/teams",
+        "/analytics",
+        "/notifications",
+        "/profile"
+      ]
+    },
+    {
+      "name": "Sidebar",
+      "description": "Sidebar navigation for projects and teams",
+      "file": "components/Sidebar.tsx",
+      "usedOn": [
+        "/",
+        "/projects",
+        "/projects/[projectId]",
+        "/teams",
+        "/analytics"
+      ]
+    },
+    {
+      "name": "KanbanBoard",
+      "description": "Kanban board with drag-and-drop columns and tasks",
+      "file": "components/KanbanBoard.tsx",
+      "usedOn": [
+        "/projects/[projectId]"
+      ]
+    },
+    {
+      "name": "TaskCard",
+      "description": "Card UI for displaying a task in a board column",
+      "file": "components/TaskCard.tsx",
+      "usedOn": [
+        "/projects/[projectId]"
+      ]
+    },
+    {
+      "name": "TaskModal",
+      "description": "Modal dialog for viewing and editing task details",
+      "file": "components/TaskModal.tsx",
+      "usedOn": [
+        "/projects/[projectId]"
+      ]
+    },
+    {
+      "name": "CommentList",
+      "description": "List of comments for a task",
+      "file": "components/CommentList.tsx",
+      "usedOn": [
+        "/projects/[projectId]"
+      ]
+    },
+    {
+      "name": "AnalyticsDashboard",
+      "description": "Displays productivity metrics and charts",
+      "file": "components/AnalyticsDashboard.tsx",
+      "usedOn": [
+        "/analytics",
+        "/"
+      ]
+    },
+    {
+      "name": "NotificationBell",
+      "description": "Notification icon with unread badge",
+      "file": "components/NotificationBell.tsx",
+      "usedOn": [
+        "/",
+        "/projects",
+        "/projects/[projectId]",
+        "/teams",
+        "/analytics",
+        "/profile"
+      ]
+    },
+    {
+      "name": "UserAvatar",
+      "description": "User avatar with dropdown menu",
+      "file": "components/UserAvatar.tsx",
+      "usedOn": [
+        "/",
+        "/projects",
+        "/projects/[projectId]",
+        "/teams",
+        "/analytics",
+        "/profile"
+      ]
+    },
+    {
+      "name": "TeamSelector",
+      "description": "Dropdown to switch between teams",
+      "file": "components/TeamSelector.tsx",
+      "usedOn": [
+        "/",
+        "/projects",
+        "/teams",
+        "/analytics"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React Context + useReducer for global state (user, teams, notifications); local component state for UI interactions.",
+    "notes": "Context providers wrap the app in app/layout.tsx. API data is fetched via React Server Components and client-side hooks. Notifications use polling or WebSocket for real-time updates."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store (singleton per entity) for MVP; can be swapped for persistent DB.",
+    "notes": "API handlers in app/api/* interact with in-memory stores. Entities are kept in TypeScript modules. For production, replace with a database and update handlers accordingly."
+  }
+}
