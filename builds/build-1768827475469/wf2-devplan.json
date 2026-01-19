@@ -1,0 +1,49 @@
+{
+  "featurePrompt": "Build features for \"AI App\". Generate a complete feature set and an implementation plan based on the blueprint.",
+  "generatedFiles": 7,
+  "files": [
+    {
+      "path": "app/dashboard/tasks/history/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Pagina die de geschiedenis van voltooide AI-taken toont."
+    },
+    {
+      "path": "components/tasks/task-history-list.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component die een lijst van voltooide AI-taken toont."
+    },
+    {
+      "path": "components/tasks/task-history-item.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component voor het tonen van een enkele voltooide AI-taak."
+    },
+    {
+      "path": "app/api/tasks/history/route.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "API-route die voltooide AI-taken van de gebruiker retourneert."
+    },
+    {
+      "path": "lib/tasks/types.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "Type-definitie voor een AI-taak."
+    },
+    {
+      "path": "lib/tasks/store.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "In-memory store en helpers voor AI-taken."
+    },
+    {
+      "path": "lib/auth/session.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "Helper om de ingelogde gebruiker uit het request te halen (MVP stub)."
+    }
+  ],
+  "generatedAt": "2026-01-19T13:00:54.063Z"
+}
