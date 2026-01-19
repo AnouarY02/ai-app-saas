@@ -17,7 +17,7 @@ export const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
       <div
         ref={ref}
         role="status"
-        className={cn("fixed bottom-4 right-4 bg-white p-4 rounded-md shadow-lg", className)}
+        className={cn("fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded-md shadow-lg", className)}
         {...props}
       >
         {children}

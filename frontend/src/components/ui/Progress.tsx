@@ -3,27 +3,29 @@ import { cn } from "@/lib/utils";
 
 export interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   value: number;
-  min?: number;
-  max?: number;
+  max: number;
 }
 
 export const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
-  ({ className, value, min = 0, max = 100, ...props }, ref) => {
-    const percentage = ((value - min) / (max - min)) * 100;
+  ({ className, value, max, ...props }, ref) => {
+    const percentage = (value / max) * 100;
+
     return (
       <div
         ref={ref}
         role="progressbar"
         aria-valuenow={value}
-        aria-valuemin={min}
+        aria-valuemin={0}
         aria-valuemax={max}
         className={cn("w-full bg-gray-200 rounded-full", className)}
         {...props}
       >
         <div
-          className="bg-blue-600 h-4 rounded-full"
+          className="bg-blue-600 text-center text-white rounded-full"
           style={{ width: `${percentage}%` }}
-        />
+        >
+          {Math.round(percentage)}%
+        </div>
       </div>
     );
   }

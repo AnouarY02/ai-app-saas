@@ -33,6 +33,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         ref={ref}
         className={cn(inputVariants({ size, error }), className)}
+        aria-invalid={error}
         {...props}
       />
     );

@@ -30,12 +30,11 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
+  icon?: React.ReactNode;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, isLoading, leftIcon, rightIcon, children, ...props }, ref) => {
+  ({ className, variant, size, isLoading, icon, children, ...props }, ref) => {
     return (
       <button
         ref={ref}
@@ -44,9 +43,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {isLoading && <Spinner className="mr-2" />}
-        {leftIcon && !isLoading && <span className="mr-2">{leftIcon}</span>}
+        {icon && !isLoading && <span className="mr-2">{icon}</span>}
         {children}
-        {rightIcon && !isLoading && <span className="ml-2">{rightIcon}</span>}
       </button>
     );
   }

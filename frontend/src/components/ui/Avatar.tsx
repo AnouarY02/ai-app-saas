@@ -17,7 +17,7 @@ export const Avatar = React.forwardRef<HTMLImageElement, AvatarProps>(
           {...props}
         />
       ) : (
-        <span className="flex items-center justify-center h-full text-lg font-medium text-gray-700">
+        <span className="flex items-center justify-center h-full text-lg font-bold text-gray-700">
           {initials}
         </span>
       )}

@@ -1,14 +1,14 @@
 import React from 'react';
 
-interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+interface LabelProps {
+  htmlFor: string;
   required?: boolean;
+  children: React.ReactNode;
 }
 
-export const Label: React.FC<LabelProps> = ({ children, required, ...props }) => {
-  return (
-    <label className="block text-primary-700" {...props}>
-      {children}
-      {required && <span className="text-red-500">*</span>}
-    </label>
-  );
-};
+export const Label: React.FC<LabelProps> = ({ htmlFor, required, children }) => (
+  <label htmlFor={htmlFor} className="block text-primary-700">
+    {children}
+    {required && <span className="text-red-500"> *</span>}
+  </label>
+);
