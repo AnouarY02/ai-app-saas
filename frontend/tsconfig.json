@@ -12,7 +12,11 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src"]
 }
