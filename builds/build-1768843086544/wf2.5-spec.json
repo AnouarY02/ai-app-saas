@@ -1,0 +1,372 @@
+{
+  "meta": {
+    "buildId": "build-1768843086544",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-1768843086544",
+    "appName": "AI App",
+    "baseBranch": "main"
+  },
+  "functionalitySpec": {
+    "stack": {
+      "framework": "Next.js 14 App Router",
+      "language": "TypeScript",
+      "styling": [
+        "Tailwind CSS",
+        "shadcn/ui"
+      ],
+      "api": [
+        "Next.js Route Handlers"
+      ],
+      "stateManagement": "React Context API",
+      "dataLayer": "In-memory store (singleton pattern)"
+    },
+    "tenancy": {
+      "strategy": "single-tenant",
+      "isolationLevel": "user-level"
+    },
+    "roles": [
+      {
+        "name": "user",
+        "permissions": [
+          "read:own-requests",
+          "create:own-requests",
+          "delete:own-requests",
+          "update:own-profile"
+        ]
+      }
+    ],
+    "entities": [
+      {
+        "name": "User",
+        "description": "Geregistreerde gebruiker van de app",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unieke gebruikers-ID"
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "required": true,
+            "description": "E-mailadres van de gebruiker"
+          },
+          {
+            "name": "passwordHash",
+            "type": "string",
+            "required": true,
+            "description": "Gehasht wachtwoord"
+          },
+          {
+            "name": "createdAt",
+            "type": "Date",
+            "required": true,
+            "description": "Aanmaakdatum"
+          }
+        ],
+        "relations": [
+          {
+            "type": "oneToMany",
+            "target": "AIRequest",
+            "foreignKey": "userId"
+          }
+        ]
+      },
+      {
+        "name": "AIRequest",
+        "description": "Een prompt die door de gebruiker is ingediend voor AI-verwerking",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unieke aanvraag-ID"
+          },
+          {
+            "name": "userId",
+            "type": "string",
+            "required": true,
+            "description": "ID van de gebruiker die de aanvraag deed"
+          },
+          {
+            "name": "prompt",
+            "type": "string",
+            "required": true,
+            "description": "De door de gebruiker ingevoerde prompt"
+          },
+          {
+            "name": "result",
+            "type": "string",
+            "required": false,
+            "description": "AI-gegenereerde tekst als resultaat"
+          },
+          {
+            "name": "createdAt",
+            "type": "Date",
+            "required": true,
+            "description": "Aanmaakdatum van de aanvraag"
+          }
+        ],
+        "relations": [
+          {
+            "type": "manyToOne",
+            "target": "User",
+            "foreignKey": "userId"
+          }
+        ]
+      }
+    ],
+    "permissions": [
+      {
+        "resource": "AIRequest",
+        "actions": [
+          "create",
+          "read",
+          "delete"
+        ],
+        "roles": [
+          "user"
+        ],
+        "conditions": "userId === currentUser.id"
+      },
+      {
+        "resource": "User",
+        "actions": [
+          "read",
+          "update"
+        ],
+        "roles": [
+          "user"
+        ],
+        "conditions": "id === currentUser.id"
+      }
+    ],
+    "api": [
+      {
+        "path": "/api/auth/login",
+        "methods": [
+          "POST"
+        ],
+        "auth": false,
+        "description": "Inloggen van gebruiker, retourneert sessie/token",
+        "requestBody": {
+          "email": "string",
+          "password": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "user": "User",
+          "token": "string"
+        }
+      },
+      {
+        "path": "/api/auth/register",
+        "methods": [
+          "POST"
+        ],
+        "auth": false,
+        "description": "Registreren van nieuwe gebruiker",
+        "requestBody": {
+          "email": "string",
+          "password": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "user": "User"
+        }
+      },
+      {
+        "path": "/api/auth/logout",
+        "methods": [
+          "POST"
+        ],
+        "auth": true,
+        "description": "Uitloggen van gebruiker",
+        "response": {
+          "success": "boolean"
+        }
+      },
+      {
+        "path": "/api/ai-requests",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "auth": true,
+        "description": "Ophalen van alle AI-aanvragen van de ingelogde gebruiker (GET), of nieuwe aanvraag indienen (POST)",
+        "requestBody": {
+          "prompt": "string"
+        },
+        "response": {
+          "requests": "AIRequest[]",
+          "request": "AIRequest"
+        }
+      },
+      {
+        "path": "/api/ai-requests/[id]",
+        "methods": [
+          "GET",
+          "DELETE"
+        ],
+        "auth": true,
+        "description": "Ophalen van een specifieke AI-aanvraag (GET) of verwijderen (DELETE)",
+        "response": {
+          "request": "AIRequest",
+          "success": "boolean"
+        }
+      }
+    ],
+    "pages": [
+      {
+        "path": "/",
+        "title": "Home",
+        "auth": false,
+        "description": "Homepagina met uitleg en call-to-action",
+        "file": "app/page.tsx",
+        "layout": "app/layout.tsx",
+        "components": [
+          "Navbar",
+          "Notification"
+        ]
+      },
+      {
+        "path": "/dashboard",
+        "title": "Dashboard",
+        "auth": true,
+        "description": "Dashboard met overzicht van AI-aanvragen en mogelijkheid om nieuwe prompt in te dienen",
+        "file": "app/dashboard/page.tsx",
+        "layout": "app/dashboard/layout.tsx",
+        "components": [
+          "Navbar",
+          "AIRequestForm",
+          "AIRequestList",
+          "AIRequestItem",
+          "Notification"
+        ]
+      },
+      {
+        "path": "/login",
+        "title": "Login",
+        "auth": false,
+        "description": "Inlogpagina voor bestaande gebruikers",
+        "file": "app/login/page.tsx",
+        "layout": "app/layout.tsx",
+        "components": [
+          "AuthForm",
+          "Notification"
+        ]
+      },
+      {
+        "path": "/register",
+        "title": "Register",
+        "auth": false,
+        "description": "Registratiepagina voor nieuwe gebruikers",
+        "file": "app/register/page.tsx",
+        "layout": "app/layout.tsx",
+        "components": [
+          "AuthForm",
+          "Notification"
+        ]
+      },
+      {
+        "path": "/dashboard/history",
+        "title": "AI Request History",
+        "auth": true,
+        "description": "Uitgebreide AI-aanvraaggeschiedenis met filter- en sorteeropties",
+        "file": "app/dashboard/history/page.tsx",
+        "layout": "app/dashboard/layout.tsx",
+        "components": [
+          "ai-request-history",
+          "Input",
+          "Select"
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "name": "User Registration",
+        "steps": [
+          "User navigates to /register",
+          "User fills in email and password in AuthForm",
+          "Form submits POST to /api/auth/register",
+          "API validates input and creates User entity",
+          "API returns success and user data",
+          "User is redirected to /dashboard"
+        ]
+      },
+      {
+        "name": "User Login",
+        "steps": [
+          "User navigates to /login",
+          "User fills in email and password in AuthForm",
+          "Form submits POST to /api/auth/login",
+          "API validates credentials",
+          "API returns session token",
+          "User is redirected to /dashboard"
+        ]
+      },
+      {
+        "name": "Submit AI Request",
+        "steps": [
+          "User navigates to /dashboard",
+          "User enters prompt in AIRequestForm",
+          "Form submits POST to /api/ai-requests",
+          "API creates AIRequest entity with userId",
+          "API processes prompt and generates result",
+          "API returns AIRequest with result",
+          "Dashboard updates AIRequestList with new request"
+        ]
+      },
+      {
+        "name": "View AI Request History",
+        "steps": [
+          "User navigates to /dashboard/history",
+          "Page loads ai-request-history component",
+          "Component fetches GET /api/ai-requests",
+          "API returns all AIRequest entities for user",
+          "User can filter and sort requests",
+          "User can view individual request details"
+        ]
+      },
+      {
+        "name": "Delete AI Request",
+        "steps": [
+          "User clicks delete on AIRequestItem",
+          "Component sends DELETE to /api/ai-requests/[id]",
+          "API validates user owns the request",
+          "API deletes AIRequest entity",
+          "API returns success",
+          "Dashboard removes item from AIRequestList"
+        ]
+      }
+    ],
+    "definitionOfDone": [
+      "All pages render correctly with proper layouts",
+      "Authentication flow works (register, login, logout)",
+      "Users can submit AI prompts and receive results",
+      "Users can view their AI request history",
+      "Users can delete their own AI requests",
+      "All API routes validate authentication and authorization",
+      "UI components use shadcn/ui and Tailwind CSS consistently",
+      "Error handling and notifications work on all pages",
+      "TypeScript types are properly defined for all entities",
+      "In-memory store correctly isolates data per user",
+      "All routes follow Next.js 14 App Router conventions",
+      "Responsive design works on mobile and desktop"
+    ],
+    "errorContract": {
+      "code": "ERR_STANDARD",
+      "http": 200,
+      "structure": {
+        "success": "boolean",
+        "error": {
+          "code": "string",
+          "message": "string",
+          "details": "object"
+        }
+      }
+    }
+  }
+}
