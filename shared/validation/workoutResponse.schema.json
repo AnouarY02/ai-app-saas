@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WorkoutResponse",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "user_id": { "type": "string", "format": "uuid" },
+    "date": { "type": "string", "format": "date" },
+    "type": { "type": "string" },
+    "duration_minutes": { "type": "integer", "minimum": 1 },
+    "calories_burned": { "type": "integer", "minimum": 0 },
+    "notes": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "required": ["id", "user_id", "date", "type", "duration_minutes", "calories_burned", "created_at", "updated_at"]
+}

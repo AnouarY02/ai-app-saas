@@ -1,45 +1,40 @@
 import React from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import NotificationBell from './NotificationBell'
-import UserAvatar from './UserAvatar'
-import TeamSelector from './TeamSelector'
+import { useNavigate } from 'react-router-dom'
+import { FaUserCircle, FaSignOutAlt } from 'react-icons/fa'
 
-const navLinks = [
-  { label: 'Dashboard', path: '/', icon: '🏠' },
-  { label: 'Projects', path: '/projects', icon: '📁' },
-  { label: 'Teams', path: '/teams', icon: '👥' },
-  { label: 'Analytics', path: '/analytics', icon: '📊' },
-]
-
-const Navbar: React.FC = () => {
-  const { user } = useAuth()
-  const location = useLocation()
+export default function Navbar() {
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
 
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login')
+  }
+
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-white shadow">
+    <nav className="flex items-center justify-between px-6 py-3 bg-white border-b shadow-sm">
+      <div className="text-xl font-bold text-blue-600">FitTrack Pro</div>
       <div className="flex items-center gap-4">
-        <span className="font-bold text-lg text-blue-700 cursor-pointer" onClick={() => navigate('/')}>Padel Club Manager</span>
-        <nav className="hidden md:flex gap-2">
-          {navLinks.map(link => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`px-3 py-2 rounded hover:bg-blue-50 ${location.pathname === link.path ? 'bg-blue-100 font-semibold' : ''}`}
-            >
-              <span className="mr-1">{link.icon}</span>{link.label}
-            </Link>
-          ))}
-        </nav>
+        {user && (
+          <button
+            className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
+            onClick={() => navigate('/settings')}
+            title="Profile"
+          >
+            <FaUserCircle size={22} />
+            <span className="hidden sm:inline">{user.full_name}</span>
+          </button>
+        )}
+        <button
+          className="flex items-center gap-2 text-gray-700 hover:text-red-600"
+          onClick={handleLogout}
+          title="Logout"
+        >
+          <FaSignOutAlt size={20} />
+          <span className="hidden sm:inline">Logout</span>
+        </button>
       </div>
-      <div className="flex items-center gap-4">
-        <TeamSelector />
-        <NotificationBell />
-        <UserAvatar user={user} />
-      </div>
-    </header>
+    </nav>
   )
 }
-
-export default Navbar

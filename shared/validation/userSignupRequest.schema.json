@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UserSignupRequest",
+  "type": "object",
+  "properties": {
+    "email": { "type": "string", "format": "email" },
+    "password": { "type": "string", "minLength": 6 },
+    "full_name": { "type": "string", "minLength": 1 }
+  },
+  "required": ["email", "password", "full_name"]
+}

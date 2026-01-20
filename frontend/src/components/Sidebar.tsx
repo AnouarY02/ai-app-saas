@@ -1,34 +1,32 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { FaTachometerAlt, FaFolderOpen, FaUsers, FaChartBar, FaBell, FaUser } from 'react-icons/fa'
+import { NavLink } from 'react-router-dom'
+import { FaHome, FaChartBar, FaCog } from 'react-icons/fa'
 
-const links = [
-  { label: 'Dashboard', path: '/', icon: <FaTachometerAlt /> },
-  { label: 'Projects', path: '/projects', icon: <FaFolderOpen /> },
-  { label: 'Teams', path: '/teams', icon: <FaUsers /> },
-  { label: 'Analytics', path: '/analytics', icon: <FaChartBar /> },
-  { label: 'Notifications', path: '/notifications', icon: <FaBell /> },
-  { label: 'Profile', path: '/profile', icon: <FaUser /> },
+const navItems = [
+  { label: 'Home', path: '/', icon: <FaHome /> },
+  { label: 'Dashboard', path: '/dashboard', icon: <FaChartBar /> },
+  { label: 'Settings', path: '/settings', icon: <FaCog /> },
 ]
 
-const Sidebar: React.FC = () => {
-  const location = useLocation()
+export default function Sidebar() {
   return (
-    <aside className="hidden md:flex flex-col w-56 bg-white border-r min-h-screen">
-      <nav className="flex flex-col gap-1 mt-8">
-        {links.map(link => (
-          <Link
-            key={link.path}
-            to={link.path}
-            className={`flex items-center gap-3 px-6 py-3 hover:bg-blue-50 rounded-r-full transition ${location.pathname.startsWith(link.path) ? 'bg-blue-100 font-semibold' : ''}`}
+    <aside className="hidden md:flex flex-col w-56 bg-white border-r min-h-screen shadow-sm">
+      <div className="h-16 flex items-center justify-center text-2xl font-bold text-blue-600 border-b">FitTrack</div>
+      <nav className="flex-1 flex flex-col gap-2 p-4">
+        {navItems.map(item => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2 rounded transition-colors ${isActive ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-gray-100'}`
+            }
+            end={item.path === '/'}
           >
-            <span className="text-blue-600">{link.icon}</span>
-            {link.label}
-          </Link>
+            {item.icon}
+            {item.label}
+          </NavLink>
         ))}
       </nav>
     </aside>
   )
 }
-
-export default Sidebar

@@ -1,37 +1,55 @@
-import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { getUserByEmail } from '../services/userService';
-import { v4 as uuidv4 } from 'uuid';
+import { Request, Response, NextFunction } from 'express';
+import { findUserByEmail, createUser } from '../services/userService';
+import { comparePasswords, hashPassword, signJwt } from '../services/authService';
+import { logWithTimestamp } from '../utils/logger';
 
-const SESSION_SECRET = process.env.SESSION_SECRET || 'dev_secret';
-
-export async function login(req: Request, res: Response) {
+export async function loginUser(req: Request, res: Response, next: NextFunction) {
   try {
-    const { email, name } = req.body;
-    if (!email || !name) {
-      return res.status(400).json({ error: 'Email and name are required' });
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required.' });
     }
-    let user = getUserByEmail(email);
+    const user = await findUserByEmail(email);
     if (!user) {
-      user = {
-        id: uuidv4(),
-        name,
-        email,
-        avatarUrl: '',
-        role: 'member',
-        teams: []
-      };
-      // Add user to store
-      require('../services/userService').addUser(user);
+      return res.status(401).json({ error: 'Invalid credentials.' });
     }
-    const token = jwt.sign({ userId: user.id, role: user.role }, SESSION_SECRET, { expiresIn: '7d' });
-    res.json({ token, user });
+    const valid = await comparePasswords(password, user.hashed_password);
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid credentials.' });
+    }
+    const token = signJwt({ userId: user.id, email: user.email });
+    logWithTimestamp(`User ${user.email} logged in.`);
+    res.json({ token });
   } catch (err) {
-    res.status(500).json({ error: 'Login failed' });
+    next(err);
   }
 }
 
-export async function logout(req: Request, res: Response) {
-  // For stateless JWT, logout is handled on client (token removal)
-  res.json({ success: true });
+export async function registerUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, password, full_name } = req.body;
+    if (!email || !password || !full_name) {
+      return res.status(400).json({ error: 'Email, password, and full name required.' });
+    }
+    const existing = await findUserByEmail(email);
+    if (existing) {
+      return res.status(409).json({ error: 'Email already registered.' });
+    }
+    const hashed_password = await hashPassword(password);
+    const user = await createUser({ email, hashed_password, full_name });
+    const token = signJwt({ userId: user.id, email: user.email });
+    logWithTimestamp(`User ${user.email} registered.`);
+    res.status(201).json({ token });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function logoutUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    // Stateless JWT: client deletes token
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
 }

@@ -1,20 +1,52 @@
-import { Request, Response } from 'express';
-import { AuthRequest } from '../middleware/auth';
-import { updateUser } from '../services/userService';
+import { Request, Response, NextFunction } from 'express';
+import { getUserById, updateUserProfile } from '../services/userService';
+import { logWithTimestamp } from '../utils/logger';
 
-export async function getMe(req: AuthRequest, res: Response) {
+export async function getCurrentUser(req: Request, res: Response, next: NextFunction) {
   try {
-    res.json(req.user);
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const user = await getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({
+      id: user.id,
+      email: user.email,
+      full_name: user.full_name,
+      created_at: user.created_at,
+      updated_at: user.updated_at
+    });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch user' });
+    next(err);
   }
 }
 
-export async function updateMe(req: AuthRequest, res: Response) {
+export async function updateCurrentUser(req: Request, res: Response, next: NextFunction) {
   try {
-    const updated = updateUser(req.user.id, req.body);
-    res.json(updated);
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const { full_name } = req.body;
+    if (!full_name) {
+      return res.status(400).json({ error: 'Full name required.' });
+    }
+    const updated = await updateUserProfile(userId, { full_name });
+    if (!updated) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    logWithTimestamp(`User ${userId} updated profile.`);
+    res.json({
+      id: updated.id,
+      email: updated.email,
+      full_name: updated.full_name,
+      created_at: updated.created_at,
+      updated_at: updated.updated_at
+    });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update user' });
+    next(err);
   }
 }

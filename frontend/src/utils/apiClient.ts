@@ -1,237 +1,155 @@
-// API Client for Padel Club Manager
-const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000'
-
 export interface User {
   id: string
-  name: string
   email: string
-  avatarUrl: string
-  role: 'admin' | 'member'
+  full_name: string
+  created_at: string
+  updated_at: string
 }
 
-export interface Team {
-  id: string
-  name: string
-  members: User[]
+export interface UserLoginRequest {
+  email: string
+  password: string
 }
 
-export interface Project {
-  id: string
-  name: string
-  description: string
-  teamId: string
-  createdAt: string
+export interface UserSignupRequest {
+  email: string
+  password: string
+  full_name: string
 }
 
-export interface Board {
-  id: string
-  projectId: string
-  name: string
-  columns: Column[]
+export interface UserProfileUpdateRequest {
+  full_name?: string
+  password?: string
 }
 
-export interface Column {
-  id: string
-  name: string
-  taskIds: string[]
+export interface AuthTokenResponse {
+  token: string
 }
 
-export interface Task {
+export interface Workout {
   id: string
-  title: string
-  description: string
-  assigneeId: string
-  status: string
-  dueDate: string
-  createdAt: string
-}
-
-export interface Comment {
-  id: string
-  taskId: string
-  authorId: string
-  content: string
-  createdAt: string
-}
-
-export interface Notification {
-  id: string
-  userId: string
+  user_id: string
+  date: string
   type: string
-  message: string
-  read: boolean
-  createdAt: string
+  duration_minutes: number
+  calories_burned: number
+  notes: string
+  created_at: string
+  updated_at: string
 }
 
-export interface Metric {
-  id: string
-  teamId: string
+export interface WorkoutCreateRequest {
+  date: string
   type: string
-  value: number
-  period: string
+  duration_minutes: number
+  calories_burned: number
+  notes: string
 }
 
-export interface Activity {
-  id: string
-  projectId: string
-  actorId: string
-  type: string
-  payload: any
-  createdAt: string
+export interface WorkoutUpdateRequest {
+  date?: string
+  type?: string
+  duration_minutes?: number
+  calories_burned?: number
+  notes?: string
 }
 
-// Auth
-export async function login(email: string, password: string) {
-  const res = await fetch(`${apiUrl}/api/auth/login`, {
+export interface WorkoutListResponse {
+  workouts: Workout[]
+}
+
+export interface SuccessResponse {
+  success: boolean
+  message?: string
+}
+
+const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000'
+
+function getAuthHeaders() {
+  const token = localStorage.getItem('token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+export async function loginUser(data: UserLoginRequest): Promise<AuthTokenResponse> {
+  const res = await fetch(`${apiUrl}/api/v1/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify(data)
   })
   if (!res.ok) throw new Error('Invalid credentials')
   return res.json()
 }
 
-export async function logout() {
-  await fetch(`${apiUrl}/api/auth/logout`, {
+export async function signupUser(data: UserSignupRequest): Promise<AuthTokenResponse> {
+  const res = await fetch(`${apiUrl}/api/v1/auth/signup`, {
     method: 'POST',
-    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
   })
+  if (!res.ok) throw new Error('Signup failed')
+  return res.json()
+}
+
+export async function logoutUser(): Promise<SuccessResponse> {
+  const res = await fetch(`${apiUrl}/api/v1/auth/logout`, {
+    method: 'POST',
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+  })
+  if (!res.ok) throw new Error('Logout failed')
+  return res.json()
 }
 
 export async function getCurrentUser(): Promise<User> {
-  const res = await fetch(`${apiUrl}/api/users/me`, {
-    credentials: 'include',
+  const res = await fetch(`${apiUrl}/api/v1/users/me`, {
+    headers: getAuthHeaders()
   })
   if (!res.ok) throw new Error('Not authenticated')
   return res.json()
 }
 
-export async function updateCurrentUser(data: Partial<User>): Promise<User> {
-  const res = await fetch(`${apiUrl}/api/users/me`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+export async function updateCurrentUser(data: UserProfileUpdateRequest): Promise<User> {
+  const res = await fetch(`${apiUrl}/api/v1/users/me`, {
+    method: 'PUT',
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
-  if (!res.ok) throw new Error('Failed to update user')
+  if (!res.ok) throw new Error('Profile update failed')
   return res.json()
 }
 
-// Teams
-export async function getTeams(): Promise<Team[]> {
-  const res = await fetch(`${apiUrl}/api/teams`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch teams')
+export async function listWorkouts(): Promise<WorkoutListResponse> {
+  const res = await fetch(`${apiUrl}/api/v1/workouts`, {
+    headers: getAuthHeaders()
+  })
+  if (!res.ok) throw new Error('Failed to fetch workouts')
   return res.json()
 }
 
-// Projects
-export async function getProjects(): Promise<Project[]> {
-  const res = await fetch(`${apiUrl}/api/projects`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch projects')
-  return res.json()
-}
-
-export async function getProject(projectId: string): Promise<Project> {
-  const res = await fetch(`${apiUrl}/api/projects/${projectId}`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch project')
-  return res.json()
-}
-
-export async function createProject(data: { name: string; description: string; teamId: string }): Promise<Project> {
-  const res = await fetch(`${apiUrl}/api/projects`, {
+export async function createWorkout(data: WorkoutCreateRequest): Promise<Workout> {
+  const res = await fetch(`${apiUrl}/api/v1/workouts`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
-  if (!res.ok) throw new Error('Failed to create project')
+  if (!res.ok) throw new Error('Failed to create workout')
   return res.json()
 }
 
-export async function updateProject(projectId: string, data: Partial<Project>): Promise<Project> {
-  const res = await fetch(`${apiUrl}/api/projects/${projectId}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+export async function updateWorkout(id: string, data: WorkoutUpdateRequest): Promise<Workout> {
+  const res = await fetch(`${apiUrl}/api/v1/workouts/${id}`, {
+    method: 'PUT',
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
-  if (!res.ok) throw new Error('Failed to update project')
+  if (!res.ok) throw new Error('Failed to update workout')
   return res.json()
 }
 
-// Boards
-export async function getBoards(projectId: string): Promise<Board[]> {
-  const res = await fetch(`${apiUrl}/api/projects/${projectId}/boards`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch boards')
-  return res.json()
-}
-
-export async function getBoard(boardId: string): Promise<Board> {
-  const res = await fetch(`${apiUrl}/api/boards/${boardId}`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch board')
-  return res.json()
-}
-
-// Tasks
-export async function getTasks(params?: { projectId?: string }): Promise<Task[]> {
-  let url = `${apiUrl}/api/tasks`
-  if (params?.projectId) url += `?projectId=${params.projectId}`
-  const res = await fetch(url, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch tasks')
-  return res.json()
-}
-
-export async function getTask(taskId: string): Promise<Task> {
-  const res = await fetch(`${apiUrl}/api/tasks/${taskId}`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch task')
-  return res.json()
-}
-
-// Comments
-export async function getComments(taskId: string): Promise<Comment[]> {
-  const res = await fetch(`${apiUrl}/api/tasks/${taskId}/comments`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch comments')
-  return res.json()
-}
-
-export async function createComment(taskId: string, content: string): Promise<Comment> {
-  const res = await fetch(`${apiUrl}/api/tasks/${taskId}/comments`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ content })
+export async function deleteWorkout(id: string): Promise<SuccessResponse> {
+  const res = await fetch(`${apiUrl}/api/v1/workouts/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
   })
-  if (!res.ok) throw new Error('Failed to add comment')
-  return res.json()
-}
-
-// Activity
-export async function getProjectActivity(projectId: string): Promise<Activity[]> {
-  const res = await fetch(`${apiUrl}/api/projects/${projectId}/activity`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch activity')
-  return res.json()
-}
-
-// Notifications
-export async function getNotifications(): Promise<Notification[]> {
-  const res = await fetch(`${apiUrl}/api/notifications`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch notifications')
-  return res.json()
-}
-
-export async function markNotificationAsRead(notificationId: string): Promise<Notification> {
-  const res = await fetch(`${apiUrl}/api/notifications/${notificationId}/read`, {
-    method: 'POST',
-    credentials: 'include',
-  })
-  if (!res.ok) throw new Error('Failed to mark as read')
-  return res.json()
-}
-
-// Metrics
-export async function getMetrics(): Promise<Metric[]> {
-  const res = await fetch(`${apiUrl}/api/metrics`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch metrics')
+  if (!res.ok) throw new Error('Failed to delete workout')
   return res.json()
 }

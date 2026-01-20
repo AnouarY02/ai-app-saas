@@ -1,32 +1,33 @@
 import { v4 as uuidv4 } from 'uuid';
+import { User, UserProfileUpdate } from '../types/user';
+import { users } from '../store/inMemoryDb';
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl: string;
-  role: string;
-  teams?: string[];
-}
-
-const users: User[] = [];
-
-export function getUserById(id: string): User | undefined {
-  return users.find(u => u.id === id);
-}
-
-export function getUserByEmail(email: string): User | undefined {
+export async function findUserByEmail(email: string): Promise<User | undefined> {
   return users.find(u => u.email === email);
 }
 
-export function addUser(user: User): User {
+export async function createUser({ email, hashed_password, full_name }: { email: string, hashed_password: string, full_name: string }): Promise<User> {
+  const now = new Date().toISOString();
+  const user: User = {
+    id: uuidv4(),
+    email,
+    hashed_password,
+    full_name,
+    created_at: now,
+    updated_at: now
+  };
   users.push(user);
   return user;
 }
 
-export function updateUser(id: string, data: Partial<User>): User | undefined {
-  const user = getUserById(id);
+export async function getUserById(userId: string): Promise<User | undefined> {
+  return users.find(u => u.id === userId);
+}
+
+export async function updateUserProfile(userId: string, update: UserProfileUpdate): Promise<User | undefined> {
+  const user = users.find(u => u.id === userId);
   if (!user) return undefined;
-  Object.assign(user, data);
+  if (update.full_name) user.full_name = update.full_name;
+  user.updated_at = new Date().toISOString();
   return user;
 }
