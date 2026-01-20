@@ -2,23 +2,23 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface AvatarProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  initials: string;
+  fallback: string;
 }
 
 export const Avatar = React.forwardRef<HTMLImageElement, AvatarProps>(
-  ({ className, src, initials, alt, ...props }, ref) => (
-    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+  ({ className, src, fallback, alt, ...props }, ref) => (
+    <div className="relative inline-block">
       {src ? (
         <img
           ref={ref}
           src={src}
           alt={alt}
-          className={cn("w-full h-full object-cover", className)}
+          className={cn("rounded-full", className)}
           {...props}
         />
       ) : (
-        <span className="flex items-center justify-center h-full text-lg font-bold text-gray-700">
-          {initials}
+        <span className="inline-block bg-gray-300 text-gray-700 rounded-full p-2">
+          {fallback}
         </span>
       )}
     </div>

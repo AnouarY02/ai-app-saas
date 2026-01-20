@@ -1,8 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
 
-const tooltipVariants = cva("absolute p-2 bg-black text-white rounded-md", {
+const tooltipVariants = cva("absolute bg-black text-white text-sm p-2 rounded", {
   variants: {
     position: {
       top: "bottom-full mb-2",

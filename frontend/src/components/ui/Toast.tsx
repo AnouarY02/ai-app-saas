@@ -17,11 +17,13 @@ export const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
       <div
         ref={ref}
         role="status"
-        className={cn("fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded-md shadow-lg", className)}
+        className={cn("fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded shadow-lg", className)}
         {...props}
       >
         {children}
-        <button onClick={onClose} className="absolute top-2 right-2">Close</button>
+        <button onClick={onClose} className="ml-4 text-sm text-gray-400 hover:text-white">
+          Close
+        </button>
       </div>
     );
   }

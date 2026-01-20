@@ -9,7 +9,7 @@ export const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
       <div
         ref={ref}
         className={cn(
-          "animate-spin rounded-full border-t-2 border-primary-600 h-5 w-5",
+          "animate-spin rounded-full border-t-2 border-primary-600 border-opacity-50 w-6 h-6",
           className
         )}
         role="status"
