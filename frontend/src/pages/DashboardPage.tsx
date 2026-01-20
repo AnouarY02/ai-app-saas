@@ -1,48 +1,57 @@
 import React, { useEffect, useState } from 'react'
-import { getProjects, getMetrics, Project, Metric } from '../utils/apiClient'
-import AnalyticsDashboard from '../components/AnalyticsDashboard'
+import { listWorkouts, Workout } from '../utils/apiClient'
+import FitnessChart from '../components/FitnessChart'
+import WorkoutForm from '../components/WorkoutForm'
 
-const DashboardPage: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [metrics, setMetrics] = useState<Metric[]>([])
+export default function DashboardPage() {
+  const [workouts, setWorkouts] = useState<Workout[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const fetchWorkouts = () => {
     setLoading(true)
-    Promise.all([getProjects(), getMetrics()])
-      .then(([proj, met]) => {
-        setProjects(proj)
-        setMetrics(met)
-      })
-      .catch(() => setError('Failed to load dashboard'))
+    listWorkouts()
+      .then(res => setWorkouts(res.workouts))
+      .catch(e => setError(e.message || 'Failed to load workouts'))
       .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    fetchWorkouts()
   }, [])
 
-  if (loading) return <div className="flex justify-center items-center h-64">Loading...</div>
-  if (error) return <div className="text-red-600 text-center">{error}</div>
-
   return (
-    <div className="flex flex-col gap-8">
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Your Projects</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map(p => (
-            <div key={p.id} className="bg-white rounded shadow p-4 flex flex-col gap-2">
-              <div className="font-bold text-lg">{p.name}</div>
-              <div className="text-gray-600 text-sm">{p.description}</div>
-              <div className="text-xs text-gray-400">Created: {new Date(p.createdAt).toLocaleDateString()}</div>
-              <a href={`/projects/${p.id}`} className="text-blue-600 hover:underline text-sm mt-2">View Project</a>
-            </div>
-          ))}
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold mb-2">Dashboard</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-4">
+          <WorkoutForm onCreated={fetchWorkouts} />
+          <div className="bg-white rounded shadow p-4">
+            <div className="font-semibold mb-2">Workout History</div>
+            {loading ? (
+              <div>Loading...</div>
+            ) : error ? (
+              <div className="text-red-600">{error}</div>
+            ) : (
+              <ul className="divide-y">
+                {workouts.map(w => (
+                  <li key={w.id} className="py-2 flex flex-col md:flex-row md:items-center gap-2">
+                    <span className="font-semibold text-blue-700">{w.type}</span>
+                    <span className="text-gray-500">{w.date}</span>
+                    <span className="text-gray-700">{w.duration_minutes} min</span>
+                    <span className="text-gray-700">{w.calories_burned} kcal</span>
+                    <span className="text-gray-400 text-xs">{w.notes}</span>
+                  </li>
+                ))}
+                {workouts.length === 0 && <li className="p-3 text-gray-500">No workouts yet.</li>}
+              </ul>
+            )}
+          </div>
         </div>
-      </section>
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Productivity Metrics</h2>
-        <AnalyticsDashboard metrics={metrics} />
-      </section>
+        <div>
+          <FitnessChart workouts={workouts} />
+        </div>
+      </div>
     </div>
   )
 }
-
-export default DashboardPage

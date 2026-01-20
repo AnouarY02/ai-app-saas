@@ -1,139 +1,70 @@
-# Padel Club Manager
+# FitTrack Pro
 
-## Project Overview
-
-Padel Club Manager is a modern SaaS platform for managing padel clubs, projects, teams, and productivity metrics. It features a Kanban board, team management, analytics, notifications, and more.
-
-## Features
-
-- User authentication and profile management
-- Team and project management
-- Kanban board with drag-and-drop
-- Task and comment system
-- Activity feed and notifications
-- Productivity analytics dashboard
-- Responsive UI with Tailwind CSS and shadcn/ui
-
-## Tech Stack
-
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- React Context & useReducer
-- In-memory stores (MVP)
-- Jest & Supertest (testing)
-- ESLint & Prettier (linting/formatting)
+## Overview
+FitTrack Pro is a modern SaaS platform for fitness tracking, featuring a Next.js dashboard and a FastAPI backend. It supports typed full-stack code sharing and rapid development with Docker Compose and Terraform.
 
 ## Monorepo Structure
+- `frontend/` – Next.js 14 + TypeScript + Tailwind CSS dashboard
+- `backend/` – FastAPI (Python 3.11) API server
+- `shared/` – Shared types, validation schemas, and UI components
+- `infra/` – Infrastructure as code (Docker Compose, Terraform, DB init)
 
-- `frontend/` – Next.js frontend (App Router, UI, context)
-- `backend/` – Next.js API endpoints, in-memory stores
-- `shared/` – Shared types, constants, utilities
-- `infra/` – Tooling configs (ESLint, Tailwind, Jest, etc.)
+## Prerequisites
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Node.js](https://nodejs.org/) (for local dev outside Docker)
+- [Yarn](https://classic.yarnpkg.com/en/docs/install/) (monorepo scripts)
 
-## Getting Started
-
-1. **Clone the repo:**
-   ```sh
-   git clone https://github.com/AnouarY02/ai-app-saas.git
-   cd ai-app-saas
-   ```
-2. **Install dependencies:**
-   ```sh
-   npm install
-   ```
-3. **Copy environment variables:**
+## Environment Variables Setup
+1. Copy `.env.example` to `.env` and fill in required values:
    ```sh
    cp .env.example .env
    ```
-4. **Run the app locally:**
-   ```sh
-   npm run dev
-   ```
+2. Edit `.env` as needed for your environment (see comments in file).
 
-## Environment Variables
-
-See `.env.example` for required and optional environment variables:
-- `NEXTAUTH_SECRET` (required)
-- `NEXTAUTH_URL` (required)
-- `SESSION_SECRET` (required)
-- `NODE_ENV`, `PORT`, `LOG_LEVEL`, `API_BASE_URL` (optional)
-
-## Development Workflow
-
-- `npm run dev` – Start development server
-- `npm run build` – Build for production
-- `npm run start` – Start production server
-- `npm run lint` – Lint codebase
-- `npm run typecheck` – TypeScript type checking
-- `npm run test` – Run tests
-- `npm run format` – Format code with Prettier
-
-## Running Locally
-
-- **With Docker Compose:**
-  ```sh
-  cp .env.example .env
-  docker-compose up --build
-  ```
-- **Without Docker:**
-  ```sh
-  npm install
-  npm run dev
-  ```
-
-## Running Tests
-
-- Run all tests:
-  ```sh
-  npm run test
-  ```
-- Watch mode:
-  ```sh
-  npm run test:watch
-  ```
-
-## Building for Production
-
+## Local Development (Docker Compose)
+To start all services (frontend, backend, db) in Docker:
 ```sh
-npm run build
-npm run start
+yarn start
+# or
+docker-compose up
+```
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- Backend: [http://localhost:4000/docs](http://localhost:4000/docs)
+- Database: localhost:5432 (user: postgres, password: postgres)
+
+## Running Frontend and Backend Separately
+For hot reload and debugging:
+```sh
+yarn dev
+```
+This runs frontend and backend in parallel (frontend on port 3000, backend on port 4000).
+
+## Database Migrations
+Apply migrations to the database (container must be running):
+```sh
+yarn migrate
+```
+This runs `alembic upgrade head` inside the backend container.
+
+## Testing
+Run tests for both frontend and backend:
+```sh
+yarn test
 ```
 
-## Linting & Formatting
+## Shared Types and Validation
+- Shared TypeScript types: `shared/types/`
+- JSON Schemas: `shared/validation/`
+- Shared UI components: `shared/ui/`
 
-- Lint: `npm run lint`
-- Format: `npm run format`
-- Typecheck: `npm run typecheck`
+## Deployment Notes
+- Environment variables must be set in production.
+- Use `infra/terraform/` for cloud infrastructure provisioning.
+- Build and run containers with `docker-compose` for deployment.
 
-## Deployment
-
-- Deploy with Docker Compose or to Vercel/your preferred cloud provider.
-- Ensure all required environment variables are set in production.
-
-## API Reference
-
-- RESTful API under `/api/` endpoints (see backend/app/api/)
-- Auth, teams, projects, boards, tasks, comments, notifications, metrics
-
-## Shared Types & Contracts
-
-- Shared types and constants in `shared/`
-- Use these for consistent typing across frontend and backend
-
-## Extending & Customizing
-
-- Add persistent storage by introducing a database service
-- Extend API endpoints as needed
-- Customize UI via Tailwind and shadcn/ui
-
-## Troubleshooting & FAQ
-
-- **Ports in use?** Stop conflicting processes or change `PORT` in `.env` and `docker-compose.yml`.
-- **Env issues?** Ensure `.env` is present and filled out.
-- **Build errors?** Run `npm install` and check Node.js version (>=18).
-
-## License
-
-MIT License
+## Troubleshooting
+- Ensure Docker and Docker Compose are installed and running.
+- Check `.env` for missing or incorrect variables.
+- Use `docker-compose logs` to view service logs.
+- For database issues, verify `DATABASE_URL` and DB container health.

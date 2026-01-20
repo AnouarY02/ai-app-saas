@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UserAuthToken",
+  "type": "object",
+  "properties": {
+    "access_token": { "type": "string" },
+    "token_type": { "type": "string", "enum": ["bearer"] }
+  },
+  "required": ["access_token", "token_type"]
+}

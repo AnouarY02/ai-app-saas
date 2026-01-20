@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UserProfileUpdateRequest",
+  "type": "object",
+  "properties": {
+    "full_name": { "type": "string" },
+    "password": { "type": "string", "minLength": 6 }
+  },
+  "additionalProperties": false
+}

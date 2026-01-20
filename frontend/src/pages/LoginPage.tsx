@@ -1,58 +1,64 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useNavigate, Link } from 'react-router-dom'
 
-const LoginPage: React.FC = () => {
+export default function LoginPage() {
   const { login, error, loading } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [form, setForm] = useState({ email: '', password: '' })
   const [formError, setFormError] = useState<string | null>(null)
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setFormError(null)
     try {
-      await login(email, password)
+      await login(form)
       navigate('/')
-    } catch (err: any) {
-      setFormError(err.message || 'Login failed')
+    } catch (e: any) {
+      setFormError(e.message || 'Login failed')
     }
   }
 
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target
+    setForm(f => ({ ...f, [name]: value }))
+  }
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow w-full max-w-md flex flex-col gap-4">
-        <h1 className="text-2xl font-bold mb-2 text-center">Padel Club Manager</h1>
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Sign In</h1>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
-          className="border rounded px-3 py-2"
           type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
           placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
           required
+          className="border rounded px-3 py-2"
         />
         <input
-          className="border rounded px-3 py-2"
           type="password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
           placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
           required
+          className="border rounded px-3 py-2"
         />
+        {(formError || error) && <div className="text-red-600 text-sm">{formError || error}</div>}
         <button
-          className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 transition"
           type="submit"
+          className="bg-blue-600 text-white rounded px-4 py-2 mt-2 hover:bg-blue-700 disabled:opacity-60"
           disabled={loading}
         >
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? 'Signing in...' : 'Sign In'}
         </button>
-        {(formError || error) && (
-          <div className="text-red-600 text-sm text-center">{formError || error}</div>
-        )}
       </form>
+      <div className="mt-4 text-sm text-center">
+        Don't have an account?{' '}
+        <Link to="/signup" className="text-blue-600 hover:underline">Sign up</Link>
+      </div>
     </div>
   )
 }
-
-export default LoginPage

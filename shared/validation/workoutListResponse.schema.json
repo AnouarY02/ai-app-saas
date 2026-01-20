@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WorkoutListResponse",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": { "$ref": "./workout.schema.json" }
+    },
+    "total": { "type": "integer", "minimum": 0 }
+  },
+  "required": ["items", "total"]
+}

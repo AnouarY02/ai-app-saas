@@ -1,66 +1,87 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { getCurrentUser, login as apiLogin, logout as apiLogout, User } from '../utils/apiClient'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { getCurrentUser, loginUser, signupUser, logoutUser, User, UserLoginRequest, UserSignupRequest } from '../utils/apiClient'
 
 interface AuthContextType {
   user: User | null
   loading: boolean
   error: string | null
-  login: (email: string, password: string) => Promise<void>
+  login: (data: UserLoginRequest) => Promise<void>
+  signup: (data: UserSignupRequest) => Promise<void>
   logout: () => Promise<void>
+  refresh: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: true,
-  error: null,
-  login: async () => {},
-  logout: async () => {},
-})
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  async function refresh() {
+    setLoading(true)
+    try {
+      const user = await getCurrentUser()
+      setUser(user)
+      setError(null)
+    } catch (e) {
+      setUser(null)
+    }
+    setLoading(false)
+  }
+
   useEffect(() => {
-    getCurrentUser()
-      .then(u => setUser(u))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false))
+    refresh()
+    // eslint-disable-next-line
   }, [])
 
-  const login = async (email: string, password: string) => {
+  async function login(data: UserLoginRequest) {
     setLoading(true)
     setError(null)
     try {
-      await apiLogin(email, password)
-      const u = await getCurrentUser()
-      setUser(u)
+      const { token } = await loginUser(data)
+      localStorage.setItem('token', token)
+      await refresh()
     } catch (e: any) {
       setError(e.message || 'Login failed')
       setUser(null)
-    } finally {
-      setLoading(false)
     }
+    setLoading(false)
   }
 
-  const logout = async () => {
+  async function signup(data: UserSignupRequest) {
+    setLoading(true)
+    setError(null)
+    try {
+      const { token } = await signupUser(data)
+      localStorage.setItem('token', token)
+      await refresh()
+    } catch (e: any) {
+      setError(e.message || 'Signup failed')
+      setUser(null)
+    }
+    setLoading(false)
+  }
+
+  async function logout() {
     setLoading(true)
     try {
-      await apiLogout()
-      setUser(null)
-    } catch {
-      // ignore
-    } finally {
-      setLoading(false)
-    }
+      await logoutUser()
+    } catch {}
+    localStorage.removeItem('token')
+    setUser(null)
+    setLoading(false)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, error, login, signup, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
-export const useAuth = () => useContext(AuthContext)
+export function useAuth() {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
+  return ctx
+}
