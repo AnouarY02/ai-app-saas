@@ -1,0 +1,37 @@
+{
+  "featurePrompt": "Build features for \"AI App\". Generate a complete feature set and an implementation plan based on the blueprint.",
+  "generatedFiles": 5,
+  "files": [
+    {
+      "path": "app/dashboard/tasks/[id]/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Pagina voor het bekijken van details van een specifieke AI-taak."
+    },
+    {
+      "path": "components/tasks/task-detail.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component voor het tonen van details van een AI-taak en verwijderen ervan."
+    },
+    {
+      "path": "app/api/tasks/[id]/route.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "API-route voor ophalen en verwijderen van een specifieke AI-taak."
+    },
+    {
+      "path": "lib/tasks/utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "Helpers voor AI-taken: ophalen, aanmaken, verwijderen (in-memory store)."
+    },
+    {
+      "path": "components/tasks/task-list.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component voor het tonen van een lijst van AI-taken met links naar detailpagina's."
+    }
+  ],
+  "generatedAt": "2026-01-20T14:59:11.827Z"
+}
