@@ -1,17 +1,38 @@
-// User entity type
-import type { ID } from './common';
-import { UserRole } from '../constants/roles';
+// shared/types/user.ts
 
-export type User = {
-  id: ID;
-  name: string;
+export interface User {
+  id: string;
   email: string;
-  avatarUrl: string;
-  role: UserRole;
-};
+  full_name: string;
+  created_at: string; // ISO8601
+  updated_at: string; // ISO8601
+}
 
-export type Session = {
-  user: User;
-  token: string;
-  expiresAt: string; // ISO string
-};
+export interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserAuthToken {
+  access_token: string;
+  token_type: 'bearer';
+}
+
+export interface UserLoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface UserSignupRequest {
+  email: string;
+  password: string;
+  full_name: string;
+}
+
+export interface UserProfileUpdateRequest {
+  full_name?: string;
+  password?: string;
+}
