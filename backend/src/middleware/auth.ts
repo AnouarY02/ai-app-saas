@@ -1,47 +1,42 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../prisma/client';
+import { getUserById } from '../services/userService';
 
-export async function requireAuth(req: Request, res: Response, next: NextFunction) {
-  const header = req.headers['authorization'];
-  if (!header || !header.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dev_secret';
+
+export interface AuthRequest extends Request {
+  user?: any;
+}
+
+export function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.startsWith('Bearer ')
+    ? authHeader.substring(7)
+    : req.cookies && req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ error: 'Authentication required' });
   }
-  const token = header.split(' ')[1];
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET as string) as any;
-    const user = await prisma.user.findUnique({ where: { id: payload.userId } });
-    if (!user) return res.status(401).json({ error: 'User not found' });
-    (req as any).user = { id: user.id, role: user.role };
+    const decoded: any = jwt.verify(token, SESSION_SECRET);
+    const user = getUserById(decoded.userId);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid session' });
+    }
+    req.user = user;
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
 }
 
-export function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  if ((req as any).user?.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
-  }
-  next();
-}
-
-export function requireAdminOrSelf(req: Request, res: Response, next: NextFunction) {
-  const user = (req as any).user;
-  if (user.role === 'admin' || user.id === req.params.id) {
-    return next();
-  }
-  return res.status(403).json({ error: 'Forbidden' });
-}
-
-export async function requireBookingOwnerOrAdmin(req: Request, res: Response, next: NextFunction) {
-  const user = (req as any).user;
-  const bookingId = req.params.id;
-  if (user.role === 'admin') return next();
-  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-  if (!booking) return res.status(404).json({ error: 'Booking not found' });
-  if (booking.userId !== user.id) {
-    return res.status(403).json({ error: 'Forbidden' });
-  }
-  next();
+export function requireRole(role: string) {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    if (req.user.role !== role) {
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
+    next();
+  };
 }

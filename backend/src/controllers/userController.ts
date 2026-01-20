@@ -1,31 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
-import { userService } from '../services/userService';
-import { logger } from '../utils/logger';
+import { Request, Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
+import { updateUser } from '../services/userService';
 
-export async function getMe(req: Request, res: Response, next: NextFunction) {
+export async function getMe(req: AuthRequest, res: Response) {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    const user = await userService.getById(userId);
-    res.json(user);
+    res.json(req.user);
   } catch (err) {
-    logger.error('getMe error', err);
-    next(err);
+    res.status(500).json({ error: 'Failed to fetch user' });
   }
 }
 
-export async function updateMe(req: Request, res: Response, next: NextFunction) {
+export async function updateMe(req: AuthRequest, res: Response) {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    const updated = await userService.update(userId, req.body);
+    const updated = updateUser(req.user.id, req.body);
     res.json(updated);
   } catch (err) {
-    logger.error('updateMe error', err);
-    next(err);
+    res.status(500).json({ error: 'Failed to update user' });
   }
 }

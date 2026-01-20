@@ -1,6 +1,6 @@
-import { Router, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 
-const router = Router();
+const router = express.Router();
 
 router.get('/', (req: Request, res: Response) => {
   res.json({ ok: true, timestamp: new Date().toISOString() });

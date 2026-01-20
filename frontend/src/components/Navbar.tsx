@@ -1,39 +1,44 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { FaRobot } from 'react-icons/fa'
+import NotificationBell from './NotificationBell'
+import UserAvatar from './UserAvatar'
+import TeamSelector from './TeamSelector'
+
+const navLinks = [
+  { label: 'Dashboard', path: '/', icon: '🏠' },
+  { label: 'Projects', path: '/projects', icon: '📁' },
+  { label: 'Teams', path: '/teams', icon: '👥' },
+  { label: 'Analytics', path: '/analytics', icon: '📊' },
+]
 
 const Navbar: React.FC = () => {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
+  const location = useLocation()
   const navigate = useNavigate()
 
-  const handleLogout = async () => {
-    try {
-      await logout()
-      navigate('/login')
-    } catch {}
-  }
-
   return (
-    <nav className="w-full flex items-center justify-between px-6 py-3 bg-white shadow">
-      <div className="flex items-center gap-2">
-        <FaRobot className="text-indigo-600 text-2xl" />
-        <Link to="/" className="text-xl font-bold text-indigo-700">AI App</Link>
+    <header className="flex items-center justify-between px-4 py-2 bg-white shadow">
+      <div className="flex items-center gap-4">
+        <span className="font-bold text-lg text-blue-700 cursor-pointer" onClick={() => navigate('/')}>Padel Club Manager</span>
+        <nav className="hidden md:flex gap-2">
+          {navLinks.map(link => (
+            <Link
+              key={link.path}
+              to={link.path}
+              className={`px-3 py-2 rounded hover:bg-blue-50 ${location.pathname === link.path ? 'bg-blue-100 font-semibold' : ''}`}
+            >
+              <span className="mr-1">{link.icon}</span>{link.label}
+            </Link>
+          ))}
+        </nav>
       </div>
       <div className="flex items-center gap-4">
-        {user ? (
-          <>
-            <span className="text-gray-700">{user.name || user.email}</span>
-            <button onClick={handleLogout} className="px-3 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">Logout</button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="text-indigo-600 hover:underline">Login</Link>
-            <Link to="/signup" className="text-indigo-600 hover:underline">Sign Up</Link>
-          </>
-        )}
+        <TeamSelector />
+        <NotificationBell />
+        <UserAvatar user={user} />
       </div>
-    </nav>
+    </header>
   )
 }
 

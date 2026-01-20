@@ -1,37 +1,37 @@
-import { Request, Response, NextFunction } from 'express';
-import { userService } from '../services/userService';
-import { signJwt, verifyJwt } from '../services/authService';
-import { logger } from '../utils/logger';
+import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import { getUserByEmail } from '../services/userService';
+import { v4 as uuidv4 } from 'uuid';
 
-export async function signup(req: Request, res: Response, next: NextFunction) {
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dev_secret';
+
+export async function login(req: Request, res: Response) {
   try {
-    const { email, password, name } = req.body;
-    const { user, token } = await userService.signup(email, password, name);
-    res.status(201).json({ user, token });
+    const { email, name } = req.body;
+    if (!email || !name) {
+      return res.status(400).json({ error: 'Email and name are required' });
+    }
+    let user = getUserByEmail(email);
+    if (!user) {
+      user = {
+        id: uuidv4(),
+        name,
+        email,
+        avatarUrl: '',
+        role: 'member',
+        teams: []
+      };
+      // Add user to store
+      require('../services/userService').addUser(user);
+    }
+    const token = jwt.sign({ userId: user.id, role: user.role }, SESSION_SECRET, { expiresIn: '7d' });
+    res.json({ token, user });
   } catch (err) {
-    logger.error('Signup error', err);
-    next(err);
+    res.status(500).json({ error: 'Login failed' });
   }
 }
 
-export async function login(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { email, password } = req.body;
-    const { user, token } = await userService.login(email, password);
-    res.status(200).json({ user, token });
-  } catch (err) {
-    logger.error('Login error', err);
-    next(err);
-  }
-}
-
-export async function logout(req: Request, res: Response, next: NextFunction) {
-  try {
-    const token = req.body.token || req.headers.authorization?.replace('Bearer ', '');
-    await userService.logout(token);
-    res.status(200).json({ success: true });
-  } catch (err) {
-    logger.error('Logout error', err);
-    next(err);
-  }
+export async function logout(req: Request, res: Response) {
+  // For stateless JWT, logout is handled on client (token removal)
+  res.json({ success: true });
 }

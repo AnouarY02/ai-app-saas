@@ -1,18 +1,17 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import app from './app';
-import { logger } from './utils/logger';
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
 
 const server = app.listen(PORT, () => {
-  logger.info(`Server listening on port ${PORT}`);
+  console.log(`[${new Date().toISOString()}] Server listening on port ${PORT}`);
 });
 
 const shutdown = () => {
-  logger.info('Received shutdown signal, closing server...');
+  console.log(`[${new Date().toISOString()}] Shutting down server...`);
   server.close(() => {
-    logger.info('Server closed. Exiting process.');
+    console.log(`[${new Date().toISOString()}] Server closed.`);
     process.exit(0);
   });
 };

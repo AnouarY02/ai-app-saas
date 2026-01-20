@@ -1,12 +1,13 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./frontend" },
-    { "path": "./backend" },
-    { "path": "./shared" }
-  ],
+  "extends": "./infra/tsconfig.json",
   "compilerOptions": {
-    "composite": true,
-    "skipLibCheck": true
-  }
+    "baseUrl": ".",
+    "paths": {
+      "@frontend/*": ["frontend/*"],
+      "@backend/*": ["backend/*"],
+      "@shared/*": ["shared/*"]
+    }
+  },
+  "include": ["frontend", "backend", "shared", "infra"],
+  "exclude": ["node_modules", "**/dist"]
 }
