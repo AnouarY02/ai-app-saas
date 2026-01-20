@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { cva } from 'class-variance-authority';
 
-interface SwitchProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  checked: boolean;
-}
+type SwitchProps = {
+  id: string;
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+};
 
 const switchStyles = cva('relative inline-flex items-center h-6 rounded-full w-11', {
   variants: {
@@ -14,15 +16,33 @@ const switchStyles = cva('relative inline-flex items-center h-6 rounded-full w-1
   }
 });
 
-export const Switch: React.FC<SwitchProps> = ({ checked, ...props }) => {
+const switchButtonStyles = cva('inline-block w-4 h-4 transform bg-white rounded-full', {
+  variants: {
+    checked: {
+      true: 'translate-x-6',
+      false: 'translate-x-1'
+    }
+  }
+});
+
+export const Switch: React.FC<SwitchProps> = ({ id, checked = false, onChange }) => {
+  const [isChecked, setIsChecked] = useState(checked);
+
+  const handleChange = () => {
+    setIsChecked(!isChecked);
+    onChange && onChange(!isChecked);
+  };
+
   return (
-    <label className="inline-flex items-center cursor-pointer">
-      <input type="checkbox" className="sr-only" checked={checked} {...props} />
-      <span className={switchStyles({ checked })}>
-        <span
-          className={`transform transition ease-in-out duration-200 ${checked ? 'translate-x-6' : 'translate-x-1'} inline-block w-4 h-4 bg-white rounded-full`}
-        />
-      </span>
-    </label>
+    <button
+      id={id}
+      type="button"
+      role="switch"
+      aria-checked={isChecked}
+      onClick={handleChange}
+      className={switchStyles({ checked: isChecked })}
+    >
+      <span className={switchButtonStyles({ checked: isChecked })} />
+    </button>
   );
 };

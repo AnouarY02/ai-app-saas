@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
 
 const tooltipVariants = cva("absolute bg-black text-white text-sm p-2 rounded", {
   variants: {

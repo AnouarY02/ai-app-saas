@@ -1,15 +1,15 @@
 import React from 'react';
 
-interface LabelProps {
+type LabelProps = {
   htmlFor: string;
+  text: string;
   required?: boolean;
-  children: React.ReactNode;
-}
+};
 
-export const Label: React.FC<LabelProps> = ({ htmlFor, required, children }) => {
+export const Label: React.FC<LabelProps> = ({ htmlFor, text, required = false }) => {
   return (
-    <label htmlFor={htmlFor} className="block text-primary-700">
-      {children}
+    <label htmlFor={htmlFor} className="text-primary-700">
+      {text}
       {required && <span className="text-red-500"> *</span>}
     </label>
   );
