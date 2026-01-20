@@ -26,3 +26,6 @@ out/
 
 # AI-Fabriek build outputs (CRITICAL: keep runs out of main)
 runs/
+wf4-runner/package-lock.json
+wf4-runner/.env
+.env
