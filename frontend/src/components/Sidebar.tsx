@@ -1,26 +1,29 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FaTachometerAlt, FaCog } from 'react-icons/fa'
+import { FaTachometerAlt, FaFolderOpen, FaUsers, FaChartBar, FaBell, FaUser } from 'react-icons/fa'
 
-const menu = [
-  { label: 'Dashboard', path: '/dashboard', icon: <FaTachometerAlt /> },
-  { label: 'Settings', path: '/settings', icon: <FaCog /> },
+const links = [
+  { label: 'Dashboard', path: '/', icon: <FaTachometerAlt /> },
+  { label: 'Projects', path: '/projects', icon: <FaFolderOpen /> },
+  { label: 'Teams', path: '/teams', icon: <FaUsers /> },
+  { label: 'Analytics', path: '/analytics', icon: <FaChartBar /> },
+  { label: 'Notifications', path: '/notifications', icon: <FaBell /> },
+  { label: 'Profile', path: '/profile', icon: <FaUser /> },
 ]
 
 const Sidebar: React.FC = () => {
   const location = useLocation()
   return (
-    <aside className="w-56 min-h-screen bg-white border-r flex flex-col py-6 px-4">
-      <div className="mb-8 text-2xl font-bold text-indigo-700">AI App</div>
-      <nav className="flex flex-col gap-2">
-        {menu.map(item => (
+    <aside className="hidden md:flex flex-col w-56 bg-white border-r min-h-screen">
+      <nav className="flex flex-col gap-1 mt-8">
+        {links.map(link => (
           <Link
-            key={item.path}
-            to={item.path}
-            className={`flex items-center gap-3 px-3 py-2 rounded hover:bg-indigo-50 transition-colors ${location.pathname === item.path ? 'bg-indigo-100 font-semibold text-indigo-700' : 'text-gray-700'}`}
+            key={link.path}
+            to={link.path}
+            className={`flex items-center gap-3 px-6 py-3 hover:bg-blue-50 rounded-r-full transition ${location.pathname.startsWith(link.path) ? 'bg-blue-100 font-semibold' : ''}`}
           >
-            <span className="text-lg">{item.icon}</span>
-            {item.label}
+            <span className="text-blue-600">{link.icon}</span>
+            {link.label}
           </Link>
         ))}
       </nav>

@@ -1,22 +1,33 @@
-// shared/index.ts
-// Barrel file for shared imports
+// Barrel file for shared exports
 
 // Types
-export * from './types/models';
-export * from './types/api';
-export * from './types/errorTypes';
-export * from './interfaces/User';
+export * from './types/common';
+export * from './types/user';
+export * from './types/team';
+export * from './types/project';
+export * from './types/board';
+export * from './types/column';
+export * from './types/task';
+export * from './types/comment';
+export * from './types/notification';
+export * from './types/metric';
+export * from './types/activity';
+
+// Constants
+export * from './constants/statuses';
+export * from './constants/roles';
 
 // Validators
-export { signupRequestSchema } from './validators/signupRequestSchema';
-export { loginRequestSchema } from './validators/loginRequestSchema';
-export { logoutRequestSchema } from './validators/logoutRequestSchema';
-export { updateUserRequestSchema } from './validators/updateUserRequestSchema';
+export * from './validators/user';
+export * from './validators/team';
+export * from './validators/project';
+export * from './validators/board';
+export * from './validators/task';
+export * from './validators/comment';
+export * from './validators/metrics';
 
 // Utils
-export * from './utils/constants';
-export * from './utils/format';
-export * from './utils/errorNormalizer';
-
-// API Client
-export * from './api/apiClient';
+export * from './utils/dateUtils';
+export * from './utils/idUtils';
+export * from './utils/apiClient';
+export * from './utils/errorTypes';

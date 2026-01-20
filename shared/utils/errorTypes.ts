@@ -1,4 +1,4 @@
-// Shared error types and error code helpers
+// Standard error codes and helpers
 export enum ErrorCode {
   UNAUTHORIZED = 'UNAUTHORIZED',
   FORBIDDEN = 'FORBIDDEN',
@@ -8,13 +8,6 @@ export enum ErrorCode {
   INTERNAL_ERROR = 'INTERNAL_ERROR',
 }
 
-export class AppError extends Error {
-  constructor(
-    public code: ErrorCode,
-    message: string,
-    public status: number = 400
-  ) {
-    super(message);
-    this.name = 'AppError';
-  }
+export function apiError(code: ErrorCode, message?: string): { error: string; code: ErrorCode; message?: string } {
+  return { error: code, code, message };
 }

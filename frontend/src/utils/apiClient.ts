@@ -1,91 +1,237 @@
+// API Client for Padel Club Manager
 const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000'
 
 export interface User {
   id: string
-  email: string
   name: string
+  email: string
+  avatarUrl: string
+  role: 'admin' | 'member'
+}
+
+export interface Team {
+  id: string
+  name: string
+  members: User[]
+}
+
+export interface Project {
+  id: string
+  name: string
+  description: string
+  teamId: string
   createdAt: string
-  updatedAt: string
 }
 
-export interface AuthResponse {
-  user: User
-  token: string
+export interface Board {
+  id: string
+  projectId: string
+  name: string
+  columns: Column[]
 }
 
-export interface SignupRequest {
-  email: string
-  password: string
-  name?: string
+export interface Column {
+  id: string
+  name: string
+  taskIds: string[]
 }
 
-export interface LoginRequest {
-  email: string
-  password: string
+export interface Task {
+  id: string
+  title: string
+  description: string
+  assigneeId: string
+  status: string
+  dueDate: string
+  createdAt: string
 }
 
-export interface LogoutRequest {
-  token: string
+export interface Comment {
+  id: string
+  taskId: string
+  authorId: string
+  content: string
+  createdAt: string
 }
 
-export interface SuccessResponse {
-  success: boolean
+export interface Notification {
+  id: string
+  userId: string
+  type: string
+  message: string
+  read: boolean
+  createdAt: string
 }
 
-export interface UpdateUserRequest {
-  name?: string
-  email?: string
-  password?: string
+export interface Metric {
+  id: string
+  teamId: string
+  type: string
+  value: number
+  period: string
 }
 
-export async function signup(data: SignupRequest): Promise<AuthResponse> {
-  const res = await fetch(`${apiUrl}/api/auth/signup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-  if (!res.ok) throw new Error((await res.json()).message || 'Signup failed')
-  return res.json()
+export interface Activity {
+  id: string
+  projectId: string
+  actorId: string
+  type: string
+  payload: any
+  createdAt: string
 }
 
-export async function login(data: LoginRequest): Promise<AuthResponse> {
+// Auth
+export async function login(email: string, password: string) {
   const res = await fetch(`${apiUrl}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    credentials: 'include',
+    body: JSON.stringify({ email, password })
   })
-  if (!res.ok) throw new Error((await res.json()).message || 'Login failed')
+  if (!res.ok) throw new Error('Invalid credentials')
   return res.json()
 }
 
-export async function logout(token: string): Promise<SuccessResponse> {
-  const res = await fetch(`${apiUrl}/api/auth/logout`, {
+export async function logout() {
+  await fetch(`${apiUrl}/api/auth/logout`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ token })
+    credentials: 'include',
   })
-  if (!res.ok) throw new Error((await res.json()).message || 'Logout failed')
+}
+
+export async function getCurrentUser(): Promise<User> {
+  const res = await fetch(`${apiUrl}/api/users/me`, {
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Not authenticated')
   return res.json()
 }
 
-export async function getMe(): Promise<User> {
-  const token = localStorage.getItem('token')
-  if (!token) throw new Error('Not authenticated')
-  const res = await fetch(`${apiUrl}/api/user/me`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  if (!res.ok) throw new Error((await res.json()).message || 'Not authenticated')
-  return res.json()
-}
-
-export async function updateMe(data: UpdateUserRequest): Promise<User> {
-  const token = localStorage.getItem('token')
-  if (!token) throw new Error('Not authenticated')
-  const res = await fetch(`${apiUrl}/api/user/me`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+export async function updateCurrentUser(data: Partial<User>): Promise<User> {
+  const res = await fetch(`${apiUrl}/api/users/me`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify(data)
   })
-  if (!res.ok) throw new Error((await res.json()).message || 'Update failed')
+  if (!res.ok) throw new Error('Failed to update user')
+  return res.json()
+}
+
+// Teams
+export async function getTeams(): Promise<Team[]> {
+  const res = await fetch(`${apiUrl}/api/teams`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch teams')
+  return res.json()
+}
+
+// Projects
+export async function getProjects(): Promise<Project[]> {
+  const res = await fetch(`${apiUrl}/api/projects`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch projects')
+  return res.json()
+}
+
+export async function getProject(projectId: string): Promise<Project> {
+  const res = await fetch(`${apiUrl}/api/projects/${projectId}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch project')
+  return res.json()
+}
+
+export async function createProject(data: { name: string; description: string; teamId: string }): Promise<Project> {
+  const res = await fetch(`${apiUrl}/api/projects`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(data)
+  })
+  if (!res.ok) throw new Error('Failed to create project')
+  return res.json()
+}
+
+export async function updateProject(projectId: string, data: Partial<Project>): Promise<Project> {
+  const res = await fetch(`${apiUrl}/api/projects/${projectId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(data)
+  })
+  if (!res.ok) throw new Error('Failed to update project')
+  return res.json()
+}
+
+// Boards
+export async function getBoards(projectId: string): Promise<Board[]> {
+  const res = await fetch(`${apiUrl}/api/projects/${projectId}/boards`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch boards')
+  return res.json()
+}
+
+export async function getBoard(boardId: string): Promise<Board> {
+  const res = await fetch(`${apiUrl}/api/boards/${boardId}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch board')
+  return res.json()
+}
+
+// Tasks
+export async function getTasks(params?: { projectId?: string }): Promise<Task[]> {
+  let url = `${apiUrl}/api/tasks`
+  if (params?.projectId) url += `?projectId=${params.projectId}`
+  const res = await fetch(url, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch tasks')
+  return res.json()
+}
+
+export async function getTask(taskId: string): Promise<Task> {
+  const res = await fetch(`${apiUrl}/api/tasks/${taskId}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch task')
+  return res.json()
+}
+
+// Comments
+export async function getComments(taskId: string): Promise<Comment[]> {
+  const res = await fetch(`${apiUrl}/api/tasks/${taskId}/comments`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch comments')
+  return res.json()
+}
+
+export async function createComment(taskId: string, content: string): Promise<Comment> {
+  const res = await fetch(`${apiUrl}/api/tasks/${taskId}/comments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ content })
+  })
+  if (!res.ok) throw new Error('Failed to add comment')
+  return res.json()
+}
+
+// Activity
+export async function getProjectActivity(projectId: string): Promise<Activity[]> {
+  const res = await fetch(`${apiUrl}/api/projects/${projectId}/activity`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch activity')
+  return res.json()
+}
+
+// Notifications
+export async function getNotifications(): Promise<Notification[]> {
+  const res = await fetch(`${apiUrl}/api/notifications`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch notifications')
+  return res.json()
+}
+
+export async function markNotificationAsRead(notificationId: string): Promise<Notification> {
+  const res = await fetch(`${apiUrl}/api/notifications/${notificationId}/read`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to mark as read')
+  return res.json()
+}
+
+// Metrics
+export async function getMetrics(): Promise<Metric[]> {
+  const res = await fetch(`${apiUrl}/api/metrics`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch metrics')
   return res.json()
 }
