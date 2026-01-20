@@ -19,7 +19,7 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
           ref={ref}
           role="dialog"
           aria-modal="true"
-          className={cn("bg-white rounded-md p-6", className)}
+          className={cn("bg-white rounded-lg p-6", className)}
           onClick={(e) => e.stopPropagation()}
           {...props}
         >

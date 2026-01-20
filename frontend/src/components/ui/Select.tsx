@@ -1,32 +1,14 @@
 import React from 'react';
-import { cva } from 'class-variance-authority';
 
-type SelectProps = {
-  id: string;
-  options: { label: string; value: string }[];
-  selectedValue?: string;
-  onChange?: (value: string) => void;
-};
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  options: { value: string; label: string }[];
+}
 
-const selectStyles = cva('form-select text-primary-700', {
-  variants: {
-    filled: {
-      true: 'bg-primary-600',
-      false: 'bg-white'
-    }
-  }
-});
-
-export const Select: React.FC<SelectProps> = ({ id, options, selectedValue, onChange }) => {
+export const Select: React.FC<SelectProps> = ({ options, ...props }) => {
   return (
-    <select
-      id={id}
-      value={selectedValue}
-      onChange={(e) => onChange && onChange(e.target.value)}
-      className={selectStyles({ filled: !!selectedValue })}
-    >
+    <select className="form-select text-primary-700 bg-white border border-primary-600" {...props}>
       {options.map((option) => (
-        <option key={option.value} value={option.value} className="text-primary-700">
+        <option key={option.value} value={option.value}>
           {option.label}
         </option>
       ))}
