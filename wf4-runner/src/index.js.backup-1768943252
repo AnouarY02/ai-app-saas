@@ -176,7 +176,7 @@ async function runBuild(buildId, repoOwner, repoName, branch) {
     // Step 4: Check for docker-compose
     log('📦 Step 4/10: Checking docker-compose.yml...');
     try {
-      const composeFile = path.join(workDir, "docker-compose.yml"); await fs.access(composeFile);
+      await exec(`test -f ${workDir}/docker-compose.yml`);
       log('✅ Found docker-compose.yml');
     } catch {
       throw new Error('docker-compose.yml not found in repository');
@@ -253,7 +253,7 @@ async function runBuild(buildId, repoOwner, repoName, branch) {
 async function applyAutomaticFixes(workDir, log) {
   // Fix 1: Create frontend/public directory
   log('  🔧 Creating frontend/public directory...');
-  const publicDir = path.join(workDir, "frontend/public"); await fs.mkdir(publicDir, { recursive: true });
+  await exec(`mkdir -p ${workDir}/frontend/public`);
   
   // Fix 2: Create vite.svg in public if missing
   const viteSvgPath = path.join(workDir, 'frontend/public/vite.svg');

@@ -3,6 +3,10 @@ import { exec as execCallback } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 const exec = promisify(execCallback);
 const app = express();
@@ -10,6 +14,13 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 8787;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
+// Validate GITHUB_TOKEN on startup
+if (!GITHUB_TOKEN || GITHUB_TOKEN === 'undefined') {
+  console.error('❌ ERROR: GITHUB_TOKEN not found in environment variables!');
+  console.error('   Please create a .env file with: GITHUB_TOKEN=your_token_here');
+  process.exit(1);
+}
 
 // In-memory build state
 const builds = new Map();
@@ -176,7 +187,7 @@ async function runBuild(buildId, repoOwner, repoName, branch) {
     // Step 4: Check for docker-compose
     log('📦 Step 4/10: Checking docker-compose.yml...');
     try {
-      const composeFile = path.join(workDir, "docker-compose.yml"); await fs.access(composeFile);
+      await exec(`test -f ${workDir}/docker-compose.yml`);
       log('✅ Found docker-compose.yml');
     } catch {
       throw new Error('docker-compose.yml not found in repository');
@@ -253,7 +264,7 @@ async function runBuild(buildId, repoOwner, repoName, branch) {
 async function applyAutomaticFixes(workDir, log) {
   // Fix 1: Create frontend/public directory
   log('  🔧 Creating frontend/public directory...');
-  const publicDir = path.join(workDir, "frontend/public"); await fs.mkdir(publicDir, { recursive: true });
+  await exec(`mkdir -p ${workDir}/frontend/public`);
   
   // Fix 2: Create vite.svg in public if missing
   const viteSvgPath = path.join(workDir, 'frontend/public/vite.svg');
