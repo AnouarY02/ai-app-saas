@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { cva } from 'class-variance-authority';
 
-interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+type CheckboxProps = {
+  id: string;
   label: string;
-  checked: boolean;
-}
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+};
 
-const checkboxStyles = cva('form-checkbox h-4 w-4 text-primary-700', {
+const checkboxStyles = cva('form-checkbox h-5 w-5 text-primary-700', {
   variants: {
     checked: {
       true: 'bg-primary-600',
@@ -15,11 +17,26 @@ const checkboxStyles = cva('form-checkbox h-4 w-4 text-primary-700', {
   }
 });
 
-export const Checkbox: React.FC<CheckboxProps> = ({ label, checked, ...props }) => {
+export const Checkbox: React.FC<CheckboxProps> = ({ id, label, checked = false, onChange }) => {
+  const [isChecked, setIsChecked] = useState(checked);
+
+  const handleChange = () => {
+    setIsChecked(!isChecked);
+    onChange && onChange(!isChecked);
+  };
+
   return (
-    <label className="inline-flex items-center">
-      <input type="checkbox" className={checkboxStyles({ checked })} checked={checked} {...props} />
-      <span className="ml-2 text-primary-700">{label}</span>
-    </label>
+    <div className="flex items-center">
+      <input
+        id={id}
+        type="checkbox"
+        className={checkboxStyles({ checked: isChecked })}
+        checked={isChecked}
+        onChange={handleChange}
+      />
+      <label htmlFor={id} className="ml-2 text-primary-700">
+        {label}
+      </label>
+    </div>
   );
 };

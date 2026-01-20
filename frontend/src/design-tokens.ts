@@ -1,6 +1,6 @@
 /**
  * AI App Design Tokens
- * A sophisticated AI-focused design system that balances technological innovation with human accessibility. The color palette combines deep neural network-inspired indigo with energetic electric green accents, creating a modern yet approachable interface that conveys intelligence and forward-thinking innovation.
+ * A sophisticated AI-first design system that balances technological innovation with human accessibility. The color palette combines deep neural network-inspired indigo with energetic electric green accents, creating a modern yet approachable interface that conveys intelligence and forward-thinking capabilities.
  */
 
 export const designTokens = {
@@ -9,15 +9,15 @@ export const designTokens = {
       "primary": {
         "50": "#f0f4ff",
         "100": "#e0e9ff",
-        "200": "#c7d6ff",
-        "300": "#a5b8ff",
-        "400": "#8191ff",
-        "500": "#5d6aff",
-        "600": "#4c4ff7",
-        "700": "#3d3ee3",
-        "800": "#3133b9",
-        "900": "#2e3192",
-        "950": "#1e1f58"
+        "200": "#c7d6fe",
+        "300": "#a5b8fc",
+        "400": "#8b93f8",
+        "500": "#6366f1",
+        "600": "#4f46e5",
+        "700": "#4338ca",
+        "800": "#3730a3",
+        "900": "#312e81",
+        "950": "#1e1b4b"
       },
       "secondary": {
         "50": "#f0fdf4",
@@ -36,14 +36,14 @@ export const designTokens = {
         "50": "#f0fff4",
         "100": "#dcfff0",
         "200": "#bbffe1",
-        "300": "#86ffc6",
-        "400": "#4dffa3",
-        "500": "#1aff80",
-        "600": "#00e066",
-        "700": "#00b852",
-        "800": "#009042",
-        "900": "#006837",
-        "950": "#003d1f"
+        "300": "#86ffc7",
+        "400": "#4dffaa",
+        "500": "#00ff88",
+        "600": "#00e673",
+        "700": "#00cc5f",
+        "800": "#00b34c",
+        "900": "#009940",
+        "950": "#004d20"
       }
     },
     "neutral": {
