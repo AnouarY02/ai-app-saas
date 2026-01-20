@@ -1,0 +1,454 @@
+{
+  "meta": {
+    "buildId": "build-1768921102462",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-1768921102462",
+    "appName": "AI App",
+    "baseBranch": "main"
+  },
+  "functionalitySpec": {
+    "stack": {
+      "framework": "Next.js 14 App Router",
+      "language": "TypeScript",
+      "styling": [
+        "Tailwind CSS",
+        "shadcn/ui"
+      ],
+      "api": [
+        "Next.js Route Handlers (app/api)"
+      ],
+      "stateManagement": "React Server Components with client components for local UI state",
+      "dataLayer": "In-memory store (singleton pattern)"
+    },
+    "tenancy": {
+      "strategy": "single-tenant",
+      "isolationLevel": "user-based",
+      "notes": "Each user has isolated access to their own AI tasks"
+    },
+    "roles": [
+      {
+        "name": "user",
+        "permissions": [
+          "read:own-profile",
+          "update:own-profile",
+          "create:own-tasks",
+          "read:own-tasks",
+          "delete:own-tasks"
+        ]
+      }
+    ],
+    "entities": [
+      {
+        "name": "User",
+        "description": "Een geregistreerde gebruiker van de app",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unieke identifier voor de gebruiker"
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "required": true,
+            "description": "E-mailadres van de gebruiker"
+          },
+          {
+            "name": "passwordHash",
+            "type": "string",
+            "required": true,
+            "description": "Gehasht wachtwoord van de gebruiker"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": false,
+            "description": "Naam van de gebruiker"
+          },
+          {
+            "name": "createdAt",
+            "type": "Date",
+            "required": true,
+            "description": "Aanmaakdatum van het account"
+          }
+        ],
+        "relations": [
+          {
+            "type": "one-to-many",
+            "target": "AITask",
+            "foreignKey": "userId"
+          }
+        ]
+      },
+      {
+        "name": "AITask",
+        "description": "Een taak die door de gebruiker wordt aangemaakt",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "Unieke identifier voor de taak"
+          },
+          {
+            "name": "userId",
+            "type": "string",
+            "required": true,
+            "description": "De gebruiker die de taak heeft aangemaakt"
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "required": true,
+            "description": "Titel van de AI-taak"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "required": false,
+            "description": "Beschrijving van de AI-taak"
+          },
+          {
+            "name": "createdAt",
+            "type": "Date",
+            "required": true,
+            "description": "Aanmaakdatum van de taak"
+          }
+        ],
+        "relations": [
+          {
+            "type": "many-to-one",
+            "target": "User",
+            "foreignKey": "userId"
+          }
+        ]
+      }
+    ],
+    "permissions": [
+      {
+        "resource": "User",
+        "actions": [
+          "read",
+          "update"
+        ],
+        "roles": [
+          "user"
+        ],
+        "scope": "own"
+      },
+      {
+        "resource": "AITask",
+        "actions": [
+          "create",
+          "read",
+          "delete"
+        ],
+        "roles": [
+          "user"
+        ],
+        "scope": "own"
+      }
+    ],
+    "api": [
+      {
+        "path": "/api/auth/register",
+        "methods": [
+          "POST"
+        ],
+        "description": "Registreer een nieuwe gebruiker",
+        "auth": false,
+        "input": {
+          "email": "string",
+          "password": "string",
+          "name": "string?"
+        },
+        "output": {
+          "user": "User",
+          "token": "string"
+        }
+      },
+      {
+        "path": "/api/auth/login",
+        "methods": [
+          "POST"
+        ],
+        "description": "Log een gebruiker in",
+        "auth": false,
+        "input": {
+          "email": "string",
+          "password": "string"
+        },
+        "output": {
+          "user": "User",
+          "token": "string"
+        }
+      },
+      {
+        "path": "/api/auth/logout",
+        "methods": [
+          "POST"
+        ],
+        "description": "Log een gebruiker uit",
+        "auth": true,
+        "input": {},
+        "output": {
+          "success": "boolean"
+        }
+      },
+      {
+        "path": "/api/user/profile",
+        "methods": [
+          "GET",
+          "PUT"
+        ],
+        "description": "Bekijk of update het profiel van de gebruiker",
+        "auth": true,
+        "input": {
+          "name": "string?",
+          "email": "string?"
+        },
+        "output": {
+          "user": "User"
+        }
+      },
+      {
+        "path": "/api/tasks",
+        "methods": [
+          "GET",
+          "POST"
+        ],
+        "description": "Haal alle AI-taken op of maak een nieuwe taak aan",
+        "auth": true,
+        "input": {
+          "title": "string",
+          "description": "string?"
+        },
+        "output": {
+          "tasks": "AITask[]",
+          "task": "AITask"
+        }
+      },
+      {
+        "path": "/api/tasks/[id]",
+        "methods": [
+          "GET",
+          "DELETE"
+        ],
+        "description": "Bekijk of verwijder een specifieke AI-taak",
+        "auth": true,
+        "input": {
+          "id": "string"
+        },
+        "output": {
+          "task": "AITask",
+          "success": "boolean"
+        }
+      }
+    ],
+    "pages": [
+      {
+        "path": "/",
+        "title": "Home",
+        "description": "Homepagina met uitleg en call-to-action",
+        "auth": false,
+        "layout": "app/layout.tsx",
+        "components": [
+          "Navbar"
+        ]
+      },
+      {
+        "path": "/login",
+        "title": "Login",
+        "description": "Loginpagina voor bestaande gebruikers",
+        "auth": false,
+        "layout": "app/layout.tsx",
+        "components": [
+          "Navbar",
+          "AuthForm"
+        ]
+      },
+      {
+        "path": "/register",
+        "title": "Register",
+        "description": "Registratiepagina voor nieuwe gebruikers",
+        "auth": false,
+        "layout": "app/layout.tsx",
+        "components": [
+          "Navbar",
+          "AuthForm"
+        ]
+      },
+      {
+        "path": "/dashboard",
+        "title": "Dashboard",
+        "description": "Overzicht van AI-taken van de gebruiker",
+        "auth": true,
+        "layout": "app/dashboard/layout.tsx",
+        "components": [
+          "Navbar",
+          "TaskList",
+          "TaskItem"
+        ]
+      },
+      {
+        "path": "/dashboard/profile",
+        "title": "Profile",
+        "description": "Profielpagina van de gebruiker",
+        "auth": true,
+        "layout": "app/dashboard/layout.tsx",
+        "components": [
+          "Navbar",
+          "ProfileCard"
+        ]
+      },
+      {
+        "path": "/dashboard/tasks/new",
+        "title": "New Task",
+        "description": "Pagina voor het aanmaken van een nieuwe AI-taak",
+        "auth": true,
+        "layout": "app/dashboard/layout.tsx",
+        "components": [
+          "Navbar",
+          "TaskForm"
+        ]
+      },
+      {
+        "path": "/dashboard/tasks/[id]",
+        "title": "Task Details",
+        "description": "Pagina voor het bekijken van details van een specifieke AI-taak",
+        "auth": true,
+        "layout": "app/dashboard/layout.tsx",
+        "components": [
+          "Navbar",
+          "TaskDetail"
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "name": "User Registration",
+        "description": "Nieuwe gebruiker registreert een account",
+        "steps": [
+          "User navigates to /register",
+          "User fills in email, password, and optional name",
+          "System validates input",
+          "System creates user with hashed password",
+          "System creates session and sets HTTP-only cookie",
+          "User is redirected to /dashboard"
+        ]
+      },
+      {
+        "name": "User Login",
+        "description": "Bestaande gebruiker logt in",
+        "steps": [
+          "User navigates to /login",
+          "User enters email and password",
+          "System validates credentials",
+          "System creates session and sets HTTP-only cookie",
+          "User is redirected to /dashboard"
+        ]
+      },
+      {
+        "name": "Create AI Task",
+        "description": "Gebruiker maakt een nieuwe AI-taak aan",
+        "steps": [
+          "User navigates to /dashboard/tasks/new",
+          "User fills in title and optional description",
+          "System validates input",
+          "System creates AITask linked to current user",
+          "User is redirected to /dashboard with success message"
+        ]
+      },
+      {
+        "name": "View AI Tasks",
+        "description": "Gebruiker bekijkt lijst van AI-taken",
+        "steps": [
+          "User navigates to /dashboard",
+          "System fetches all tasks for current user",
+          "System displays tasks in TaskList component",
+          "User can click on task to view details"
+        ]
+      },
+      {
+        "name": "Delete AI Task",
+        "description": "Gebruiker verwijdert een AI-taak",
+        "steps": [
+          "User views task details at /dashboard/tasks/[id]",
+          "User clicks delete button",
+          "System confirms deletion",
+          "System removes task from store",
+          "User is redirected to /dashboard"
+        ]
+      },
+      {
+        "name": "Update Profile",
+        "description": "Gebruiker werkt profiel bij",
+        "steps": [
+          "User navigates to /dashboard/profile",
+          "System displays current profile information",
+          "User updates name or email",
+          "System validates input",
+          "System updates user record",
+          "Success message is displayed"
+        ]
+      }
+    ],
+    "definitionOfDone": [
+      "All pages render correctly with shadcn/ui and Tailwind CSS",
+      "Authentication flow works: register, login, logout",
+      "Protected routes redirect unauthenticated users to /login",
+      "Users can create, view, and delete their own AI tasks",
+      "Users can view and update their profile",
+      "All API routes return proper error responses",
+      "Session management via HTTP-only cookies is implemented",
+      "In-memory store correctly isolates user data",
+      "All components are TypeScript typed",
+      "Responsive design works on mobile and desktop",
+      "Form validation provides clear error messages",
+      "Success/error feedback is shown to users"
+    ],
+    "errorContract": {
+      "code": "ERR_STANDARD",
+      "http": 200,
+      "structure": {
+        "success": "boolean",
+        "error": {
+          "code": "string",
+          "message": "string",
+          "details": "object?"
+        }
+      },
+      "examples": [
+        {
+          "code": "AUTH_INVALID_CREDENTIALS",
+          "message": "Invalid email or password"
+        },
+        {
+          "code": "AUTH_USER_EXISTS",
+          "message": "User with this email already exists"
+        },
+        {
+          "code": "TASK_NOT_FOUND",
+          "message": "Task not found"
+        },
+        {
+          "code": "UNAUTHORIZED",
+          "message": "Authentication required"
+        },
+        {
+          "code": "FORBIDDEN",
+          "message": "You don't have permission to access this resource"
+        },
+        {
+          "code": "VALIDATION_ERROR",
+          "message": "Invalid input data",
+          "details": {
+            "field": "error message"
+          }
+        }
+      ]
+    }
+  }
+}
