@@ -1,0 +1,698 @@
+{
+  "appName": "FitTrack Pro",
+  "description": "A modern fitness SaaS app for workout tracking, progress analytics, and habit formation. Features include personalized workout plans, exercise logging, dashboards, goal tracking, reminders, and nutrition logging. Multi-user, secure authentication, and extensible for future integrations.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "All UI uses shadcn/ui components styled with Tailwind. API endpoints are colocated in app/api/* and use in-memory store for MVP."
+  },
+  "domains": [
+    {
+      "name": "User",
+      "description": "Represents an authenticated user of the app.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "A registered user with authentication credentials.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique user identifier"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "User email address"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "User's display name"
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "required": true,
+              "description": "Hashed password"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Account creation timestamp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Workout",
+      "description": "Workout plans and exercise logs.",
+      "entities": [
+        {
+          "name": "WorkoutPlan",
+          "description": "A personalized workout plan for a user.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique plan identifier"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Owner user ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Plan name"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Plan description"
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Creation timestamp"
+            },
+            {
+              "name": "exercises",
+              "type": "ExerciseTemplate[]",
+              "required": true,
+              "description": "List of exercises in the plan"
+            }
+          ]
+        },
+        {
+          "name": "ExerciseTemplate",
+          "description": "Template for an exercise within a workout plan.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique exercise template ID"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Exercise name"
+            },
+            {
+              "name": "targetMuscle",
+              "type": "string",
+              "required": false,
+              "description": "Targeted muscle group"
+            },
+            {
+              "name": "sets",
+              "type": "number",
+              "required": true,
+              "description": "Number of sets"
+            },
+            {
+              "name": "reps",
+              "type": "number",
+              "required": true,
+              "description": "Number of reps per set"
+            }
+          ]
+        },
+        {
+          "name": "ExerciseLog",
+          "description": "A user's log entry for a performed exercise.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique log entry ID"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "User who performed the exercise"
+            },
+            {
+              "name": "workoutPlanId",
+              "type": "string",
+              "required": false,
+              "description": "Associated workout plan"
+            },
+            {
+              "name": "exerciseName",
+              "type": "string",
+              "required": true,
+              "description": "Name of the exercise"
+            },
+            {
+              "name": "date",
+              "type": "Date",
+              "required": true,
+              "description": "Date of exercise"
+            },
+            {
+              "name": "sets",
+              "type": "number",
+              "required": true,
+              "description": "Sets performed"
+            },
+            {
+              "name": "reps",
+              "type": "number",
+              "required": true,
+              "description": "Reps per set"
+            },
+            {
+              "name": "weight",
+              "type": "number",
+              "required": false,
+              "description": "Weight used (kg)"
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "required": false,
+              "description": "Optional notes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Progress",
+      "description": "Tracks user progress, goals, and analytics.",
+      "entities": [
+        {
+          "name": "Goal",
+          "description": "A fitness goal set by the user.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique goal ID"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Owner user ID"
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "required": true,
+              "description": "Goal type (e.g. weight, reps, frequency)"
+            },
+            {
+              "name": "targetValue",
+              "type": "number",
+              "required": true,
+              "description": "Target value for the goal"
+            },
+            {
+              "name": "currentValue",
+              "type": "number",
+              "required": false,
+              "description": "Current progress value"
+            },
+            {
+              "name": "unit",
+              "type": "string",
+              "required": false,
+              "description": "Unit of measurement"
+            },
+            {
+              "name": "deadline",
+              "type": "Date",
+              "required": false,
+              "description": "Goal deadline"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Nutrition",
+      "description": "Basic nutrition logging for users.",
+      "entities": [
+        {
+          "name": "NutritionLog",
+          "description": "A user's nutrition log entry.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique nutrition log ID"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Owner user ID"
+            },
+            {
+              "name": "date",
+              "type": "Date",
+              "required": true,
+              "description": "Date of entry"
+            },
+            {
+              "name": "mealType",
+              "type": "string",
+              "required": true,
+              "description": "Meal type (breakfast, lunch, etc.)"
+            },
+            {
+              "name": "calories",
+              "type": "number",
+              "required": false,
+              "description": "Calories consumed"
+            },
+            {
+              "name": "protein",
+              "type": "number",
+              "required": false,
+              "description": "Protein (g)"
+            },
+            {
+              "name": "carbs",
+              "type": "number",
+              "required": false,
+              "description": "Carbohydrates (g)"
+            },
+            {
+              "name": "fat",
+              "type": "number",
+              "required": false,
+              "description": "Fat (g)"
+            },
+            {
+              "name": "notes",
+              "type": "string",
+              "required": false,
+              "description": "Optional notes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "description": "Reminders and notifications for users.",
+      "entities": [
+        {
+          "name": "Notification",
+          "description": "A scheduled or triggered notification.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique notification ID"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Recipient user ID"
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "required": true,
+              "description": "Notification type (reminder, goal, etc.)"
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "required": true,
+              "description": "Notification message"
+            },
+            {
+              "name": "scheduledAt",
+              "type": "Date",
+              "required": false,
+              "description": "Scheduled time"
+            },
+            {
+              "name": "read",
+              "type": "boolean",
+              "required": true,
+              "description": "Has the notification been read"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "layout",
+      "description": "Root layout with navigation and authentication context.",
+      "file": "app/layout.tsx",
+      "layout": null
+    },
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Landing/dashboard page after login.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "User login page.",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/register",
+      "type": "page",
+      "description": "User registration page.",
+      "file": "app/register/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/workouts",
+      "type": "page",
+      "description": "List and manage workout plans.",
+      "file": "app/workouts/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/workouts/[id]",
+      "type": "page",
+      "description": "View/edit a specific workout plan.",
+      "file": "app/workouts/[id]/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/log",
+      "type": "page",
+      "description": "Log a new exercise session.",
+      "file": "app/log/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/progress",
+      "type": "page",
+      "description": "Progress dashboard with analytics and goal tracking.",
+      "file": "app/progress/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/goals",
+      "type": "page",
+      "description": "Set and manage fitness goals.",
+      "file": "app/goals/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/nutrition",
+      "type": "page",
+      "description": "Log and view nutrition entries.",
+      "file": "app/nutrition/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/notifications",
+      "type": "page",
+      "description": "View and manage notifications/reminders.",
+      "file": "app/notifications/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/settings",
+      "type": "page",
+      "description": "User profile and settings.",
+      "file": "app/settings/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "description": "Authenticate user and return session token."
+    },
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ],
+      "description": "Register a new user."
+    },
+    {
+      "path": "/api/auth/logout",
+      "methods": [
+        "POST"
+      ],
+      "description": "Logout user and destroy session."
+    },
+    {
+      "path": "/api/user",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "description": "Get or update current user profile."
+    },
+    {
+      "path": "/api/workouts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List all workout plans for user or create new plan."
+    },
+    {
+      "path": "/api/workouts/[id]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific workout plan."
+    },
+    {
+      "path": "/api/exerciselogs",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create exercise log entries."
+    },
+    {
+      "path": "/api/exerciselogs/[id]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific exercise log entry."
+    },
+    {
+      "path": "/api/goals",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create user goals."
+    },
+    {
+      "path": "/api/goals/[id]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific goal."
+    },
+    {
+      "path": "/api/nutritionlogs",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create nutrition log entries."
+    },
+    {
+      "path": "/api/nutritionlogs/[id]",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Get, update, or delete a specific nutrition log entry."
+    },
+    {
+      "path": "/api/notifications",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "List or create notifications."
+    },
+    {
+      "path": "/api/notifications/[id]",
+      "methods": [
+        "PATCH",
+        "DELETE"
+      ],
+      "description": "Update or delete a notification."
+    }
+  ],
+  "components": [
+    {
+      "name": "Navbar",
+      "description": "Main navigation bar with links and user menu.",
+      "file": "components/Navbar.tsx",
+      "usedOn": [
+        "/",
+        "/workouts",
+        "/log",
+        "/progress",
+        "/goals",
+        "/nutrition",
+        "/notifications",
+        "/settings"
+      ]
+    },
+    {
+      "name": "WorkoutPlanList",
+      "description": "Displays a list of workout plans.",
+      "file": "components/WorkoutPlanList.tsx",
+      "usedOn": [
+        "/workouts"
+      ]
+    },
+    {
+      "name": "WorkoutPlanForm",
+      "description": "Form to create or edit a workout plan.",
+      "file": "components/WorkoutPlanForm.tsx",
+      "usedOn": [
+        "/workouts",
+        "/workouts/[id]"
+      ]
+    },
+    {
+      "name": "ExerciseLogForm",
+      "description": "Form to log a new exercise session.",
+      "file": "components/ExerciseLogForm.tsx",
+      "usedOn": [
+        "/log"
+      ]
+    },
+    {
+      "name": "ExerciseLogList",
+      "description": "Displays a list of exercise logs.",
+      "file": "components/ExerciseLogList.tsx",
+      "usedOn": [
+        "/progress"
+      ]
+    },
+    {
+      "name": "GoalList",
+      "description": "Displays user goals and progress.",
+      "file": "components/GoalList.tsx",
+      "usedOn": [
+        "/goals",
+        "/progress"
+      ]
+    },
+    {
+      "name": "GoalForm",
+      "description": "Form to create or edit a goal.",
+      "file": "components/GoalForm.tsx",
+      "usedOn": [
+        "/goals"
+      ]
+    },
+    {
+      "name": "NutritionLogForm",
+      "description": "Form to log nutrition data.",
+      "file": "components/NutritionLogForm.tsx",
+      "usedOn": [
+        "/nutrition"
+      ]
+    },
+    {
+      "name": "NutritionLogList",
+      "description": "Displays a list of nutrition logs.",
+      "file": "components/NutritionLogList.tsx",
+      "usedOn": [
+        "/nutrition"
+      ]
+    },
+    {
+      "name": "NotificationList",
+      "description": "Displays user notifications and reminders.",
+      "file": "components/NotificationList.tsx",
+      "usedOn": [
+        "/notifications"
+      ]
+    },
+    {
+      "name": "ProgressDashboard",
+      "description": "Shows analytics and progress charts.",
+      "file": "components/ProgressDashboard.tsx",
+      "usedOn": [
+        "/progress"
+      ]
+    },
+    {
+      "name": "UserSettingsForm",
+      "description": "Form to update user profile and settings.",
+      "file": "components/UserSettingsForm.tsx",
+      "usedOn": [
+        "/settings"
+      ]
+    },
+    {
+      "name": "AuthForm",
+      "description": "Reusable authentication form for login/register.",
+      "file": "components/AuthForm.tsx",
+      "usedOn": [
+        "/login",
+        "/register"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React Context for authentication and user state; local component state for forms and UI; server state fetched via API routes.",
+    "notes": "Authentication context is provided at the root layout. Data fetching uses Next.js server components and client-side hooks as needed."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store for all entities (users, workouts, logs, etc.) via singleton modules; replaceable with persistent DB in future.",
+    "notes": "All API routes interact with a shared in-memory store. Entities are keyed by userId for multi-user support. No external DB in MVP."
+  }
+}
