@@ -16,15 +16,11 @@ const radioStyles = cva('form-radio h-4 w-4 text-primary-700', {
   }
 });
 
-export const Radio: React.FC<RadioProps> = ({ label, name, checked, ...props }) => (
-  <div className="flex items-center">
-    <input
-      type="radio"
-      name={name}
-      className={radioStyles({ checked })}
-      checked={checked}
-      {...props}
-    />
-    <label className="ml-2 text-primary-700">{label}</label>
-  </div>
-);
+export const Radio: React.FC<RadioProps> = ({ label, name, checked, ...props }) => {
+  return (
+    <label className="inline-flex items-center">
+      <input type="radio" name={name} className={radioStyles({ checked })} checked={checked} {...props} />
+      <span className="ml-2 text-primary-700">{label}</span>
+    </label>
+  );
+};

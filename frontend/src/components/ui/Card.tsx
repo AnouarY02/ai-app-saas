@@ -4,16 +4,18 @@ import { cn } from "@/lib/utils";
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, children, ...props }, ref) => {
     return (
       <div
         ref={ref}
         className={cn(
-          "bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow",
+          "bg-white shadow-md rounded-lg overflow-hidden transition-transform transform hover:scale-105",
           className
         )}
         {...props}
-      />
+      >
+        {children}
+      </div>
     );
   }
 );

@@ -14,13 +14,15 @@ const switchStyles = cva('relative inline-flex items-center h-6 rounded-full w-1
   }
 });
 
-export const Switch: React.FC<SwitchProps> = ({ checked, ...props }) => (
-  <label className="flex items-center cursor-pointer">
-    <input type="checkbox" className="sr-only" checked={checked} {...props} />
-    <div className={switchStyles({ checked })}>
-      <span
-        className={`transform transition ease-in-out duration-200 ${checked ? 'translate-x-6' : 'translate-x-1'} inline-block w-4 h-4 bg-white rounded-full`}
-      />
-    </div>
-  </label>
-);
+export const Switch: React.FC<SwitchProps> = ({ checked, ...props }) => {
+  return (
+    <label className="inline-flex items-center cursor-pointer">
+      <input type="checkbox" className="sr-only" checked={checked} {...props} />
+      <span className={switchStyles({ checked })}>
+        <span
+          className={`transform transition ease-in-out duration-200 ${checked ? 'translate-x-6' : 'translate-x-1'} inline-block w-4 h-4 bg-white rounded-full`}
+        />
+      </span>
+    </label>
+  );
+};
