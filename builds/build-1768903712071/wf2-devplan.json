@@ -1,0 +1,49 @@
+{
+  "featurePrompt": "Build features for \"AI App\". Generate a complete feature set and an implementation plan based on the blueprint.",
+  "generatedFiles": 7,
+  "files": [
+    {
+      "path": "app/dashboard/tasks/[id]/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Pagina voor het tonen van details van een specifieke AI-taak."
+    },
+    {
+      "path": "components/tasks/task-detail.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component voor het tonen van de details van een AI-taak."
+    },
+    {
+      "path": "app/dashboard/tasks/[id]/edit/page.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Pagina voor het bewerken van een bestaande AI-taak."
+    },
+    {
+      "path": "components/tasks/task-form.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Formuliercomponent voor het toevoegen of bewerken van een AI-taak."
+    },
+    {
+      "path": "app/api/tasks/[id]/route.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "API-route voor ophalen, bijwerken en verwijderen van een specifieke AI-taak."
+    },
+    {
+      "path": "lib/tasks/utils.ts",
+      "role": "backend",
+      "kind": "code",
+      "description": "Helperfuncties voor het beheren van AI-taken in-memory."
+    },
+    {
+      "path": "components/tasks/task-list.tsx",
+      "role": "frontend",
+      "kind": "code",
+      "description": "Component voor het tonen van een lijst met AI-taken met link naar detailpagina."
+    }
+  ],
+  "generatedAt": "2026-01-20T10:09:37.054Z"
+}
