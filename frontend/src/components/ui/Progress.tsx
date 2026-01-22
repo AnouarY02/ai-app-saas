@@ -7,25 +7,21 @@ export interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
-  ({ className, value, max, ...props }, ref) => {
-    const percentage = (value / max) * 100;
-
-    return (
+  ({ className, value, max, ...props }, ref) => (
+    <div
+      ref={ref}
+      role="progressbar"
+      aria-valuenow={value}
+      aria-valuemin={0}
+      aria-valuemax={max}
+      className={cn("relative w-full h-4 bg-gray-200 rounded", className)}
+      {...props}
+    >
       <div
-        ref={ref}
-        role="progressbar"
-        aria-valuenow={value}
-        aria-valuemin={0}
-        aria-valuemax={max}
-        className={cn("w-full bg-gray-200 rounded", className)}
-        {...props}
-      >
-        <div
-          className="bg-blue-600 h-4 rounded"
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
-    );
-  }
+        className="absolute top-0 left-0 h-full bg-success-600 rounded"
+        style={{ width: `${(value / max) * 100}%` }}
+      />
+    </div>
+  )
 );
 Progress.displayName = "Progress";
