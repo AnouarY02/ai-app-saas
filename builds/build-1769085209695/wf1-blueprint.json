@@ -1,0 +1,203 @@
+{
+  "appName": "TaskManager",
+  "description": "Simple task management app with user authentication",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "The app will use Next.js for server-side rendering and API routes, Tailwind CSS for styling, and shadcn/ui for UI components."
+  },
+  "domains": [
+    {
+      "name": "User",
+      "description": "Represents a user of the application",
+      "entities": [
+        {
+          "name": "User",
+          "description": "A registered user",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the user"
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Email address of the user"
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "required": true,
+              "description": "Hashed password for authentication"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Name of the user"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Task",
+      "description": "Represents a task in the application",
+      "entities": [
+        {
+          "name": "Task",
+          "description": "A task created by a user",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the task"
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "description": "Title of the task"
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Detailed description of the task"
+            },
+            {
+              "name": "completed",
+              "type": "boolean",
+              "required": true,
+              "description": "Status of the task"
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Identifier of the user who created the task"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Home page showing user's tasks",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Login page for user authentication",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/register",
+      "type": "page",
+      "description": "Registration page for new users",
+      "file": "app/register/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/tasks",
+      "type": "page",
+      "description": "Page to manage tasks",
+      "file": "app/tasks/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "description": "API route for user login"
+    },
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ],
+      "description": "API route for user registration"
+    },
+    {
+      "path": "/api/tasks",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API route to get and create tasks"
+    },
+    {
+      "path": "/api/tasks/:id",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ],
+      "description": "API route to update or delete a task"
+    }
+  ],
+  "components": [
+    {
+      "name": "TaskList",
+      "description": "Component to display a list of tasks",
+      "file": "components/TaskList.tsx",
+      "usedOn": [
+        "/",
+        "/tasks"
+      ]
+    },
+    {
+      "name": "TaskItem",
+      "description": "Component to display a single task",
+      "file": "components/TaskItem.tsx",
+      "usedOn": [
+        "/",
+        "/tasks"
+      ]
+    },
+    {
+      "name": "LoginForm",
+      "description": "Component for the login form",
+      "file": "components/LoginForm.tsx",
+      "usedOn": [
+        "/login"
+      ]
+    },
+    {
+      "name": "RegisterForm",
+      "description": "Component for the registration form",
+      "file": "components/RegisterForm.tsx",
+      "usedOn": [
+        "/register"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "Context API with useReducer",
+    "notes": "Using React's Context API and useReducer for managing global state such as user authentication status."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store using React state",
+    "notes": "Tasks and user data will be managed in-memory for simplicity, suitable for a small-scale application."
+  }
+}
