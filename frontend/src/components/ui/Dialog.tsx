@@ -7,26 +7,24 @@ export interface DialogProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
-  ({ className, isOpen, onClose, children, ...props }, ref) => {
-    if (!isOpen) return null;
-
-    return (
+  ({ className, isOpen, onClose, children, ...props }, ref) => (
+    isOpen ? (
       <div
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-        onClick={onClose}
+        className="fixed inset-0 z-50 flex items-center justify-center"
+        aria-modal="true"
+        role="dialog"
+        {...props}
       >
+        <div className="fixed inset-0 bg-black opacity-50" onClick={onClose} />
         <div
           ref={ref}
-          role="dialog"
-          aria-modal="true"
-          className={cn("bg-white rounded-lg p-6", className)}
-          onClick={(e) => e.stopPropagation()}
-          {...props}
+          className={cn("bg-white rounded-lg shadow-lg z-10", className)}
         >
           {children}
+          <button onClick={onClose} className="absolute top-0 right-0 m-2">Close</button>
         </div>
       </div>
-    );
-  }
+    ) : null
+  )
 );
 Dialog.displayName = "Dialog";
