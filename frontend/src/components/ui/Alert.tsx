@@ -7,14 +7,14 @@ interface AlertProps {
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(({ variant, message }, ref) => {
   const variantClasses = {
-    success: 'bg-success-600 text-white',
-    error: 'bg-error-600 text-white',
-    warning: 'bg-yellow-600 text-black',
-    info: 'bg-blue-600 text-white',
+    success: 'bg-success-600',
+    error: 'bg-error-600',
+    warning: 'bg-yellow-600',
+    info: 'bg-blue-600',
   };
 
   return (
-    <div ref={ref} className={`p-4 rounded ${variantClasses[variant]}`}>
+    <div ref={ref} className={`p-4 text-white ${variantClasses[variant]}`}>
       {message}
     </div>
   );

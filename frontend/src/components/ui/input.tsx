@@ -17,10 +17,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   error?: boolean;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(({ error, className, ...props }, ref) => {
-  return <input ref={ref} className={`${inputVariants({ error: error ? 'true' : 'false' })} ${className}`} {...props} />;
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ error, className, ...props }, ref) => {
+  return <input ref={ref} className={inputVariants({ error: error ? 'true' : 'false', className })} {...props} />;
 });
 
 Input.displayName = 'Input';
-
-export default Input;

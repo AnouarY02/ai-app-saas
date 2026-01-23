@@ -1,6 +1,6 @@
-# TaskManager Design System
+# Test App Design System
 
-🎨 **TaskManager embraces a professional yet energetic visual identity centered around productivity and focus. The deep forest green primary color evokes growth and completion, while warm amber accents add energy and highlight important actions, creating a balanced system that feels both trustworthy and motivating.**
+🎨 **A sophisticated and trustworthy design system that balances professionalism with approachability for modern SaaS applications. The color palette emphasizes clarity and reliability while maintaining visual interest through carefully balanced contrasts and semantic meaning.**
 
 ## Stats
 - Components: 18
@@ -9,8 +9,8 @@
 - Quality: 9.5/10
 
 ## Colors
-- Primary: #22a06b
-- Secondary: #eab308
+- Primary: #0284c7
+- Secondary: #64748b
 
 ## Components
 1. **Spinner** - Component
@@ -25,9 +25,9 @@
 10. **Textarea** - Component
 11. **Switch** - Component
 12. **Label** - Component
-13. **Alert** - A feedback component to display alert messages with different variants.
+13. **Alert** - A component to display alert messages with different variants.
 14. **Dialog** - A modal dialog component with a backdrop.
-15. **Tooltip** - A tooltip component to display additional information on hover.
+15. **Tooltip** - A tooltip component to display additional information.
 16. **ProgressBar** - A progress bar component to indicate progress.
 17. **Avatar** - An avatar component with fallback initials.
 18. **Toast** - A toast notification component.

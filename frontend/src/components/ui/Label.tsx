@@ -1,23 +1,19 @@
 import React from 'react';
 import { cva } from 'class-variance-authority';
 
-type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement> & {
+interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
-};
+}
 
-const labelStyles = cva('block text-sm font-medium text-gray-700', {
-  variants: {
-    required: {
-      true: 'after:content-["*"] after:ml-0.5 after:text-red-500',
-      false: '',
-    },
-  },
-});
+const labelStyles = cva('block text-sm font-medium text-gray-700');
 
-export const Label: React.FC<LabelProps> = ({ children, required, ...props }) => {
+const Label: React.FC<LabelProps> = ({ children, required, className, ...props }) => {
   return (
-    <label className={labelStyles({ required })} {...props}>
+    <label className={labelStyles({ className })} {...props}>
       {children}
+      {required && <span className="text-red-500"> *</span>}
     </label>
   );
 };
+
+export default Label;
