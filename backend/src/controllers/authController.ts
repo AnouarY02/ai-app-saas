@@ -1,54 +1,53 @@
 import { Request, Response, NextFunction } from 'express';
-import { findUserByEmail, createUser } from '../services/userService';
-import { comparePasswords, hashPassword, signJwt } from '../services/authService';
-import { logWithTimestamp } from '../utils/logger';
+import * as authService from '../services/authService';
+import { z } from 'zod';
+import { registerRequestSchema, loginRequestSchema, updateProfileRequestSchema } from '../types/validators';
 
-export async function loginUser(req: Request, res: Response, next: NextFunction) {
+export async function register(req: Request, res: Response, next: NextFunction) {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password required.' });
-    }
-    const user = await findUserByEmail(email);
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials.' });
-    }
-    const valid = await comparePasswords(password, user.hashed_password);
-    if (!valid) {
-      return res.status(401).json({ error: 'Invalid credentials.' });
-    }
-    const token = signJwt({ userId: user.id, email: user.email });
-    logWithTimestamp(`User ${user.email} logged in.`);
-    res.json({ token });
+    const data = registerRequestSchema.parse(req.body);
+    const result = await authService.register(data);
+    res.status(201).json(result);
   } catch (err) {
     next(err);
   }
 }
 
-export async function registerUser(req: Request, res: Response, next: NextFunction) {
+export async function login(req: Request, res: Response, next: NextFunction) {
   try {
-    const { email, password, full_name } = req.body;
-    if (!email || !password || !full_name) {
-      return res.status(400).json({ error: 'Email, password, and full name required.' });
-    }
-    const existing = await findUserByEmail(email);
-    if (existing) {
-      return res.status(409).json({ error: 'Email already registered.' });
-    }
-    const hashed_password = await hashPassword(password);
-    const user = await createUser({ email, hashed_password, full_name });
-    const token = signJwt({ userId: user.id, email: user.email });
-    logWithTimestamp(`User ${user.email} registered.`);
-    res.status(201).json({ token });
+    const data = loginRequestSchema.parse(req.body);
+    const result = await authService.login(data);
+    res.json(result);
   } catch (err) {
     next(err);
   }
 }
 
-export async function logoutUser(req: Request, res: Response, next: NextFunction) {
+export async function logout(req: Request, res: Response, next: NextFunction) {
   try {
-    // Stateless JWT: client deletes token
-    res.json({ success: true });
+    // Stateless JWT: just respond success
+    res.json({ message: 'Logged out successfully' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getProfile(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user?.id;
+    const user = await authService.getProfile(userId);
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateProfile(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user?.id;
+    const data = updateProfileRequestSchema.parse(req.body);
+    const user = await authService.updateProfile(userId, data);
+    res.json(user);
   } catch (err) {
     next(err);
   }

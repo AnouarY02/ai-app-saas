@@ -1,19 +1,21 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import app from './app';
-import { logWithTimestamp } from './utils/logger';
+import { logger } from './utils/logger';
 
 const PORT = process.env.PORT || 4000;
 
 const server = app.listen(PORT, () => {
-  logWithTimestamp(`🚀 FitTrack Pro backend running on port ${PORT}`);
+  logger.info(`Server listening on port ${PORT}`);
 });
 
-function gracefulShutdown(signal: string) {
-  logWithTimestamp(`Received ${signal}. Shutting down gracefully...`);
+const shutdown = () => {
+  logger.info('Received shutdown signal, closing server...');
   server.close(() => {
-    logWithTimestamp('Server closed. Bye!');
+    logger.info('Server closed. Exiting process.');
     process.exit(0);
   });
-}
+};
 
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

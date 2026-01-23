@@ -1,50 +1,59 @@
-import { Request, Response } from 'express';
-import { listAllTasks, createTask, getTaskById, updateTask, deleteTask } from '../services/taskService';
+import { Request, Response, NextFunction } from 'express';
+import * as taskService from '../services/taskService';
+import { createTaskRequestSchema, updateTaskRequestSchema, queryParamsSchema, pathParamsSchema } from '../types/validators';
 
-export async function listTasks(req: Request, res: Response) {
+export async function listTasks(req: Request, res: Response, next: NextFunction) {
   try {
-    res.json(listAllTasks(req.query));
+    const userId = req.user?.id;
+    const query = queryParamsSchema.parse(req.query);
+    const tasks = await taskService.listTasks(userId, query);
+    res.json(tasks);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to list tasks' });
+    next(err);
   }
 }
 
-export async function createTask(req: Request, res: Response) {
+export async function createTask(req: Request, res: Response, next: NextFunction) {
   try {
-    const task = createTask(req.body);
+    const userId = req.user?.id;
+    const data = createTaskRequestSchema.parse(req.body);
+    const task = await taskService.createTask(userId, data);
     res.status(201).json(task);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create task' });
+    next(err);
   }
 }
 
-export async function getTask(req: Request, res: Response) {
+export async function getTask(req: Request, res: Response, next: NextFunction) {
   try {
-    const { taskId } = req.params;
-    const task = getTaskById(taskId);
-    if (!task) return res.status(404).json({ error: 'Task not found' });
+    const userId = req.user?.id;
+    const { id } = pathParamsSchema.parse(req.params);
+    const task = await taskService.getTask(userId, id);
     res.json(task);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to get task' });
+    next(err);
   }
 }
 
-export async function updateTask(req: Request, res: Response) {
+export async function updateTask(req: Request, res: Response, next: NextFunction) {
   try {
-    const { taskId } = req.params;
-    const task = updateTask(taskId, req.body);
+    const userId = req.user?.id;
+    const { id } = pathParamsSchema.parse(req.params);
+    const data = updateTaskRequestSchema.parse(req.body);
+    const task = await taskService.updateTask(userId, id, data);
     res.json(task);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update task' });
+    next(err);
   }
 }
 
-export async function deleteTask(req: Request, res: Response) {
+export async function deleteTask(req: Request, res: Response, next: NextFunction) {
   try {
-    const { taskId } = req.params;
-    deleteTask(taskId);
-    res.json({ success: true });
+    const userId = req.user?.id;
+    const { id } = pathParamsSchema.parse(req.params);
+    await taskService.deleteTask(userId, id);
+    res.json({ message: 'Task deleted successfully' });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete task' });
+    next(err);
   }
 }

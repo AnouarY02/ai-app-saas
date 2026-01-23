@@ -1,15 +1,5 @@
-// API contract types
-import type { UserPublic, Task } from './user';
-import type { TaskStatus } from './task';
-
-export interface AuthResponse {
-  token: string;
-  user: UserPublic;
-}
-
-export interface SuccessResponse {
-  message: string;
-}
+import { UserPublic } from '../models/User';
+import { Task } from '../models/Task';
 
 export interface RegisterRequest {
   email: string;
@@ -27,21 +17,30 @@ export interface UpdateProfileRequest {
   password?: string;
 }
 
+export interface AuthResponse {
+  token: string;
+  user: UserPublic;
+}
+
+export interface SuccessResponse {
+  message: string;
+}
+
 export interface CreateTaskRequest {
   title: string;
   description?: string;
-  dueDate?: string;
+  dueDate?: Date;
 }
 
 export interface UpdateTaskRequest {
   title?: string;
   description?: string;
-  status?: TaskStatus;
-  dueDate?: string;
+  status?: string;
+  dueDate?: Date;
 }
 
 export interface QueryParams {
-  status?: TaskStatus;
+  status?: string;
   dueDate?: string;
 }
 

@@ -1,8 +1,16 @@
 export interface User {
   id: string;
   email: string;
-  password_hash: string;
-  name: string;
-  created_at: Date;
-  updated_at: Date;
+  passwordHash: string;
+  name?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserPublic {
+  id: string;
+  email: string;
+  name?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

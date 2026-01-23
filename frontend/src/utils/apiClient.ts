@@ -1,155 +1,126 @@
-export interface User {
+const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000'
+
+export interface UserPublic {
   id: string
   email: string
-  full_name: string
-  created_at: string
-  updated_at: string
+  name?: string
+  createdAt: string
+  updatedAt: string
 }
 
-export interface UserLoginRequest {
-  email: string
-  password: string
+export interface Task {
+  id: string
+  userId: string
+  title: string
+  description?: string
+  status: 'todo' | 'in_progress' | 'done'
+  dueDate?: string
+  createdAt: string
+  updatedAt: string
 }
 
-export interface UserSignupRequest {
-  email: string
-  password: string
-  full_name: string
-}
-
-export interface UserProfileUpdateRequest {
-  full_name?: string
-  password?: string
-}
-
-export interface AuthTokenResponse {
+export interface AuthResponse {
   token: string
-}
-
-export interface Workout {
-  id: string
-  user_id: string
-  date: string
-  type: string
-  duration_minutes: number
-  calories_burned: number
-  notes: string
-  created_at: string
-  updated_at: string
-}
-
-export interface WorkoutCreateRequest {
-  date: string
-  type: string
-  duration_minutes: number
-  calories_burned: number
-  notes: string
-}
-
-export interface WorkoutUpdateRequest {
-  date?: string
-  type?: string
-  duration_minutes?: number
-  calories_burned?: number
-  notes?: string
-}
-
-export interface WorkoutListResponse {
-  workouts: Workout[]
+  user: UserPublic
 }
 
 export interface SuccessResponse {
-  success: boolean
-  message?: string
+  message: string
 }
 
-const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000'
-
-function getAuthHeaders() {
-  const token = localStorage.getItem('token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
-
-export async function loginUser(data: UserLoginRequest): Promise<AuthTokenResponse> {
-  const res = await fetch(`${apiUrl}/api/v1/auth/login`, {
+export async function login(email: string, password: string): Promise<AuthResponse> {
+  const res = await fetch(`${apiUrl}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify({ email, password })
   })
-  if (!res.ok) throw new Error('Invalid credentials')
+  if (!res.ok) throw new Error((await res.json()).message || 'Login failed')
   return res.json()
 }
 
-export async function signupUser(data: UserSignupRequest): Promise<AuthTokenResponse> {
-  const res = await fetch(`${apiUrl}/api/v1/auth/signup`, {
+export async function register(email: string, password: string, name?: string): Promise<AuthResponse> {
+  const res = await fetch(`${apiUrl}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify({ email, password, name })
   })
-  if (!res.ok) throw new Error('Signup failed')
+  if (!res.ok) throw new Error((await res.json()).message || 'Registration failed')
   return res.json()
 }
 
-export async function logoutUser(): Promise<SuccessResponse> {
-  const res = await fetch(`${apiUrl}/api/v1/auth/logout`, {
+export async function getProfile(token: string): Promise<UserPublic> {
+  const res = await fetch(`${apiUrl}/api/users/me`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  if (!res.ok) throw new Error('Unauthorized')
+  return res.json()
+}
+
+export async function updateProfile(token: string, data: { name?: string; password?: string }): Promise<UserPublic> {
+  const res = await fetch(`${apiUrl}/api/users/me`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data)
+  })
+  if (!res.ok) throw new Error((await res.json()).message || 'Update failed')
+  return res.json()
+}
+
+export async function logout(token: string): Promise<SuccessResponse> {
+  const res = await fetch(`${apiUrl}/api/auth/logout`, {
     method: 'POST',
-    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+    headers: { Authorization: `Bearer ${token}` }
   })
   if (!res.ok) throw new Error('Logout failed')
   return res.json()
 }
 
-export async function getCurrentUser(): Promise<User> {
-  const res = await fetch(`${apiUrl}/api/v1/users/me`, {
-    headers: getAuthHeaders()
+export async function fetchTasks(token: string, params?: { status?: string; dueDate?: string }): Promise<Task[]> {
+  const url = new URL(`${apiUrl}/api/tasks`)
+  if (params) {
+    if (params.status) url.searchParams.append('status', params.status)
+    if (params.dueDate) url.searchParams.append('dueDate', params.dueDate)
+  }
+  const res = await fetch(url.toString(), {
+    headers: { Authorization: `Bearer ${token}` }
   })
-  if (!res.ok) throw new Error('Not authenticated')
+  if (!res.ok) throw new Error('Failed to fetch tasks')
   return res.json()
 }
 
-export async function updateCurrentUser(data: UserProfileUpdateRequest): Promise<User> {
-  const res = await fetch(`${apiUrl}/api/v1/users/me`, {
-    method: 'PUT',
-    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-  if (!res.ok) throw new Error('Profile update failed')
-  return res.json()
-}
-
-export async function listWorkouts(): Promise<WorkoutListResponse> {
-  const res = await fetch(`${apiUrl}/api/v1/workouts`, {
-    headers: getAuthHeaders()
-  })
-  if (!res.ok) throw new Error('Failed to fetch workouts')
-  return res.json()
-}
-
-export async function createWorkout(data: WorkoutCreateRequest): Promise<Workout> {
-  const res = await fetch(`${apiUrl}/api/v1/workouts`, {
+export async function createTask(token: string, data: { title: string; description?: string; dueDate?: string }): Promise<Task> {
+  const res = await fetch(`${apiUrl}/api/tasks`, {
     method: 'POST',
-    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify(data)
   })
-  if (!res.ok) throw new Error('Failed to create workout')
+  if (!res.ok) throw new Error((await res.json()).message || 'Create failed')
   return res.json()
 }
 
-export async function updateWorkout(id: string, data: WorkoutUpdateRequest): Promise<Workout> {
-  const res = await fetch(`${apiUrl}/api/v1/workouts/${id}`, {
+export async function getTask(token: string, id: string): Promise<Task> {
+  const res = await fetch(`${apiUrl}/api/tasks/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  if (!res.ok) throw new Error('Task not found')
+  return res.json()
+}
+
+export async function updateTask(token: string, id: string, data: { title?: string; description?: string; status?: string; dueDate?: string }): Promise<Task> {
+  const res = await fetch(`${apiUrl}/api/tasks/${id}`, {
     method: 'PUT',
-    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify(data)
   })
-  if (!res.ok) throw new Error('Failed to update workout')
+  if (!res.ok) throw new Error((await res.json()).message || 'Update failed')
   return res.json()
 }
 
-export async function deleteWorkout(id: string): Promise<SuccessResponse> {
-  const res = await fetch(`${apiUrl}/api/v1/workouts/${id}`, {
+export async function deleteTask(token: string, id: string): Promise<SuccessResponse> {
+  const res = await fetch(`${apiUrl}/api/tasks/${id}`, {
     method: 'DELETE',
-    headers: getAuthHeaders()
+    headers: { Authorization: `Bearer ${token}` }
   })
-  if (!res.ok) throw new Error('Failed to delete workout')
+  if (!res.ok) throw new Error('Delete failed')
   return res.json()
 }

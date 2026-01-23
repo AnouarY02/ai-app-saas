@@ -1,8 +1,6 @@
 import express from 'express';
 import { exec as execCallback } from 'child_process';
 import { promisify } from 'util';
-import fs from 'fs/promises';
-import path from 'path';
 
 const exec = promisify(execCallback);
 const app = express();
@@ -26,17 +24,17 @@ app.get('/health', (req, res) => {
 // ========================================
 app.get('/v1/status', (req, res) => {
   const { buildId } = req.query;
-
+  
   if (!buildId) {
     return res.status(400).json({ error: 'buildId required' });
   }
 
   const build = builds.get(buildId);
-
+  
   if (!build) {
-    return res.status(404).json({
+    return res.status(404).json({ 
       status: 'NOT_FOUND',
-      buildId
+      buildId 
     });
   }
 
@@ -54,13 +52,13 @@ app.get('/v1/status', (req, res) => {
 // ========================================
 app.get('/v1/result', (req, res) => {
   const { buildId } = req.query;
-
+  
   if (!buildId) {
     return res.status(400).json({ error: 'buildId required' });
   }
 
   const build = builds.get(buildId);
-
+  
   if (!build) {
     return res.status(404).json({ error: 'Build not found' });
   }
@@ -70,8 +68,7 @@ app.get('/v1/result', (req, res) => {
     frontendUrl: build.frontendUrl,
     backendUrl: build.backendUrl,
     errorReason: build.errorReason,
-    logs: build.logs,
-    branch: build.branch
+    logs: build.logs
   });
 });
 
@@ -80,13 +77,13 @@ app.get('/v1/result', (req, res) => {
 // ========================================
 app.post('/v1/persistResult', (req, res) => {
   const { buildId, result } = req.body;
-
+  
   if (!buildId || !result) {
     return res.status(400).json({ error: 'buildId and result required' });
   }
 
   const build = builds.get(buildId);
-
+  
   if (build) {
     Object.assign(build, result);
     console.log(`✅ Persisted result for ${buildId}`);
@@ -102,7 +99,7 @@ app.post('/v1/build', async (req, res) => {
   const { buildId, repoOwner, repoName, branch, mode } = req.body;
 
   if (!buildId || !repoOwner || !repoName || !branch) {
-    return res.status(400).json({
+    return res.status(400).json({ 
       error: 'Missing required fields',
       required: ['buildId', 'repoOwner', 'repoName', 'branch']
     });
@@ -122,10 +119,7 @@ app.post('/v1/build', async (req, res) => {
     backendUrl: null,
     errorReason: null,
     logs: '',
-    startedAt: Date.now(),
-    branch: branch,
-    repoOwner: repoOwner,
-    repoName: repoName
+    startedAt: Date.now()
   });
 
   // Start async build
@@ -143,11 +137,11 @@ app.post('/v1/build', async (req, res) => {
 });
 
 // ========================================
-// BUILD RUNNER (Async) - ENHANCED
+// BUILD RUNNER (Async)
 // ========================================
 async function runBuild(buildId, repoOwner, repoName, branch) {
   const build = builds.get(buildId);
-
+  
   const log = (msg) => {
     console.log(msg);
     build.logs += msg + '\n';
@@ -155,40 +149,25 @@ async function runBuild(buildId, repoOwner, repoName, branch) {
 
   try {
     // Step 1: Clone repo
-    log('📦 Step 1/10: Cloning repository...');
+    log('📦 Step 1/6: Cloning repository...');
     const workDir = `/tmp/${buildId}`;
     const repoUrl = `https://${GITHUB_TOKEN}@github.com/${repoOwner}/${repoName}.git`;
-
+    
     await exec(`rm -rf ${workDir}`);
     await exec(`git clone --branch ${branch} --depth 1 ${repoUrl} ${workDir}`);
     log(`✅ Repository cloned to ${workDir}`);
 
-    // Step 2: Apply automatic fixes
-    log('📦 Step 2/10: Applying automatic fixes...');
-    await applyAutomaticFixes(workDir, log);
-    log('✅ Automatic fixes applied');
-
-    // Step 3: Commit and push fixes
-    log('📦 Step 3/10: Committing fixes to GitHub...');
-    await commitAndPushFixes(workDir, branch, log);
-    log('✅ Fixes pushed to GitHub');
-
-    // Step 4: Check for docker-compose
-    log('📦 Step 4/10: Checking docker-compose.yml...');
+    // Step 2: Check for docker-compose
+    log('📦 Step 2/6: Checking docker-compose.yml...');
     try {
-      const composeFile = path.join(workDir, "docker-compose.yml"); await fs.access(composeFile);
+      await exec(`test -f ${workDir}/docker-compose.yml`);
       log('✅ Found docker-compose.yml');
     } catch {
       throw new Error('docker-compose.yml not found in repository');
     }
 
-    // Step 5: Install dependencies
-    log('📦 Step 5/10: Installing dependencies...');
-    await installDependencies(workDir, log);
-    log('✅ Dependencies installed');
-
-    // Step 6: Stop existing containers
-    log('📦 Step 6/10: Cleaning up old containers...');
+    // Step 3: Stop existing containers
+    log('📦 Step 3/6: Cleaning up old containers...');
     try {
       await exec(`cd ${workDir} && docker-compose -p ${buildId} down -v`, { timeout: 30000 });
       log('✅ Old containers stopped');
@@ -196,24 +175,23 @@ async function runBuild(buildId, repoOwner, repoName, branch) {
       log(`⚠️  No old containers: ${err.message}`);
     }
 
-    // Step 7: Build containers
-    log('📦 Step 7/10: Building Docker containers...');
-    const { stdout: buildOutput, stderr: buildErrors } = await exec(
+    // Step 4: Build containers
+    log('📦 Step 4/6: Building Docker containers...');
+    const { stdout: buildOutput } = await exec(
       `cd ${workDir} && docker-compose -p ${buildId} build --no-cache`,
       { timeout: 600000, maxBuffer: 10 * 1024 * 1024 }
     );
     log(buildOutput);
-    if (buildErrors) log(`Build warnings: ${buildErrors}`);
     log('✅ Containers built');
 
-    // Step 8: Start containers
-    log('📦 Step 8/10: Starting containers...');
+    // Step 5: Start containers
+    log('📦 Step 5/6: Starting containers...');
     await exec(`cd ${workDir} && docker-compose -p ${buildId} up -d`);
     log('✅ Containers started');
 
-    // Step 9: Get ports & wait for startup
-    log('📦 Step 9/10: Waiting for services to be ready...');
-    await new Promise(resolve => setTimeout(resolve, 15000));
+    // Step 6: Get ports & health check
+    log('📦 Step 6/6: Health checks...');
+    await new Promise(resolve => setTimeout(resolve, 10000));
 
     const frontendPort = await getContainerPort(buildId, 'frontend', 80);
     const backendPort = await getContainerPort(buildId, 'backend', 3000);
@@ -224,271 +202,31 @@ async function runBuild(buildId, repoOwner, repoName, branch) {
     log(`✅ Frontend: ${build.frontendUrl}`);
     log(`✅ Backend: ${build.backendUrl}`);
 
-    // Step 10: Health checks
-    log('📦 Step 10/10: Running health checks...');
-    await performHealthChecks(build, log);
+    // Health checks
+    try {
+      const backendHealth = await fetch(`${build.backendUrl}/health`);
+      if (!backendHealth.ok) throw new Error('Backend health check failed');
+      log('✅ Backend health check PASSED');
+    } catch (err) {
+      log(`⚠️  Backend health: ${err.message}`);
+    }
+
+    try {
+      const frontendHealth = await fetch(build.frontendUrl);
+      if (!frontendHealth.ok) throw new Error('Frontend health check failed');
+      log('✅ Frontend health check PASSED');
+    } catch (err) {
+      log(`⚠️  Frontend health: ${err.message}`);
+    }
 
     build.status = 'PASS';
-    log('\n' + '='.repeat(60));
-    log('🎉 BUILD COMPLETE!');
-    log('='.repeat(60));
-    log(`\n📱 OPEN YOUR APP:`);
-    log(`   Frontend: ${build.frontendUrl}`);
-    log(`   Backend:  ${build.backendUrl}`);
-    log(`   GitHub:   https://github.com/${repoOwner}/${repoName}/tree/${branch}`);
-    log('\n' + '='.repeat(60) + '\n');
+    log('\n🎉 BUILD COMPLETE!\n');
 
   } catch (err) {
     log(`\n❌ BUILD FAILED: ${err.message}\n`);
-    log(`Stack trace: ${err.stack}\n`);
     build.status = 'FAIL';
     build.errorReason = err.message;
     throw err;
-  }
-}
-
-// ========================================
-// AUTOMATIC FIXES
-// ========================================
-async function applyAutomaticFixes(workDir, log) {
-  // Fix 1: Create frontend/public directory
-  log('  🔧 Creating frontend/public directory...');
-  const publicDir = path.join(workDir, "frontend/public"); await fs.mkdir(publicDir, { recursive: true });
-  
-  // Fix 2: Create vite.svg in public if missing
-  const viteSvgPath = path.join(workDir, 'frontend/public/vite.svg');
-  try {
-    await fs.access(viteSvgPath);
-  } catch {
-    log('  🔧 Creating vite.svg...');
-    const viteSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 410 404">
-  <defs>
-    <linearGradient id="a" x1="6%" x2="89%" y1="7%" y2="90%">
-      <stop offset="0%" stop-color="#41D1FF"/>
-      <stop offset="100%" stop-color="#BD34FE"/>
-    </linearGradient>
-  </defs>
-  <path fill="url(#a)" d="M369 352.5 170.6 7.2a23.5 23.5 0 0 0-41.2 0L-29 352.5a23.5 23.5 0 0 0 20.6 35l358.8-.3a23.5 23.5 0 0 0 20.6-34.7Z"/>
-  <path fill="#41D1FF" d="M149.3 336.7c9.7 11.6 28.5 10.8 37 .1l94.9-119.6c9-11.3 2-28-11.6-28H207c-6 0-11.6-2.5-15.6-7a25 25 0 0 1-5.8-19.8l9.7-66c.6-4-4.7-6-7-2.5L81.8 245.3c-8 12.4-.8 29.2 12.4 29.2h42c6.3 0 12.3 2.7 16.4 7.3a26 26 0 0 1 6.2 21.2l-9.5 33.7Z"/>
-</svg>`;
-    await fs.writeFile(viteSvgPath, viteSvg, 'utf-8');
-  }
-
-  // Fix 3: Ensure package.json has required dependencies
-  log('  🔧 Checking frontend package.json...');
-  const frontendPkgPath = path.join(workDir, 'frontend/package.json');
-  try {
-    const pkgContent = await fs.readFile(frontendPkgPath, 'utf-8');
-    const pkg = JSON.parse(pkgContent);
-    
-    let modified = false;
-    const requiredDeps = {
-      'clsx': '^2.1.0',
-      'tailwind-merge': '^2.2.0',
-      'class-variance-authority': '^0.7.0'
-    };
-
-    if (!pkg.dependencies) pkg.dependencies = {};
-    
-    for (const [dep, version] of Object.entries(requiredDeps)) {
-      if (!pkg.dependencies[dep]) {
-        log(`  🔧 Adding missing dependency: ${dep}`);
-        pkg.dependencies[dep] = version;
-        modified = true;
-      }
-    }
-
-    if (modified) {
-      await fs.writeFile(frontendPkgPath, JSON.stringify(pkg, null, 2), 'utf-8');
-      log('  ✅ Updated frontend package.json');
-    }
-  } catch (err) {
-    log(`  ⚠️  Could not update package.json: ${err.message}`);
-  }
-
-  // Fix 4: Fix TypeScript path aliases
-  log('  🔧 Checking TypeScript configuration...');
-  const tsconfigPath = path.join(workDir, 'frontend/tsconfig.json');
-  try {
-    const tsconfigContent = await fs.readFile(tsconfigPath, 'utf-8');
-    const tsconfig = JSON.parse(tsconfigContent);
-    
-    if (!tsconfig.compilerOptions) tsconfig.compilerOptions = {};
-    if (!tsconfig.compilerOptions.paths) {
-      log('  🔧 Adding TypeScript path aliases...');
-      tsconfig.compilerOptions.baseUrl = '.';
-      tsconfig.compilerOptions.paths = {
-        '@/*': ['./src/*']
-      };
-      await fs.writeFile(tsconfigPath, JSON.stringify(tsconfig, null, 2), 'utf-8');
-      log('  ✅ Updated tsconfig.json');
-    }
-  } catch (err) {
-    log(`  ⚠️  Could not update tsconfig.json: ${err.message}`);
-  }
-
-  // Fix 5: Create vite.config.ts if missing path alias
-  log('  🔧 Checking Vite configuration...');
-  const viteConfigPath = path.join(workDir, 'frontend/vite.config.ts');
-  try {
-    let viteConfig = await fs.readFile(viteConfigPath, 'utf-8');
-    
-    if (!viteConfig.includes('resolve:') || !viteConfig.includes('alias:')) {
-      log('  🔧 Adding Vite path alias configuration...');
-      
-      // Add path import if not present
-      if (!viteConfig.includes("import path from 'path'")) {
-        viteConfig = "import path from 'path';\n" + viteConfig;
-      }
-
-      // Add resolve.alias if not present
-      if (!viteConfig.includes('resolve:')) {
-        viteConfig = viteConfig.replace(
-          'export default defineConfig({',
-          `export default defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },`
-        );
-        await fs.writeFile(viteConfigPath, viteConfig, 'utf-8');
-        log('  ✅ Updated vite.config.ts');
-      }
-    }
-  } catch (err) {
-    log(`  ⚠️  Could not update vite.config.ts: ${err.message}`);
-  }
-
-  // Fix 6: Ensure .env files exist
-  log('  🔧 Checking environment files...');
-  const envFiles = [
-    { path: path.join(workDir, '.env'), template: 'NODE_ENV=production\nGITHUB_TOKEN=\n' },
-    { path: path.join(workDir, 'backend/.env'), template: 'PORT=3000\nNODE_ENV=production\n' },
-    { path: path.join(workDir, 'frontend/.env'), template: 'VITE_API_URL=http://localhost:3000\n' }
-  ];
-
-  for (const envFile of envFiles) {
-    try {
-      await fs.access(envFile.path);
-    } catch {
-      log(`  🔧 Creating ${envFile.path}...`);
-      await fs.writeFile(envFile.path, envFile.template, 'utf-8');
-    }
-  }
-}
-
-// ========================================
-// COMMIT AND PUSH FIXES
-// ========================================
-async function commitAndPushFixes(workDir, branch, log) {
-  try {
-    // Configure git
-    await exec(`cd ${workDir} && git config user.email "ai-factory@localhost"`);
-    await exec(`cd ${workDir} && git config user.name "AI Factory"`);
-
-    // Check if there are changes
-    const { stdout: statusOutput } = await exec(`cd ${workDir} && git status --porcelain`);
-    
-    if (statusOutput.trim().length > 0) {
-      log('  📝 Changes detected, committing...');
-      
-      // Add all changes
-      await exec(`cd ${workDir} && git add .`);
-      
-      // Commit
-      const commitMsg = `[AI Factory] Auto-fix: Added missing dependencies and configurations`;
-      await exec(`cd ${workDir} && git commit -m "${commitMsg}"`);
-      
-      // Push to branch
-      await exec(`cd ${workDir} && git push origin ${branch}`);
-      
-      log('  ✅ Changes committed and pushed to GitHub');
-    } else {
-      log('  ℹ️  No changes to commit');
-    }
-  } catch (err) {
-    log(`  ⚠️  Could not commit/push: ${err.message}`);
-  }
-}
-
-// ========================================
-// INSTALL DEPENDENCIES
-// ========================================
-async function installDependencies(workDir, log) {
-  // Install frontend dependencies
-  log('  📦 Installing frontend dependencies...');
-  try {
-    await exec(`cd ${workDir}/frontend && npm install`, { timeout: 300000 });
-    log('  ✅ Frontend dependencies installed');
-  } catch (err) {
-    log(`  ⚠️  Frontend npm install warning: ${err.message}`);
-  }
-
-  // Install backend dependencies
-  log('  📦 Installing backend dependencies...');
-  try {
-    await exec(`cd ${workDir}/backend && npm install`, { timeout: 300000 });
-    log('  ✅ Backend dependencies installed');
-  } catch (err) {
-    log(`  ⚠️  Backend npm install warning: ${err.message}`);
-  }
-
-  // Install shared dependencies if exists
-  const sharedPath = path.join(workDir, 'shared');
-  try {
-    await fs.access(sharedPath);
-    log('  📦 Installing shared dependencies...');
-    await exec(`cd ${workDir}/shared && npm install`, { timeout: 300000 });
-    log('  ✅ Shared dependencies installed');
-  } catch (err) {
-    // Shared folder might not exist, that's okay
-  }
-}
-
-// ========================================
-// HEALTH CHECKS
-// ========================================
-async function performHealthChecks(build, log) {
-  const maxRetries = 5;
-  const retryDelay = 5000;
-
-  // Backend health check with retries
-  log('  🏥 Checking backend health...');
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const backendHealth = await fetch(`${build.backendUrl}/health`, { timeout: 5000 });
-      if (backendHealth.ok) {
-        log('  ✅ Backend health check PASSED');
-        break;
-      }
-    } catch (err) {
-      if (i === maxRetries - 1) {
-        log(`  ⚠️  Backend health check failed after ${maxRetries} attempts: ${err.message}`);
-      } else {
-        log(`  ⏳ Backend not ready yet, retrying in ${retryDelay/1000}s... (${i+1}/${maxRetries})`);
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
-      }
-    }
-  }
-
-  // Frontend health check with retries
-  log('  🏥 Checking frontend health...');
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const frontendHealth = await fetch(build.frontendUrl, { timeout: 5000 });
-      if (frontendHealth.ok) {
-        log('  ✅ Frontend health check PASSED');
-        break;
-      }
-    } catch (err) {
-      if (i === maxRetries - 1) {
-        log(`  ⚠️  Frontend health check failed after ${maxRetries} attempts: ${err.message}`);
-      } else {
-        log(`  ⏳ Frontend not ready yet, retrying in ${retryDelay/1000}s... (${i+1}/${maxRetries})`);
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
-      }
-    }
   }
 }
 
@@ -497,26 +235,17 @@ async function performHealthChecks(build, log) {
 // ========================================
 async function getContainerPort(buildId, serviceName, internalPort) {
   const containerName = `${buildId}_${serviceName}_1`;
-
+  
   try {
     const { stdout } = await exec(
       `docker port ${containerName} ${internalPort} | cut -d: -f2`
     );
     return stdout.trim();
   } catch {
-    // Try alternative method
-    try {
-      const { stdout } = await exec(
-        `docker ps --filter name=${buildId} --filter name=${serviceName} --format "{{.Ports}}" | grep -oP '\\d+(?=->)' | head -1`
-      );
-      return stdout.trim();
-    } catch {
-      // Fallback to docker-compose ps
-      const { stdout } = await exec(
-        `docker-compose -p ${buildId} ps ${serviceName} | grep -oP '0.0.0.0:\\K\\d+' | head -1`
-      );
-      return stdout.trim();
-    }
+    const { stdout } = await exec(
+      `docker ps --filter name=${buildId} --filter name=${serviceName} --format "{{.Ports}}" | grep -oP '\\d+(?=->)' | head -1`
+    );
+    return stdout.trim();
   }
 }
 
@@ -526,17 +255,9 @@ async function getContainerPort(buildId, serviceName, internalPort) {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`
 ╔════════════════════════════════════════╗
-║   🤖 AI FACTORY - WF4 RUNNER           ║
-║   Port: ${PORT.toString().padEnd(28)} ║
-║   Status: READY ✅                     ║
-║                                        ║
-║   Features:                            ║
-║   • Auto-fix missing dependencies      ║
-║   • Auto-fix TypeScript config         ║
-║   • Auto-create required directories   ║
-║   • Auto-commit & push to GitHub       ║
-║   • Docker build & deploy              ║
-║   • Health checks with retries         ║
+║   WF4 RUNNER SERVICE                   ║
+║   Port: ${PORT}                         ║
+║   Status: READY                        ║
 ╚════════════════════════════════════════╝
   `);
 });

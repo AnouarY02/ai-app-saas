@@ -1,12 +1,11 @@
-// shared/index.ts
-
-// Types
-export * from './types';
-// Error types
-export * from './errorTypes';
-// Auth utils
-export * from './authUtils';
-// Date utils
-export * from './dateUtils';
-// API client
-export * from './apiClient';
+// Barrel export for shared layer
+export * from './types/user';
+export * from './types/task';
+export * from './types/api';
+export * from './types/errorTypes';
+export * from './validators/userSchemas';
+export * from './validators/taskSchemas';
+export * from './validators/apiSchemas';
+export * from './utils/dates';
+export * from './utils/validation';
+export * from './constants';
