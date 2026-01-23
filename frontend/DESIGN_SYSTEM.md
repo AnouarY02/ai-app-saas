@@ -1,6 +1,6 @@
 # TaskManager Design System
 
-🎨 **TaskManager embraces a professional productivity aesthetic with deep forest green as the primary color, symbolizing growth and focus. The warm amber secondary creates energy and urgency, while slate accents provide sophisticated neutrality for a modern SaaS experience.**
+🎨 **TaskManager embraces a professional yet energetic visual identity centered around productivity and focus. The deep forest green primary color evokes growth and completion, while warm amber accents add energy and highlight important actions, creating a balanced system that feels both trustworthy and motivating.**
 
 ## Stats
 - Components: 18
@@ -9,30 +9,30 @@
 - Quality: 9.5/10
 
 ## Colors
-- Primary: #2d9d5f
-- Secondary: #f59e0b
+- Primary: #22a06b
+- Secondary: #eab308
 
 ## Components
-1. **Spinner** - A loading spinner component for indicating loading states.
-2. **Skeleton** - A skeleton component for loading placeholders.
-3. **Button** - A button component with loading states, icons, and variants.
-4. **Input** - A text input component with error states and size variants.
-5. **Card** - A card component with shadow and hover effects.
-6. **Badge** - A badge component for status indicators with various variants.
+1. **Spinner** - Component
+2. **Skeleton** - Component
+3. **Button** - Component
+4. **Input** - Component
+5. **Card** - Component
+6. **Badge** - Component
 7. **Checkbox** - Component
 8. **Radio** - Component
 9. **Select** - Component
 10. **Textarea** - Component
 11. **Switch** - Component
 12. **Label** - Component
-13. **Alert** - Alert component for displaying success, error, warning, and info messages with appropriate icons.
-14. **Dialog** - Modal dialog component with a backdrop, close button, header, content, and footer.
-15. **Tooltip** - Tooltip component that appears on hover with smart positioning (top, right, bottom, left).
-16. **Progress** - Progress bar component with percentage display.
-17. **Avatar** - User avatar component with an image and fallback to initials.
-18. **Toast** - Notification toast component with auto-dismiss and close button.
+13. **Alert** - A feedback component to display alert messages with different variants.
+14. **Dialog** - A modal dialog component with a backdrop.
+15. **Tooltip** - A tooltip component to display additional information on hover.
+16. **ProgressBar** - A progress bar component to indicate progress.
+17. **Avatar** - An avatar component with fallback initials.
+18. **Toast** - A toast notification component.
 
 ## Layouts
-1. **DashboardLayout** - A layout with a collapsible sidebar, top header with a hamburger menu, breadcrumbs navigation, and a main content area.
-2. **AuthLayout** - A centered card layout with a logo area, form content area, and footer links, set against a gradient background.
-3. **SettingsLayout** - A layout with a fixed-width left sidebar, scrollable content area, and save/cancel footer buttons.
+1. **DashboardLayout** - Layout
+2. **AuthLayout** - Layout
+3. **SettingsLayout** - Layout

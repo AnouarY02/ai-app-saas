@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --primary: #2d9d5f;
-    --secondary: #f59e0b;
+    --primary: #22a06b;
+    --secondary: #eab308;
     --radius: 0.5rem;
   }
   * { @apply border-border; }

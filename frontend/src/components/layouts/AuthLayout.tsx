@@ -1,18 +1,15 @@
-import * as React from "react";
+import React from 'react';
 
-interface AuthLayoutProps {
-  children: React.ReactNode;
-  logo?: React.ReactNode;
-  footerLinks?: React.ReactNode;
-}
-
-export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, logo, footerLinks }) => {
+export const AuthLayout: React.FC = ({ children }) => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <div className="mb-4">{logo}</div>
-        <div className="mb-6">{children}</div>
-        <footer className="text-center">{footerLinks}</footer>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <div className="flex justify-center mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-12 h-12 text-blue-500">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+          </svg>
+        </div>
+        {children}
       </div>
     </div>
   );

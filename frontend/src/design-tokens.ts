@@ -1,6 +1,6 @@
 /**
  * TaskManager Design Tokens
- * TaskManager embraces a professional productivity aesthetic with deep forest green as the primary color, symbolizing growth and focus. The warm amber secondary creates energy and urgency, while slate accents provide sophisticated neutrality for a modern SaaS experience.
+ * TaskManager embraces a professional yet energetic visual identity centered around productivity and focus. The deep forest green primary color evokes growth and completion, while warm amber accents add energy and highlight important actions, creating a balanced system that feels both trustworthy and motivating.
  */
 
 export const designTokens = {
@@ -8,56 +8,56 @@ export const designTokens = {
     "brand": {
       "primary": {
         "50": "#f0f9f4",
-        "100": "#dcf2e3",
-        "200": "#bce5ca",
-        "300": "#8dd1a7",
-        "400": "#57b67d",
-        "500": "#2d9d5f",
-        "600": "#228049",
-        "700": "#1d663c",
-        "800": "#1a5232",
-        "900": "#16432a",
-        "950": "#0a2515"
+        "100": "#dcf4e6",
+        "200": "#bbe8d0",
+        "300": "#86d5b0",
+        "400": "#4abe89",
+        "500": "#22a06b",
+        "600": "#188455",
+        "700": "#146a46",
+        "800": "#13543a",
+        "900": "#114530",
+        "950": "#09261a"
       },
       "secondary": {
-        "50": "#fffbeb",
-        "100": "#fef3c7",
-        "200": "#fde68a",
-        "300": "#fcd34d",
-        "400": "#fbbf24",
-        "500": "#f59e0b",
-        "600": "#d97706",
-        "700": "#b45309",
-        "800": "#92400e",
-        "900": "#78350f",
-        "950": "#451a03"
+        "50": "#fefce8",
+        "100": "#fef9c3",
+        "200": "#fef08a",
+        "300": "#fde047",
+        "400": "#facc15",
+        "500": "#eab308",
+        "600": "#ca8a04",
+        "700": "#a16207",
+        "800": "#854d0e",
+        "900": "#713f12",
+        "950": "#422006"
       },
       "accent": {
-        "50": "#f8fafc",
-        "100": "#f1f5f9",
-        "200": "#e2e8f0",
-        "300": "#cbd5e1",
-        "400": "#94a3b8",
-        "500": "#64748b",
-        "600": "#475569",
-        "700": "#334155",
-        "800": "#1e293b",
-        "900": "#0f172a",
-        "950": "#020617"
+        "50": "#fff7ed",
+        "100": "#ffedd5",
+        "200": "#fed7aa",
+        "300": "#fdba74",
+        "400": "#fb923c",
+        "500": "#f97316",
+        "600": "#ea580c",
+        "700": "#c2410c",
+        "800": "#9a3412",
+        "900": "#7c2d12",
+        "950": "#431407"
       }
     },
     "neutral": {
       "50": "#fafafa",
-      "100": "#f4f4f5",
-      "200": "#e4e4e7",
-      "300": "#d4d4d8",
-      "400": "#a1a1aa",
-      "500": "#71717a",
-      "600": "#52525b",
-      "700": "#3f3f46",
-      "800": "#27272a",
-      "900": "#18181b",
-      "950": "#09090b"
+      "100": "#f5f5f5",
+      "200": "#e5e5e5",
+      "300": "#d4d4d4",
+      "400": "#a3a3a3",
+      "500": "#737373",
+      "600": "#525252",
+      "700": "#404040",
+      "800": "#262626",
+      "900": "#171717",
+      "950": "#0a0a0a"
     },
     "semantic": {
       "success": {

@@ -13,6 +13,6 @@ export { Label } from './Label';
 export { Alert } from './Alert';
 export { Dialog } from './Dialog';
 export { Tooltip } from './Tooltip';
-export { Progress } from './Progress';
+export { ProgressBar } from './ProgressBar';
 export { Avatar } from './Avatar';
 export { Toast } from './Toast';

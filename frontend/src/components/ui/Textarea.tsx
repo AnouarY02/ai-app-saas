@@ -1,9 +1,17 @@
 import React from 'react';
+import { cva } from 'class-variance-authority';
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-export const Textarea: React.FC<TextareaProps> = (props) => {
-  return (
-    <textarea className="form-textarea mt-1 block w-full bg-white border border-gray-300 text-primary-700" {...props} />
-  );
+const textareaStyles = cva('form-textarea mt-1 block w-full', {
+  variants: {
+    disabled: {
+      true: 'opacity-50 cursor-not-allowed',
+      false: '',
+    },
+  },
+});
+
+export const Textarea: React.FC<TextareaProps> = ({ disabled, ...props }) => {
+  return <textarea className={textareaStyles({ disabled })} disabled={disabled} {...props} />;
 };

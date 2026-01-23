@@ -1,29 +1,19 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import React, { forwardRef } from 'react';
 
-export interface ToastProps extends React.HTMLAttributes<HTMLDivElement> {
-  duration?: number;
+interface ToastProps {
+  message: string;
   onClose: () => void;
 }
 
-export const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
-  ({ className, duration = 5000, onClose, children, ...props }, ref) => {
-    React.useEffect(() => {
-      const timer = setTimeout(onClose, duration);
-      return () => clearTimeout(timer);
-    }, [duration, onClose]);
-
-    return (
-      <div
-        ref={ref}
-        role="status"
-        className={cn("fixed bottom-4 right-4 bg-white p-4 rounded shadow-lg", className)}
-        {...props}
-      >
-        {children}
-        <button onClick={onClose} className="absolute top-0 right-0 m-2">Close</button>
+const Toast = forwardRef<HTMLDivElement, ToastProps>(({ message, onClose }, ref) => {
+  return (
+    <div ref={ref} className="fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded shadow-lg">
+      <div className="flex justify-between items-center">
+        <span>{message}</span>
+        <button onClick={onClose} className="ml-4">Close</button>
       </div>
-    );
-  }
-);
-Toast.displayName = "Toast";
+    </div>
+  );
+});
+
+export default Toast;

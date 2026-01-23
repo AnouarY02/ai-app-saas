@@ -1,24 +1,32 @@
-import * as React from "react";
+import React, { useState } from 'react';
 
-interface SettingsLayoutProps {
-  children: React.ReactNode;
-  sidebarContent?: React.ReactNode;
-}
+export const SettingsLayout: React.FC = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children, sidebarContent }) => {
   return (
     <div className="flex h-screen">
-      <aside className="w-64 bg-gray-200 p-4">
-        {sidebarContent}
-      </aside>
+      <div className={`fixed inset-y-0 left-0 bg-gray-800 p-4 transition-transform transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:relative md:w-64`}>
+        <button className="text-white md:hidden" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
+        <nav className="mt-4">
+          {/* Sidebar navigation */}
+        </nav>
+      </div>
       <div className="flex-1 flex flex-col">
+        <header className="bg-white shadow p-4 flex justify-between items-center">
+          <button className="md:hidden" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+          </button>
+          <h1 className="text-xl font-bold">Settings</h1>
+        </header>
         <main className="flex-1 overflow-y-auto p-4">
           {children}
         </main>
-        <footer className="flex justify-end p-4 bg-white shadow-md">
-          <button className="mr-2 px-4 py-2 bg-gray-300 rounded">Cancel</button>
-          <button className="px-4 py-2 bg-[#2d9d5f] text-white rounded">Save</button>
-        </footer>
       </div>
     </div>
   );

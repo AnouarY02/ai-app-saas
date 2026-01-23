@@ -1,26 +1,24 @@
 import React from 'react';
 import { cva } from 'class-variance-authority';
 
-interface RadioProps extends React.InputHTMLAttributes<HTMLInputElement> {
+type RadioProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label: string;
-  name: string;
-  checked: boolean;
-}
+};
 
-const radioStyles = cva('form-radio h-4 w-4 text-primary-700', {
+const radioStyles = cva('form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out', {
   variants: {
-    checked: {
-      true: 'bg-primary-600',
-      false: 'bg-white'
-    }
-  }
+    disabled: {
+      true: 'opacity-50 cursor-not-allowed',
+      false: '',
+    },
+  },
 });
 
-export const Radio: React.FC<RadioProps> = ({ label, name, checked, ...props }) => {
+export const Radio: React.FC<RadioProps> = ({ label, disabled, ...props }) => {
   return (
     <label className="inline-flex items-center">
-      <input type="radio" name={name} className={radioStyles({ checked })} checked={checked} {...props} />
-      <span className="ml-2 text-primary-700">{label}</span>
+      <input type="radio" className={radioStyles({ disabled })} disabled={disabled} {...props} />
+      <span className="ml-2">{label}</span>
     </label>
   );
 };
