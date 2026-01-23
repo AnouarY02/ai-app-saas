@@ -1,48 +1,55 @@
+import { Task, TaskStatus } from '../models/Task';
+import { CreateTaskRequest, UpdateTaskRequest, QueryParams } from '../types/api';
+import { tasksDb } from '../config/database';
 import { v4 as uuidv4 } from 'uuid';
 
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  assigneeId: string;
-  status: string;
-  dueDate: Date;
-  createdAt: Date;
-}
-
-const tasks: Task[] = [];
-
-export function listAllTasks(query?: any): Task[] {
-  // Optionally filter by query
+export async function listTasks(userId: string, query: QueryParams): Promise<Task[]> {
+  let tasks = tasksDb.filter(t => t.userId === userId);
+  if (query.status) {
+    tasks = tasks.filter(t => t.status === query.status);
+  }
+  if (query.dueDate) {
+    const dueDate = new Date(query.dueDate);
+    tasks = tasks.filter(t => t.dueDate && new Date(t.dueDate).toDateString() === dueDate.toDateString());
+  }
   return tasks;
 }
 
-export function createTask(data: Partial<Task>): Task {
+export async function createTask(userId: string, data: CreateTaskRequest): Promise<Task> {
+  const now = new Date();
   const task: Task = {
     id: uuidv4(),
-    title: data.title || '',
-    description: data.description || '',
-    assigneeId: data.assigneeId || '',
-    status: data.status || 'todo',
-    dueDate: data.dueDate ? new Date(data.dueDate) : new Date(),
-    createdAt: new Date()
+    userId,
+    title: data.title,
+    description: data.description,
+    status: 'todo',
+    dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+    createdAt: now,
+    updatedAt: now
   };
-  tasks.push(task);
+  tasksDb.push(task);
   return task;
 }
 
-export function getTaskById(id: string): Task | undefined {
-  return tasks.find(t => t.id === id);
-}
-
-export function updateTask(id: string, data: Partial<Task>): Task | undefined {
-  const task = getTaskById(id);
-  if (!task) return undefined;
-  Object.assign(task, data);
+export async function getTask(userId: string, id: string): Promise<Task> {
+  const task = tasksDb.find(t => t.id === id && t.userId === userId);
+  if (!task) throw { status: 404, message: 'Task not found' };
   return task;
 }
 
-export function deleteTask(id: string): void {
-  const idx = tasks.findIndex(t => t.id === id);
-  if (idx !== -1) tasks.splice(idx, 1);
+export async function updateTask(userId: string, id: string, data: UpdateTaskRequest): Promise<Task> {
+  const task = tasksDb.find(t => t.id === id && t.userId === userId);
+  if (!task) throw { status: 404, message: 'Task not found' };
+  if (data.title !== undefined) task.title = data.title;
+  if (data.description !== undefined) task.description = data.description;
+  if (data.status !== undefined) task.status = data.status as TaskStatus;
+  if (data.dueDate !== undefined) task.dueDate = data.dueDate ? new Date(data.dueDate) : undefined;
+  task.updatedAt = new Date();
+  return task;
+}
+
+export async function deleteTask(userId: string, id: string): Promise<void> {
+  const idx = tasksDb.findIndex(t => t.id === id && t.userId === userId);
+  if (idx === -1) throw { status: 404, message: 'Task not found' };
+  tasksDb.splice(idx, 1);
 }

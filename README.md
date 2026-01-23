@@ -1,70 +1,95 @@
-# FitTrack Pro
+# TaskManager
 
-## Overview
-FitTrack Pro is a modern SaaS platform for fitness tracking, featuring a Next.js dashboard and a FastAPI backend. It supports typed full-stack code sharing and rapid development with Docker Compose and Terraform.
+## Project Overview
+TaskManager is a full-stack monorepo SaaS application for managing tasks, built with Next.js (frontend), Express (backend), and PostgreSQL (database). The stack is TypeScript throughout and ready for cloud-native deployment.
 
 ## Monorepo Structure
-- `frontend/` – Next.js 14 + TypeScript + Tailwind CSS dashboard
-- `backend/` – FastAPI (Python 3.11) API server
-- `shared/` – Shared types, validation schemas, and UI components
-- `infra/` – Infrastructure as code (Docker Compose, Terraform, DB init)
+- `frontend/` – Next.js 14 app (TypeScript, Tailwind CSS)
+- `backend/` – Express API server (TypeScript)
+- `shared/` – Shared types and utilities (TypeScript)
+- `infra/` – Infrastructure as code (Docker, Kubernetes, scripts)
 
 ## Prerequisites
-- [Docker](https://www.docker.com/get-started)
-- [Docker Compose](https://docs.docker.com/compose/)
-- [Node.js](https://nodejs.org/) (for local dev outside Docker)
-- [Yarn](https://classic.yarnpkg.com/en/docs/install/) (monorepo scripts)
+- [Node.js](https://nodejs.org/) >= 18.x
+- [Yarn](https://yarnpkg.com/) (workspaces support)
+- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
-## Environment Variables Setup
-1. Copy `.env.example` to `.env` and fill in required values:
-   ```sh
-   cp .env.example .env
-   ```
-2. Edit `.env` as needed for your environment (see comments in file).
+## Environment Variables
+Copy `.env.example` to `.env` and fill in any secrets or overrides as needed.
 
-## Local Development (Docker Compose)
-To start all services (frontend, backend, db) in Docker:
-```sh
-yarn start
-# or
-docker-compose up
 ```
-- Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend: [http://localhost:4000/docs](http://localhost:4000/docs)
-- Database: localhost:5432 (user: postgres, password: postgres)
+cp .env.example .env
+```
+
+- `DATABASE_URL` (required): Postgres connection string
+- `JWT_SECRET` (required): Secret for JWT signing
+- `NEXT_PUBLIC_API_URL` (required): Backend API URL for frontend
+- `PORT`, `NODE_ENV`, `LOG_LEVEL`, `FRONTEND_URL`, `CORS_ORIGIN` (optional)
+
+## Local Development (with Docker Compose)
+Start the full stack (frontend, backend, database) with:
+
+```
+yarn start
+```
+Or directly:
+```
+docker-compose up --build
+```
+
+The frontend will be available at [http://localhost:3000](http://localhost:3000)
+The backend API will be at [http://localhost:4000](http://localhost:4000)
 
 ## Running Frontend and Backend Separately
-For hot reload and debugging:
-```sh
+You can run frontend and backend in dev mode (with hot reload) using:
+
+```
 yarn dev
 ```
-This runs frontend and backend in parallel (frontend on port 3000, backend on port 4000).
 
-## Database Migrations
-Apply migrations to the database (container must be running):
-```sh
+Or run each workspace individually:
+```
+yarn workspace backend dev
+# in another terminal
+yarn workspace frontend dev
+```
+
+## Database Setup and Migrations
+The database is provisioned via Docker Compose. To run migrations:
+
+```
 yarn migrate
 ```
-This runs `alembic upgrade head` inside the backend container.
 
-## Testing
-Run tests for both frontend and backend:
-```sh
-yarn test
+## Seeding Sample Data
+To seed the database with sample data:
+
+```
+yarn seed
 ```
 
-## Shared Types and Validation
-- Shared TypeScript types: `shared/types/`
-- JSON Schemas: `shared/validation/`
-- Shared UI components: `shared/ui/`
+## Scripts Reference
+- `yarn dev` – Run frontend and backend in dev mode concurrently
+- `yarn build` – Build both frontend and backend
+- `yarn start` – Start all services via Docker Compose
+- `yarn lint` – Lint all code
+- `yarn typecheck` – TypeScript project references check
+- `yarn migrate` – Run DB migrations
+- `yarn seed` – Seed sample data
+- `yarn test` – Run tests (placeholder)
 
-## Deployment Notes
-- Environment variables must be set in production.
-- Use `infra/terraform/` for cloud infrastructure provisioning.
-- Build and run containers with `docker-compose` for deployment.
+## Testing
+Test scripts are placeholders. Add your tests in the respective workspaces.
 
-## Troubleshooting
-- Ensure Docker and Docker Compose are installed and running.
-- Check `.env` for missing or incorrect variables.
-- Use `docker-compose logs` to view service logs.
-- For database issues, verify `DATABASE_URL` and DB container health.
+## Deployment (Docker/Kubernetes)
+- **Docker Compose**: For local/dev use (`docker-compose.yml` at root)
+- **Kubernetes**: See manifests in `infra/k8s/` for cloud deployment
+
+## API Reference
+See backend and shared documentation for API contracts and endpoints.
+
+## Contributing
+Pull requests are welcome! Please lint and typecheck before submitting.
+
+## License
+MIT

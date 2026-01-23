@@ -1,16 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyJwt } from '../services/authService';
+import { verifyJwt } from '../utils/jwt';
+import { usersDb } from '../config/database';
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized' });
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Missing or invalid Authorization header' });
   }
-  const token = authHeader.replace('Bearer ', '');
-  const payload = verifyJwt(token);
-  if (!payload) {
-    return res.status(401).json({ error: 'Invalid or expired token' });
+  const token = auth.slice(7);
+  try {
+    const payload = verifyJwt(token);
+    const user = usersDb.find(u => u.id === payload.id);
+    if (!user) return res.status(401).json({ message: 'Invalid token user' });
+    (req as any).user = { id: user.id, email: user.email };
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid or expired token' });
   }
-  req.user = payload;
-  next();
 }

@@ -1,38 +1,17 @@
-// shared/types/user.ts
-
+// User-related shared types
 export interface User {
   id: string;
   email: string;
-  full_name: string;
-  created_at: string; // ISO8601
-  updated_at: string; // ISO8601
+  passwordHash: string;
+  name?: string;
+  createdAt: string; // ISO date
+  updatedAt: string; // ISO date
 }
 
-export interface UserProfile {
+export interface UserPublic {
   id: string;
   email: string;
-  full_name: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface UserAuthToken {
-  access_token: string;
-  token_type: 'bearer';
-}
-
-export interface UserLoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface UserSignupRequest {
-  email: string;
-  password: string;
-  full_name: string;
-}
-
-export interface UserProfileUpdateRequest {
-  full_name?: string;
-  password?: string;
+  name?: string;
+  createdAt: string;
+  updatedAt: string;
 }

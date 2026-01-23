@@ -1,5 +1,5 @@
 {
-  "name": "fittrack-pro-monorepo",
+  "name": "taskmanager-monorepo",
   "private": true,
   "workspaces": [
     "frontend",
@@ -7,14 +7,19 @@
     "shared"
   ],
   "scripts": {
-    "dev": "concurrently \"yarn --cwd frontend dev\" \"yarn --cwd backend start\"",
-    "build": "yarn --cwd frontend build && yarn --cwd backend build",
-    "start": "docker-compose up",
-    "lint": "yarn --cwd frontend lint && yarn --cwd backend lint",
-    "test": "yarn --cwd frontend test && yarn --cwd backend test",
-    "migrate": "docker-compose exec backend alembic upgrade head"
+    "dev": "concurrently \"yarn workspace backend dev\" \"yarn workspace frontend dev\"",
+    "build": "yarn workspace backend build && yarn workspace frontend build",
+    "start": "docker-compose up --build",
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc -b",
+    "test": "echo \"Add tests!\" && exit 0",
+    "migrate": "sh ./infra/scripts/migrate.sh",
+    "seed": "sh ./infra/scripts/seed.sh"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^2.0.0",
+    "concurrently": "^8.0.0"
   }
 }

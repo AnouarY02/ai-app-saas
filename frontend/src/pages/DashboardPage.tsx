@@ -1,57 +1,72 @@
 import React, { useEffect, useState } from 'react'
-import { listWorkouts, Workout } from '../utils/apiClient'
-import FitnessChart from '../components/FitnessChart'
-import WorkoutForm from '../components/WorkoutForm'
+import { useAuth } from '../context/AuthContext'
+import { fetchTasks, createTask, deleteTask, Task } from '../utils/apiClient'
+import TaskList from '../components/TaskList'
+import TaskForm from '../components/TaskForm'
 
-export default function DashboardPage() {
-  const [workouts, setWorkouts] = useState<Workout[]>([])
+const DashboardPage: React.FC = () => {
+  const { user } = useAuth()
+  const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [creating, setCreating] = useState(false)
 
-  const fetchWorkouts = () => {
+  const token = localStorage.getItem('token') || ''
+
+  const loadTasks = async () => {
     setLoading(true)
-    listWorkouts()
-      .then(res => setWorkouts(res.workouts))
-      .catch(e => setError(e.message || 'Failed to load workouts'))
-      .finally(() => setLoading(false))
+    setError(null)
+    try {
+      const data = await fetchTasks(token)
+      setTasks(data)
+    } catch (e: any) {
+      setError(e.message || 'Failed to load tasks')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
-    fetchWorkouts()
+    loadTasks()
+    // eslint-disable-next-line
   }, [])
+
+  const handleCreate = async (data: { title: string; description?: string; dueDate?: string }) => {
+    setCreating(true)
+    try {
+      const newTask = await createTask(token, data)
+      setTasks(prev => [newTask, ...prev])
+    } catch (e: any) {
+      setError(e.message || 'Failed to create task')
+    } finally {
+      setCreating(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    const prev = tasks
+    setTasks(tasks.filter(t => t.id !== id))
+    try {
+      await deleteTask(token, id)
+    } catch (e: any) {
+      setTasks(prev)
+      setError(e.message || 'Failed to delete task')
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold mb-2">Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex flex-col gap-4">
-          <WorkoutForm onCreated={fetchWorkouts} />
-          <div className="bg-white rounded shadow p-4">
-            <div className="font-semibold mb-2">Workout History</div>
-            {loading ? (
-              <div>Loading...</div>
-            ) : error ? (
-              <div className="text-red-600">{error}</div>
-            ) : (
-              <ul className="divide-y">
-                {workouts.map(w => (
-                  <li key={w.id} className="py-2 flex flex-col md:flex-row md:items-center gap-2">
-                    <span className="font-semibold text-blue-700">{w.type}</span>
-                    <span className="text-gray-500">{w.date}</span>
-                    <span className="text-gray-700">{w.duration_minutes} min</span>
-                    <span className="text-gray-700">{w.calories_burned} kcal</span>
-                    <span className="text-gray-400 text-xs">{w.notes}</span>
-                  </li>
-                ))}
-                {workouts.length === 0 && <li className="p-3 text-gray-500">No workouts yet.</li>}
-              </ul>
-            )}
-          </div>
-        </div>
-        <div>
-          <FitnessChart workouts={workouts} />
-        </div>
-      </div>
+      <h1 className="text-2xl font-bold">Hello, {user?.name || user?.email}!</h1>
+      <TaskForm onSubmit={handleCreate} loading={creating} submitLabel="Add Task" />
+      {loading ? (
+        <div className="text-center text-gray-500">Loading tasks...</div>
+      ) : error ? (
+        <div className="text-red-500 text-center">{error}</div>
+      ) : (
+        <TaskList tasks={tasks} onDelete={handleDelete} />
+      )}
     </div>
   )
 }
+
+export default DashboardPage

@@ -1,72 +1,74 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { getCurrentUser, loginUser, signupUser, logoutUser, User, UserLoginRequest, UserSignupRequest } from '../utils/apiClient'
+import { getProfile, login, register, logout as apiLogout, UserPublic, AuthResponse } from '../utils/apiClient'
 
 interface AuthContextType {
-  user: User | null
+  user: UserPublic | null
   loading: boolean
   error: string | null
-  login: (data: UserLoginRequest) => Promise<void>
-  signup: (data: UserSignupRequest) => Promise<void>
+  login: (email: string, password: string) => Promise<boolean>
+  register: (email: string, password: string, name?: string) => Promise<boolean>
   logout: () => Promise<void>
-  refresh: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<UserPublic | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  async function refresh() {
-    setLoading(true)
-    try {
-      const user = await getCurrentUser()
-      setUser(user)
-      setError(null)
-    } catch (e) {
-      setUser(null)
-    }
-    setLoading(false)
-  }
-
   useEffect(() => {
-    refresh()
-    // eslint-disable-next-line
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setLoading(false)
+      return
+    }
+    getProfile(token)
+      .then(u => setUser(u))
+      .catch(() => {
+        setUser(null)
+        localStorage.removeItem('token')
+      })
+      .finally(() => setLoading(false))
   }, [])
 
-  async function login(data: UserLoginRequest) {
+  const handleLogin = async (email: string, password: string) => {
     setLoading(true)
     setError(null)
     try {
-      const { token } = await loginUser(data)
-      localStorage.setItem('token', token)
-      await refresh()
+      const res: AuthResponse = await login(email, password)
+      localStorage.setItem('token', res.token)
+      setUser(res.user)
+      setLoading(false)
+      return true
     } catch (e: any) {
       setError(e.message || 'Login failed')
-      setUser(null)
+      setLoading(false)
+      return false
     }
-    setLoading(false)
   }
 
-  async function signup(data: UserSignupRequest) {
+  const handleRegister = async (email: string, password: string, name?: string) => {
     setLoading(true)
     setError(null)
     try {
-      const { token } = await signupUser(data)
-      localStorage.setItem('token', token)
-      await refresh()
+      const res: AuthResponse = await register(email, password, name)
+      localStorage.setItem('token', res.token)
+      setUser(res.user)
+      setLoading(false)
+      return true
     } catch (e: any) {
-      setError(e.message || 'Signup failed')
-      setUser(null)
+      setError(e.message || 'Registration failed')
+      setLoading(false)
+      return false
     }
-    setLoading(false)
   }
 
-  async function logout() {
+  const handleLogout = async () => {
     setLoading(true)
     try {
-      await logoutUser()
+      const token = localStorage.getItem('token')
+      if (token) await apiLogout(token)
     } catch {}
     localStorage.removeItem('token')
     setUser(null)
@@ -74,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, signup, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, error, login: handleLogin, register: handleRegister, logout: handleLogout }}>
       {children}
     </AuthContext.Provider>
   )

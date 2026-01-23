@@ -1,4 +1,3 @@
-// Task-related shared types
 export type TaskStatus = 'todo' | 'in_progress' | 'done';
 
 export interface Task {
@@ -7,7 +6,7 @@ export interface Task {
   title: string;
   description?: string;
   status: TaskStatus;
-  dueDate?: string; // ISO date
-  createdAt: string; // ISO date
-  updatedAt: string; // ISO date
+  dueDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

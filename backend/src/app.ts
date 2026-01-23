@@ -1,37 +1,34 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import morgan from 'morgan';
+import routes from './routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
-import healthRouter from './routes/health';
-import apiRouter from './routes/api';
-import { logWithTimestamp } from './utils/logger';
-
-dotenv.config();
+import { logger } from './utils/logger';
 
 const app = express();
 
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORS: allow all in dev, restrict in prod
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL : '*',
-  credentials: true
-}));
-
 if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('dev'));
+  app.use(morgan('dev', {
+    stream: {
+      write: (msg: string) => logger.info(msg.trim())
+    }
+  }));
 }
 
-app.use('/health', healthRouter);
-app.use('/api/v1', apiRouter);
+app.get('/health', (req, res) => {
+  res.json({ ok: true, timestamp: new Date().toISOString() });
+});
+
+app.use('/api', routes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
-
-app.on('error', (err) => {
-  logWithTimestamp('Express app error: ' + err);
-});
 
 export default app;
