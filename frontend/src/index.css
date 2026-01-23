@@ -1,4 +1,3 @@
-/* Tailwind Preflight + minimal global styles */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { height: 100%; }
-body { font-family: system-ui, sans-serif; background: #f8fafc; color: #222; min-height: 100vh; }
+body { font-family: system-ui, sans-serif; background: #f8fafc; min-height: 100vh; color: #222; }

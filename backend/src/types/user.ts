@@ -3,10 +3,14 @@ export interface User {
   email: string;
   hashed_password: string;
   full_name: string;
-  created_at: string;
-  updated_at: string;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
 }
 
-export interface UserProfileUpdate {
-  full_name?: string;
+export interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string;
+  is_active: boolean;
 }

@@ -1,11 +1,9 @@
-// Barrel export for shared layer
+// Barrel file for shared exports
 export * from './types/user';
-export * from './types/task';
-export * from './types/api';
-export * from './types/errorTypes';
-export * from './validators/userSchemas';
-export * from './validators/taskSchemas';
-export * from './validators/apiSchemas';
-export * from './utils/dates';
-export * from './utils/validation';
-export * from './constants';
+export * from './types/error';
+export * from './api/constants';
+export * from './api/errorTypes';
+export * from './interfaces';
+export * from './utils/validators';
+export * from './utils/ai';
+export * from './utils/errors';

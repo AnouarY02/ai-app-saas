@@ -1,71 +1,50 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { fetchTasks, createTask, deleteTask, Task } from '../utils/apiClient'
-import TaskList from '../components/TaskList'
-import TaskForm from '../components/TaskForm'
+import { getDashboard, DashboardData } from '../utils/apiClient'
 
-const DashboardPage: React.FC = () => {
+function DashboardPage() {
   const { user } = useAuth()
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [creating, setCreating] = useState(false)
-
-  const token = localStorage.getItem('token') || ''
-
-  const loadTasks = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await fetchTasks(token)
-      setTasks(data)
-    } catch (e: any) {
-      setError(e.message || 'Failed to load tasks')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   useEffect(() => {
-    loadTasks()
-    // eslint-disable-next-line
+    const token = localStorage.getItem('access_token')
+    if (!token) {
+      setError('Not authenticated')
+      setLoading(false)
+      return
+    }
+    getDashboard(token)
+      .then((data) => {
+        setDashboard(data)
+        setLoading(false)
+      })
+      .catch((err) => {
+        setError(err.message || 'Failed to load dashboard')
+        setLoading(false)
+      })
   }, [])
 
-  const handleCreate = async (data: { title: string; description?: string; dueDate?: string }) => {
-    setCreating(true)
-    try {
-      const newTask = await createTask(token, data)
-      setTasks(prev => [newTask, ...prev])
-    } catch (e: any) {
-      setError(e.message || 'Failed to create task')
-    } finally {
-      setCreating(false)
-    }
-  }
-
-  const handleDelete = async (id: string) => {
-    const prev = tasks
-    setTasks(tasks.filter(t => t.id !== id))
-    try {
-      await deleteTask(token, id)
-    } catch (e: any) {
-      setTasks(prev)
-      setError(e.message || 'Failed to delete task')
-    }
-  }
+  if (loading) return <div className="flex justify-center items-center h-64">Loading dashboard...</div>
+  if (error) return <div className="flex justify-center items-center h-64 text-red-600">{error}</div>
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">Hello, {user?.name || user?.email}!</h1>
-      <TaskForm onSubmit={handleCreate} loading={creating} submitLabel="Add Task" />
-      {loading ? (
-        <div className="text-center text-gray-500">Loading tasks...</div>
-      ) : error ? (
-        <div className="text-red-500 text-center">{error}</div>
-      ) : (
-        <TaskList tasks={tasks} onDelete={handleDelete} />
-      )}
-    </div>
+    <section className="max-w-2xl mx-auto mt-10 bg-white rounded shadow p-8">
+      <h2 className="text-2xl font-bold mb-4 text-blue-700">Welcome, {dashboard?.user.full_name || user?.full_name}!</h2>
+      <div className="mb-4">
+        <div className="text-gray-700">Email: <span className="font-mono">{dashboard?.user.email}</span></div>
+        <div className="text-gray-700">Account status: {dashboard?.user.is_active ? <span className="text-green-600">Active</span> : <span className="text-red-600">Inactive</span>}</div>
+      </div>
+      <div className="mt-6">
+        <h3 className="text-lg font-semibold mb-2">Your Stats</h3>
+        {dashboard?.stats ? (
+          <pre className="bg-slate-100 rounded p-4 text-sm overflow-x-auto">{JSON.stringify(dashboard.stats, null, 2)}</pre>
+        ) : (
+          <div className="text-gray-500">No stats available.</div>
+        )}
+      </div>
+    </section>
   )
 }
 

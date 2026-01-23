@@ -1,33 +1,28 @@
+import { User, UserProfile } from '../types/user';
+import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { User, UserProfileUpdate } from '../types/user';
-import { users } from '../store/inMemoryDb';
+
+// In-memory user store for demo (replace with DB in production)
+const users: User[] = [
+  {
+    id: uuidv4(),
+    email: 'user@example.com',
+    hashed_password: bcrypt.hashSync('password123', 10),
+    full_name: 'Test User',
+    is_active: true,
+    created_at: new Date(),
+    updated_at: new Date()
+  }
+];
 
 export async function findUserByEmail(email: string): Promise<User | undefined> {
   return users.find(u => u.email === email);
 }
 
-export async function createUser({ email, hashed_password, full_name }: { email: string, hashed_password: string, full_name: string }): Promise<User> {
-  const now = new Date().toISOString();
-  const user: User = {
-    id: uuidv4(),
-    email,
-    hashed_password,
-    full_name,
-    created_at: now,
-    updated_at: now
-  };
-  users.push(user);
-  return user;
+export async function getUserById(id: string): Promise<User | undefined> {
+  return users.find(u => u.id === id);
 }
 
-export async function getUserById(userId: string): Promise<User | undefined> {
-  return users.find(u => u.id === userId);
-}
-
-export async function updateUserProfile(userId: string, update: UserProfileUpdate): Promise<User | undefined> {
-  const user = users.find(u => u.id === userId);
-  if (!user) return undefined;
-  if (update.full_name) user.full_name = update.full_name;
-  user.updated_at = new Date().toISOString();
-  return user;
+export async function verifyPassword(plain: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(plain, hash);
 }

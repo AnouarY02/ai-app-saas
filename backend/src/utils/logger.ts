@@ -1,8 +1,5 @@
-export const logger = {
-  info: (msg: string) => {
-    console.log(`[${new Date().toISOString()}] INFO: ${msg}`);
-  },
-  error: (msg: string) => {
-    console.error(`[${new Date().toISOString()}] ERROR: ${msg}`);
-  }
-};
+export function logWithTimestamp(message: string) {
+  const ts = new Date().toISOString();
+  // eslint-disable-next-line no-console
+  console.log(`[${ts}] ${message}`);
+}

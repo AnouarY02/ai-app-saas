@@ -1,81 +1,60 @@
 import React, { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import LoadingSpinner from './LoadingSpinner'
 
 interface AuthFormProps {
-  mode: 'login' | 'signup'
+  onSubmit: (email: string, password: string) => Promise<void>
+  loading: boolean
+  error?: string | null
 }
 
-const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
-  const { login, signup, loading, error } = useAuth()
+function AuthForm({ onSubmit, loading, error }: AuthFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
-  const [formError, setFormError] = useState<string | null>(null)
-  const navigate = useNavigate()
+  const [touched, setTouched] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setFormError(null)
-    try {
-      if (mode === 'login') {
-        await login(email, password)
-        navigate('/dashboard')
-      } else {
-        await signup(email, password, name)
-        navigate('/dashboard')
-      }
-    } catch (err: any) {
-      setFormError(err.message || 'Authentication failed')
-    }
+    setTouched(true)
+    if (!email || !password) return
+    await onSubmit(email, password)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white shadow rounded p-8 w-full max-w-md flex flex-col gap-4">
-      <h2 className="text-2xl font-bold text-center text-indigo-700 mb-2">{mode === 'login' ? 'Login' : 'Sign Up'}</h2>
-      {mode === 'signup' && (
+    <form onSubmit={handleSubmit} className="bg-white shadow rounded p-6 flex flex-col gap-4 w-full max-w-sm mx-auto">
+      <h2 className="text-xl font-bold text-center mb-2">Sign in to TestApp</h2>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="email" className="text-sm font-medium">Email</label>
         <input
-          type="text"
-          placeholder="Name (optional)"
-          className="border rounded px-3 py-2"
-          value={name}
-          onChange={e => setName(e.target.value)}
+          id="email"
+          type="email"
+          className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          disabled={loading}
+          autoComplete="email"
         />
-      )}
-      <input
-        type="email"
-        placeholder="Email"
-        className="border rounded px-3 py-2"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        className="border rounded px-3 py-2"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        required
-      />
-      {(formError || error) && (
-        <div className="text-red-600 text-sm">{formError || error}</div>
-      )}
+        {touched && !email && <span className="text-xs text-red-500">Email is required</span>}
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="password" className="text-sm font-medium">Password</label>
+        <input
+          id="password"
+          type="password"
+          className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          disabled={loading}
+          autoComplete="current-password"
+        />
+        {touched && !password && <span className="text-xs text-red-500">Password is required</span>}
+      </div>
       <button
         type="submit"
-        className="bg-indigo-600 text-white rounded px-4 py-2 font-semibold hover:bg-indigo-700 disabled:opacity-60"
-        disabled={loading}
+        className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 transition-colors disabled:opacity-60"
+        disabled={loading || !email || !password}
       >
-        {loading ? <LoadingSpinner size={20} /> : mode === 'login' ? 'Login' : 'Sign Up'}
+        {loading ? 'Signing in...' : 'Sign In'}
       </button>
-      <div className="text-center text-sm text-gray-500 mt-2">
-        {mode === 'login' ? (
-          <>Don't have an account? <Link to="/signup" className="text-indigo-600 hover:underline">Sign Up</Link></>
-        ) : (
-          <>Already have an account? <Link to="/login" className="text-indigo-600 hover:underline">Login</Link></>
-        )}
-      </div>
+      {error && <div className="text-red-600 text-sm text-center">{error}</div>}
     </form>
   )
 }

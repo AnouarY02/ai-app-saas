@@ -1,82 +1,72 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { getProfile, login, register, logout as apiLogout, UserPublic, AuthResponse } from '../utils/apiClient'
+import { getMe, login as apiLogin, logout as apiLogout, UserProfile, AuthResponse } from '../utils/apiClient'
 
 interface AuthContextType {
-  user: UserPublic | null
+  user: UserProfile | null
   loading: boolean
   error: string | null
   login: (email: string, password: string) => Promise<boolean>
-  register: (email: string, password: string, name?: string) => Promise<boolean>
   logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserPublic | null>(null)
+  const [user, setUser] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Check for token and fetch user on mount
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('access_token')
     if (!token) {
       setLoading(false)
       return
     }
-    getProfile(token)
-      .then(u => setUser(u))
+    getMe(token)
+      .then((me) => {
+        setUser(me)
+        setLoading(false)
+      })
       .catch(() => {
         setUser(null)
-        localStorage.removeItem('token')
+        setLoading(false)
+        localStorage.removeItem('access_token')
       })
-      .finally(() => setLoading(false))
   }, [])
 
-  const handleLogin = async (email: string, password: string) => {
+  const login = async (email: string, password: string) => {
     setLoading(true)
     setError(null)
     try {
-      const res: AuthResponse = await login(email, password)
-      localStorage.setItem('token', res.token)
+      const res: AuthResponse = await apiLogin(email, password)
+      localStorage.setItem('access_token', res.access_token)
       setUser(res.user)
       setLoading(false)
       return true
-    } catch (e: any) {
-      setError(e.message || 'Login failed')
+    } catch (err: any) {
+      setError(err.message || 'Login failed')
+      setUser(null)
       setLoading(false)
       return false
     }
   }
 
-  const handleRegister = async (email: string, password: string, name?: string) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const res: AuthResponse = await register(email, password, name)
-      localStorage.setItem('token', res.token)
-      setUser(res.user)
-      setLoading(false)
-      return true
-    } catch (e: any) {
-      setError(e.message || 'Registration failed')
-      setLoading(false)
-      return false
-    }
-  }
-
-  const handleLogout = async () => {
+  const logout = async () => {
     setLoading(true)
     try {
-      const token = localStorage.getItem('token')
-      if (token) await apiLogout(token)
+      const token = localStorage.getItem('access_token')
+      if (token) {
+        await apiLogout(token)
+      }
     } catch {}
-    localStorage.removeItem('token')
+    localStorage.removeItem('access_token')
     setUser(null)
     setLoading(false)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login: handleLogin, register: handleRegister, logout: handleLogout }}>
+    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

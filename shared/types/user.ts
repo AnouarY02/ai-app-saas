@@ -1,17 +1,46 @@
-// User-related shared types
+// User and related types for TestApp
+
+export type UUID = string;
+
 export interface User {
-  id: string;
+  id: UUID;
   email: string;
-  passwordHash: string;
-  name?: string;
-  createdAt: string; // ISO date
-  updatedAt: string; // ISO date
+  hashed_password: string;
+  full_name: string;
+  is_active: boolean;
+  created_at: string; // ISO datetime
+  updated_at: string; // ISO datetime
 }
 
-export interface UserPublic {
-  id: string;
+export interface UserProfile {
+  id: UUID;
   email: string;
-  name?: string;
-  createdAt: string;
-  updatedAt: string;
+  full_name: string;
+  is_active: boolean;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  access_token: string;
+  token_type: string;
+  user: UserProfile;
+}
+
+export interface LogoutResponse {
+  success: boolean;
+}
+
+export interface DashboardData {
+  user: UserProfile;
+  stats?: Record<string, any>;
+}
+
+export interface ApiError {
+  code: string;
+  message: string;
+  details?: any;
 }
