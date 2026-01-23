@@ -1,33 +1,42 @@
 import express from 'express';
 import cors from 'cors';
-import morgan from 'morgan';
-import routes from './routes';
-import { errorHandler, notFoundHandler } from './middleware/errorHandler';
-import { logger } from './utils/logger';
+import dotenv from 'dotenv';
+import healthRouter from './routes/health';
+import authRouter from './routes/auth';
+import dashboardRouter from './routes/dashboard';
+import { notFoundHandler, errorHandler } from './middleware/errorHandlers';
+import { logWithTimestamp } from './utils/logger';
+
+dotenv.config();
 
 const app = express();
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+// CORS
+const corsOptions = {
+  origin: process.env.CORS_ORIGINS?.split(',') || '*',
   credentials: true
-}));
+};
+if (process.env.NODE_ENV === 'development') {
+  app.use(cors());
+} else {
+  app.use(cors(corsOptions));
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('dev', {
-    stream: {
-      write: (msg: string) => logger.info(msg.trim())
-    }
-  }));
-}
-
-app.get('/health', (req, res) => {
-  res.json({ ok: true, timestamp: new Date().toISOString() });
+// Logging middleware
+app.use((req, res, next) => {
+  logWithTimestamp(`${req.method} ${req.url}`);
+  next();
 });
 
-app.use('/api', routes);
+// Routes
+app.use('/health', healthRouter);
+app.use('/auth', authRouter);
+app.use('/dashboard', dashboardRouter);
 
+// 404 and error handlers
 app.use(notFoundHandler);
 app.use(errorHandler);
 

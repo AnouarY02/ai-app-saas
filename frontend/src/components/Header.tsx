@@ -1,43 +1,56 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import ProfileMenu from './ProfileMenu'
-import { FaTasks, FaTachometerAlt, FaList } from 'react-icons/fa'
+import { FiHome, FiGrid, FiLogOut, FiLogIn } from 'react-icons/fi'
 
 const navItems = [
-  { label: 'Dashboard', path: '/dashboard', icon: <FaTachometerAlt /> },
-  { label: 'My Tasks', path: '/dashboard', icon: <FaList /> }
+  { label: 'Home', path: '/', icon: <FiHome /> },
+  { label: 'Dashboard', path: '/dashboard', icon: <FiGrid /> }
 ]
 
-const Header: React.FC = () => {
-  const { user } = useAuth()
+function Header() {
+  const { user, logout } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login')
+  }
+
   return (
-    <header className="w-full bg-white shadow flex items-center justify-between px-4 py-3">
-      <Link to="/" className="flex items-center gap-2 text-xl font-bold text-blue-600">
-        <FaTasks className="text-blue-500" />
-        TaskManager
-      </Link>
-      {user ? (
-        <nav className="flex items-center gap-4">
-          {navItems.map(item => (
-            <Link
-              key={item.label}
-              to={item.path}
-              className={`flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 transition text-gray-700 ${location.pathname === item.path ? 'font-semibold text-blue-600' : ''}`}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          ))}
-          <ProfileMenu />
-        </nav>
-      ) : (
-        <nav className="flex items-center gap-2">
-          <Link to="/login" className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Login</Link>
-          <Link to="/register" className="px-3 py-1 rounded border border-blue-600 text-blue-600 hover:bg-blue-50 transition">Register</Link>
-        </nav>
-      )}
+    <header className="bg-white shadow flex items-center justify-between px-6 py-3">
+      <div className="flex items-center gap-2">
+        <span className="font-bold text-lg text-blue-700">TestApp</span>
+      </div>
+      <nav className="flex items-center gap-4">
+        {navItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 transition-colors ${location.pathname === item.path ? 'text-blue-700 font-semibold' : 'text-gray-700'}`}
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </Link>
+        ))}
+        {user ? (
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1 px-2 py-1 rounded text-red-600 hover:bg-red-50 transition-colors"
+            title="Logout"
+          >
+            <FiLogOut /> Logout
+          </button>
+        ) : (
+          <Link
+            to="/login"
+            className="flex items-center gap-1 px-2 py-1 rounded text-blue-600 hover:bg-blue-50 transition-colors"
+          >
+            <FiLogIn /> Login
+          </Link>
+        )}
+      </nav>
     </header>
   )
 }

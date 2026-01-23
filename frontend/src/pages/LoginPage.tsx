@@ -1,61 +1,24 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { useNavigate, Link } from 'react-router-dom'
+import AuthForm from '../components/AuthForm'
 
-const LoginPage: React.FC = () => {
-  const { login, error } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [formError, setFormError] = useState<string | null>(null)
+function LoginPage() {
+  const { user, login, loading, error } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setFormError(null)
-    setLoading(true)
-    const ok = await login(email, password)
-    setLoading(false)
-    if (ok) {
+  if (user) return <Navigate to="/dashboard" replace />
+
+  const handleLogin = async (email: string, password: string) => {
+    const success = await login(email, password)
+    if (success) {
       navigate('/dashboard')
-    } else {
-      setFormError('Invalid email or password')
     }
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
-      <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-        <input
-          className="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
-        <input
-          className="border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
-        {(formError || error) && <div className="text-red-500 text-sm">{formError || error}</div>}
-        <button
-          type="submit"
-          className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition disabled:opacity-60"
-          disabled={loading}
-        >
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-      <div className="mt-4 text-center text-sm">
-        Don't have an account?{' '}
-        <Link to="/register" className="text-blue-600 hover:underline">Register</Link>
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">
+      <AuthForm onSubmit={handleLogin} loading={loading} error={error} />
     </div>
   )
 }

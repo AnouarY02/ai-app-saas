@@ -1,13 +1,13 @@
-# Shared Layer for TaskManager
+# Shared Module for TestApp
 
-This directory contains all types, schemas, constants, and utilities shared between the frontend and backend of the TaskManager app.
+This package contains shared types, validation schemas, constants, and utilities for use across both the frontend (Next.js) and backend (FastAPI) of TestApp.
 
 ## Contents
-- **types/**: TypeScript interfaces for User, Task, API contracts, and error types
-- **validators/**: Zod schemas for validating API requests and parameters
-- **utils/**: Date and validation helpers
-- **constants.ts**: Project-wide constants (e.g., task statuses, field limits)
-- **index.ts**: Barrel file for stable imports
+- **Types:** User, Auth, Dashboard, Error types
+- **Validators:** Zod schemas for request/response validation
+- **API Constants:** Endpoints and headers
+- **Error Handling:** Centralized error codes/messages
+- **AI Utils:** Placeholder for shared AI logic
 
 ## Usage
-Import from `@ai-app-saas/shared` in both frontend and backend for type safety and consistent validation.
+Import from `@testapp/shared` in both frontend and backend codebases for type safety and consistency.

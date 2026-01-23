@@ -9,9 +9,12 @@ services:
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=4000
       - DATABASE_URL=${DATABASE_URL}
-      - JWT_SECRET=${JWT_SECRET}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - BACKEND_URL=${BACKEND_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
       - LOG_LEVEL=${LOG_LEVEL:-info}
-      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
       interval: 10s
@@ -26,26 +29,26 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:80"
-    environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
     depends_on:
       backend:
         condition: service_healthy
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=${BACKEND_URL}
   db:
-    image: postgres:15-alpine
+    image: postgres:15
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=taskmanager
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=testapp
+      - POSTGRES_USER=testapp
+      - POSTGRES_PASSWORD=testapp
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U testapp"]
       interval: 10s
       timeout: 5s
       retries: 5

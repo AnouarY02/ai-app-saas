@@ -1,49 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { listWorkouts, Workout } from '../utils/apiClient'
-import FitnessChart from '../components/FitnessChart'
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-export default function HomePage() {
-  const [workouts, setWorkouts] = useState<Workout[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    setLoading(true)
-    listWorkouts()
-      .then(res => setWorkouts(res.workouts))
-      .catch(e => setError(e.message || 'Failed to load workouts'))
-      .finally(() => setLoading(false))
-  }, [])
-
+function HomePage() {
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold mb-2">Welcome to FitTrack Pro</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <div className="mb-4 text-lg font-semibold">Your Recent Workouts</div>
-          {loading ? (
-            <div>Loading...</div>
-          ) : error ? (
-            <div className="text-red-600">{error}</div>
-          ) : (
-            <ul className="divide-y bg-white rounded shadow">
-              {workouts.slice(0, 5).map(w => (
-                <li key={w.id} className="p-3 flex flex-col md:flex-row md:items-center gap-2">
-                  <span className="font-semibold text-blue-700">{w.type}</span>
-                  <span className="text-gray-500">{w.date}</span>
-                  <span className="text-gray-700">{w.duration_minutes} min</span>
-                  <span className="text-gray-700">{w.calories_burned} kcal</span>
-                  <span className="text-gray-400 text-xs">{w.notes}</span>
-                </li>
-              ))}
-              {workouts.length === 0 && <li className="p-3 text-gray-500">No workouts yet.</li>}
-            </ul>
-          )}
-        </div>
-        <div>
-          <FitnessChart workouts={workouts} />
-        </div>
-      </div>
-    </div>
+    <section className="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <h1 className="text-4xl font-bold mb-4 text-blue-700">Welcome to TestApp</h1>
+      <p className="text-lg text-gray-700 mb-6 max-w-xl">
+        TestApp is your AI-powered SaaS platform. Sign in to access your dashboard and unlock powerful features.
+      </p>
+      <Link
+        to="/login"
+        className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition-colors"
+      >
+        Get Started
+      </Link>
+    </section>
   )
 }
+
+export default HomePage

@@ -1,95 +1,87 @@
-# TaskManager
+# TestApp
 
 ## Project Overview
-TaskManager is a full-stack monorepo SaaS application for managing tasks, built with Next.js (frontend), Express (backend), and PostgreSQL (database). The stack is TypeScript throughout and ready for cloud-native deployment.
+TestApp is a SaaS AI application built as a monorepo, featuring a Next.js frontend, FastAPI backend, and PostgreSQL database. Infrastructure is managed with Docker Compose for local development and Terraform for cloud provisioning.
 
 ## Monorepo Structure
-- `frontend/` – Next.js 14 app (TypeScript, Tailwind CSS)
-- `backend/` – Express API server (TypeScript)
-- `shared/` – Shared types and utilities (TypeScript)
-- `infra/` – Infrastructure as code (Docker, Kubernetes, scripts)
+- `frontend/` – Next.js (TypeScript) frontend
+- `backend/` – FastAPI (Python) backend
+- `shared/` – Shared TypeScript code
+- `infra/` – Infrastructure as code (Docker Compose, Terraform, scripts)
 
-## Prerequisites
-- [Node.js](https://nodejs.org/) >= 18.x
-- [Yarn](https://yarnpkg.com/) (workspaces support)
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
+## Tech Stack
+- **Frontend:** Next.js, React, TypeScript
+- **Backend:** FastAPI, Python, SQLAlchemy, Alembic
+- **Database:** PostgreSQL
+- **Infra:** Docker Compose, Terraform
+- **Testing:** Jest (frontend), Pytest (backend)
+
+## Getting Started
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/AnouarY02/ai-app-saas.git
+   cd ai-app-saas
+   ```
+2. Copy and edit environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env as needed
+   ```
+3. Start all services with Docker Compose:
+   ```bash
+   npm run docker:up
+   ```
 
 ## Environment Variables
-Copy `.env.example` to `.env` and fill in any secrets or overrides as needed.
+See `.env.example` for all required and optional environment variables.
 
-```
-cp .env.example .env
-```
+- `DATABASE_URL` (required)
+- `JWT_SECRET_KEY` (required)
+- `JWT_ALGORITHM` (required)
+- `FRONTEND_URL` (required)
+- `BACKEND_URL` (required)
+- `LOG_LEVEL` (optional)
+- `PORT` (optional)
+- `CORS_ORIGINS` (optional)
 
-- `DATABASE_URL` (required): Postgres connection string
-- `JWT_SECRET` (required): Secret for JWT signing
-- `NEXT_PUBLIC_API_URL` (required): Backend API URL for frontend
-- `PORT`, `NODE_ENV`, `LOG_LEVEL`, `FRONTEND_URL`, `CORS_ORIGIN` (optional)
+## Running Locally (Docker & Non-Docker)
+### With Docker Compose
+- Start: `npm run docker:up`
+- Stop: `npm run docker:down`
 
-## Local Development (with Docker Compose)
-Start the full stack (frontend, backend, database) with:
+### Without Docker
+- Install dependencies in each package (`frontend/`, `backend/`)
+- Start database (e.g., local Postgres)
+- Run backend: `npm run dev:backend`
+- Run frontend: `npm run dev:frontend`
 
-```
-yarn start
-```
-Or directly:
-```
-docker-compose up --build
-```
+## Frontend Development
+- Dev server: `npm run dev:frontend`
+- Build: `npm run build:frontend`
+- Lint: `npm run lint:frontend`
+- Test: `npm run test:frontend`
 
-The frontend will be available at [http://localhost:3000](http://localhost:3000)
-The backend API will be at [http://localhost:4000](http://localhost:4000)
+## Backend Development
+- Dev server: `npm run dev:backend`
+- Migrate DB: `npm run migrate:backend`
+- Test: `npm run test:backend`
 
-## Running Frontend and Backend Separately
-You can run frontend and backend in dev mode (with hot reload) using:
-
-```
-yarn dev
-```
-
-Or run each workspace individually:
-```
-yarn workspace backend dev
-# in another terminal
-yarn workspace frontend dev
-```
-
-## Database Setup and Migrations
-The database is provisioned via Docker Compose. To run migrations:
-
-```
-yarn migrate
-```
-
-## Seeding Sample Data
-To seed the database with sample data:
-
-```
-yarn seed
-```
-
-## Scripts Reference
-- `yarn dev` – Run frontend and backend in dev mode concurrently
-- `yarn build` – Build both frontend and backend
-- `yarn start` – Start all services via Docker Compose
-- `yarn lint` – Lint all code
-- `yarn typecheck` – TypeScript project references check
-- `yarn migrate` – Run DB migrations
-- `yarn seed` – Seed sample data
-- `yarn test` – Run tests (placeholder)
+## Database & Migrations
+- Database runs in Docker Compose as `db` (Postgres)
+- Migrations via Alembic: `npm run migrate:backend`
 
 ## Testing
-Test scripts are placeholders. Add your tests in the respective workspaces.
+- Frontend: `npm run test:frontend`
+- Backend: `npm run test:backend`
 
-## Deployment (Docker/Kubernetes)
-- **Docker Compose**: For local/dev use (`docker-compose.yml` at root)
-- **Kubernetes**: See manifests in `infra/k8s/` for cloud deployment
+## Deployment & Infrastructure (Terraform)
+- See `infra/terraform/` for cloud infrastructure setup
+- Initialize: `cd infra/terraform && terraform init`
+- Plan: `terraform plan`
+- Apply: `terraform apply`
 
-## API Reference
-See backend and shared documentation for API contracts and endpoints.
-
-## Contributing
-Pull requests are welcome! Please lint and typecheck before submitting.
-
-## License
-MIT
+## Troubleshooting & FAQ
+- Ensure `.env` is configured
+- If ports are in use, adjust in `.env` and `docker-compose.yml`
+- For database issues, check `db` service logs
+- For further help, see individual package READMEs or open an issue

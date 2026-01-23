@@ -1,10 +1,11 @@
 {
-  "name": "@ai-app-saas/shared",
+  "name": "@testapp/shared",
   "version": "1.0.0",
+  "description": "Shared types, validators, and utilities for TestApp (frontend & backend)",
   "main": "index.ts",
   "types": "index.ts",
   "license": "MIT",
   "dependencies": {
-    "zod": "^3.22.4"
+    "zod": "^3.22.2"
   }
 }
