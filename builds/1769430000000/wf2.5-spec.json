@@ -1,0 +1,929 @@
+{
+  "meta": {
+    "buildId": "1769430000000",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-1769430000000",
+    "appName": "Padel Club Pro",
+    "baseBranch": "main"
+  },
+  "functionalitySpec": {
+    "apiContracts": [
+      {
+        "endpoint": "/api/users",
+        "method": "GET",
+        "description": "Retrieve all users with optional filtering",
+        "auth": "admin",
+        "requestType": "GetUsersRequest",
+        "responseType": "GetUsersResponse",
+        "schemasUsed": [
+          "GetUsersQuerySchema"
+        ],
+        "dependencies": [
+          {
+            "package": "pg",
+            "version": "^8.11.0",
+            "importStatement": "import { Pool } from 'pg';"
+          },
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/shared/types/user.types",
+            "importStatement": "import { GetUsersRequest, GetUsersResponse } from '@/shared/types/user.types';"
+          },
+          {
+            "from": "@/shared/schemas/user.schemas",
+            "importStatement": "import { GetUsersQuerySchema } from '@/shared/schemas/user.schemas';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/users/route.ts",
+          "signature": "export async function GET(request: Request): Promise<Response>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "users",
+            "notes": "Fetch users with optional role filter"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 401,
+            "condition": "No auth token",
+            "message": "Unauthorized"
+          },
+          {
+            "status": 403,
+            "condition": "Not admin",
+            "message": "Forbidden"
+          },
+          {
+            "status": 500,
+            "condition": "DB error",
+            "message": "Internal server error"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/users",
+        "method": "POST",
+        "description": "Create a new user account",
+        "auth": "none",
+        "requestType": "CreateUserRequest",
+        "responseType": "CreateUserResponse",
+        "schemasUsed": [
+          "CreateUserSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "pg",
+            "version": "^8.11.0",
+            "importStatement": "import { Pool } from 'pg';"
+          },
+          {
+            "package": "bcrypt",
+            "version": "^5.1.0",
+            "importStatement": "import bcrypt from 'bcrypt';"
+          },
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/shared/types/user.types",
+            "importStatement": "import { CreateUserRequest, CreateUserResponse } from '@/shared/types/user.types';"
+          },
+          {
+            "from": "@/shared/schemas/user.schemas",
+            "importStatement": "import { CreateUserSchema } from '@/shared/schemas/user.schemas';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/users/route.ts",
+          "signature": "export async function POST(request: Request): Promise<Response>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "users",
+            "notes": "Check if email exists"
+          },
+          {
+            "op": "insert",
+            "table": "users",
+            "notes": "Insert new user with hashed password"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          },
+          {
+            "status": 409,
+            "condition": "Email exists",
+            "message": "User already exists"
+          },
+          {
+            "status": 500,
+            "condition": "DB error",
+            "message": "Internal server error"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/bookings",
+        "method": "GET",
+        "description": "Retrieve bookings for user or all",
+        "auth": "user",
+        "requestType": "GetBookingsRequest",
+        "responseType": "GetBookingsResponse",
+        "schemasUsed": [
+          "GetBookingsQuerySchema"
+        ],
+        "dependencies": [
+          {
+            "package": "pg",
+            "version": "^8.11.0",
+            "importStatement": "import { Pool } from 'pg';"
+          },
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/shared/types/booking.types",
+            "importStatement": "import { GetBookingsRequest, GetBookingsResponse } from '@/shared/types/booking.types';"
+          },
+          {
+            "from": "@/shared/schemas/booking.schemas",
+            "importStatement": "import { GetBookingsQuerySchema } from '@/shared/schemas/booking.schemas';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/bookings/route.ts",
+          "signature": "export async function GET(request: Request): Promise<Response>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "bookings",
+            "notes": "Fetch bookings with court join, filter by userId or date"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 401,
+            "condition": "No auth token",
+            "message": "Unauthorized"
+          },
+          {
+            "status": 500,
+            "condition": "DB error",
+            "message": "Internal server error"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/bookings",
+        "method": "POST",
+        "description": "Create a new court booking",
+        "auth": "user",
+        "requestType": "CreateBookingRequest",
+        "responseType": "CreateBookingResponse",
+        "schemasUsed": [
+          "CreateBookingSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "pg",
+            "version": "^8.11.0",
+            "importStatement": "import { Pool } from 'pg';"
+          },
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/shared/types/booking.types",
+            "importStatement": "import { CreateBookingRequest, CreateBookingResponse } from '@/shared/types/booking.types';"
+          },
+          {
+            "from": "@/shared/schemas/booking.schemas",
+            "importStatement": "import { CreateBookingSchema } from '@/shared/schemas/booking.schemas';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/bookings/route.ts",
+          "signature": "export async function POST(request: Request): Promise<Response>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "courts",
+            "notes": "Verify court exists"
+          },
+          {
+            "op": "select",
+            "table": "bookings",
+            "notes": "Check for time conflicts"
+          },
+          {
+            "op": "insert",
+            "table": "bookings",
+            "notes": "Create new booking"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          },
+          {
+            "status": 401,
+            "condition": "No auth token",
+            "message": "Unauthorized"
+          },
+          {
+            "status": 404,
+            "condition": "Court not found",
+            "message": "Court does not exist"
+          },
+          {
+            "status": 409,
+            "condition": "Time conflict",
+            "message": "Court already booked for this time"
+          },
+          {
+            "status": 500,
+            "condition": "DB error",
+            "message": "Internal server error"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/bookings",
+        "method": "DELETE",
+        "description": "Cancel an existing booking",
+        "auth": "user",
+        "requestType": "DeleteBookingRequest",
+        "responseType": "DeleteBookingResponse",
+        "schemasUsed": [
+          "DeleteBookingSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "pg",
+            "version": "^8.11.0",
+            "importStatement": "import { Pool } from 'pg';"
+          },
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/shared/types/booking.types",
+            "importStatement": "import { DeleteBookingRequest, DeleteBookingResponse } from '@/shared/types/booking.types';"
+          },
+          {
+            "from": "@/shared/schemas/booking.schemas",
+            "importStatement": "import { DeleteBookingSchema } from '@/shared/schemas/booking.schemas';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/bookings/route.ts",
+          "signature": "export async function DELETE(request: Request): Promise<Response>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "bookings",
+            "notes": "Verify booking exists and ownership"
+          },
+          {
+            "op": "delete",
+            "table": "bookings",
+            "notes": "Remove booking"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          },
+          {
+            "status": 401,
+            "condition": "No auth token",
+            "message": "Unauthorized"
+          },
+          {
+            "status": 403,
+            "condition": "Not owner",
+            "message": "Cannot delete others' bookings"
+          },
+          {
+            "status": 404,
+            "condition": "Booking not found",
+            "message": "Booking does not exist"
+          },
+          {
+            "status": 500,
+            "condition": "DB error",
+            "message": "Internal server error"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/payments",
+        "method": "GET",
+        "description": "Retrieve payment records",
+        "auth": "user",
+        "requestType": "GetPaymentsRequest",
+        "responseType": "GetPaymentsResponse",
+        "schemasUsed": [
+          "GetPaymentsQuerySchema"
+        ],
+        "dependencies": [
+          {
+            "package": "pg",
+            "version": "^8.11.0",
+            "importStatement": "import { Pool } from 'pg';"
+          },
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/shared/types/payment.types",
+            "importStatement": "import { GetPaymentsRequest, GetPaymentsResponse } from '@/shared/types/payment.types';"
+          },
+          {
+            "from": "@/shared/schemas/payment.schemas",
+            "importStatement": "import { GetPaymentsQuerySchema } from '@/shared/schemas/payment.schemas';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/payments/route.ts",
+          "signature": "export async function GET(request: Request): Promise<Response>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "payments",
+            "notes": "Fetch payments with booking join, filter by userId"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 401,
+            "condition": "No auth token",
+            "message": "Unauthorized"
+          },
+          {
+            "status": 500,
+            "condition": "DB error",
+            "message": "Internal server error"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/payments",
+        "method": "POST",
+        "description": "Process a new payment",
+        "auth": "user",
+        "requestType": "CreatePaymentRequest",
+        "responseType": "CreatePaymentResponse",
+        "schemasUsed": [
+          "CreatePaymentSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "pg",
+            "version": "^8.11.0",
+            "importStatement": "import { Pool } from 'pg';"
+          },
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/shared/types/payment.types",
+            "importStatement": "import { CreatePaymentRequest, CreatePaymentResponse } from '@/shared/types/payment.types';"
+          },
+          {
+            "from": "@/shared/schemas/payment.schemas",
+            "importStatement": "import { CreatePaymentSchema } from '@/shared/schemas/payment.schemas';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/payments/route.ts",
+          "signature": "export async function POST(request: Request): Promise<Response>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "bookings",
+            "notes": "Verify booking exists and ownership"
+          },
+          {
+            "op": "insert",
+            "table": "payments",
+            "notes": "Create payment record"
+          },
+          {
+            "op": "update",
+            "table": "bookings",
+            "notes": "Update booking payment status"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          },
+          {
+            "status": 401,
+            "condition": "No auth token",
+            "message": "Unauthorized"
+          },
+          {
+            "status": 404,
+            "condition": "Booking not found",
+            "message": "Booking does not exist"
+          },
+          {
+            "status": 409,
+            "condition": "Already paid",
+            "message": "Payment already processed"
+          },
+          {
+            "status": 500,
+            "condition": "DB error",
+            "message": "Internal server error"
+          }
+        ]
+      }
+    ],
+    "sharedTypesIndex": [
+      {
+        "name": "GetUsersRequest",
+        "file": "src/shared/types/user.types.ts",
+        "fields": [
+          {
+            "name": "role",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "GetUsersResponse",
+        "file": "src/shared/types/user.types.ts",
+        "fields": [
+          {
+            "name": "users",
+            "type": "User[]",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreateUserRequest",
+        "file": "src/shared/types/user.types.ts",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "password",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "role",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreateUserResponse",
+        "file": "src/shared/types/user.types.ts",
+        "fields": [
+          {
+            "name": "user",
+            "type": "User",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "User",
+        "file": "src/shared/types/user.types.ts",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "role",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "GetBookingsRequest",
+        "file": "src/shared/types/booking.types.ts",
+        "fields": [
+          {
+            "name": "userId",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "startDate",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "endDate",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "GetBookingsResponse",
+        "file": "src/shared/types/booking.types.ts",
+        "fields": [
+          {
+            "name": "bookings",
+            "type": "Booking[]",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreateBookingRequest",
+        "file": "src/shared/types/booking.types.ts",
+        "fields": [
+          {
+            "name": "courtId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "startTime",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "endTime",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreateBookingResponse",
+        "file": "src/shared/types/booking.types.ts",
+        "fields": [
+          {
+            "name": "booking",
+            "type": "Booking",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "DeleteBookingRequest",
+        "file": "src/shared/types/booking.types.ts",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "DeleteBookingResponse",
+        "file": "src/shared/types/booking.types.ts",
+        "fields": [
+          {
+            "name": "success",
+            "type": "boolean",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "Booking",
+        "file": "src/shared/types/booking.types.ts",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "courtId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "userId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "startTime",
+            "type": "Date",
+            "optional": false
+          },
+          {
+            "name": "endTime",
+            "type": "Date",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "GetPaymentsRequest",
+        "file": "src/shared/types/payment.types.ts",
+        "fields": [
+          {
+            "name": "userId",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "GetPaymentsResponse",
+        "file": "src/shared/types/payment.types.ts",
+        "fields": [
+          {
+            "name": "payments",
+            "type": "Payment[]",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreatePaymentRequest",
+        "file": "src/shared/types/payment.types.ts",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "amount",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "currency",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreatePaymentResponse",
+        "file": "src/shared/types/payment.types.ts",
+        "fields": [
+          {
+            "name": "payment",
+            "type": "Payment",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "Payment",
+        "file": "src/shared/types/payment.types.ts",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "amount",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "currency",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      }
+    ],
+    "schemasIndex": [
+      {
+        "name": "GetUsersQuerySchema",
+        "file": "src/shared/schemas/user.schemas.ts",
+        "forType": "GetUsersRequest",
+        "rules": [
+          {
+            "field": "role",
+            "zod": "z.enum(['user', 'admin']).optional()"
+          }
+        ]
+      },
+      {
+        "name": "CreateUserSchema",
+        "file": "src/shared/schemas/user.schemas.ts",
+        "forType": "CreateUserRequest",
+        "rules": [
+          {
+            "field": "name",
+            "zod": "z.string().min(1).max(100)"
+          },
+          {
+            "field": "email",
+            "zod": "z.string().email()"
+          },
+          {
+            "field": "password",
+            "zod": "z.string().min(8)"
+          },
+          {
+            "field": "role",
+            "zod": "z.enum(['user', 'admin'])"
+          }
+        ]
+      },
+      {
+        "name": "GetBookingsQuerySchema",
+        "file": "src/shared/schemas/booking.schemas.ts",
+        "forType": "GetBookingsRequest",
+        "rules": [
+          {
+            "field": "userId",
+            "zod": "z.string().uuid().optional()"
+          },
+          {
+            "field": "startDate",
+            "zod": "z.string().datetime().optional()"
+          },
+          {
+            "field": "endDate",
+            "zod": "z.string().datetime().optional()"
+          }
+        ]
+      },
+      {
+        "name": "CreateBookingSchema",
+        "file": "src/shared/schemas/booking.schemas.ts",
+        "forType": "CreateBookingRequest",
+        "rules": [
+          {
+            "field": "courtId",
+            "zod": "z.string().uuid()"
+          },
+          {
+            "field": "startTime",
+            "zod": "z.string().datetime()"
+          },
+          {
+            "field": "endTime",
+            "zod": "z.string().datetime()"
+          }
+        ]
+      },
+      {
+        "name": "DeleteBookingSchema",
+        "file": "src/shared/schemas/booking.schemas.ts",
+        "forType": "DeleteBookingRequest",
+        "rules": [
+          {
+            "field": "bookingId",
+            "zod": "z.string().uuid()"
+          }
+        ]
+      },
+      {
+        "name": "GetPaymentsQuerySchema",
+        "file": "src/shared/schemas/payment.schemas.ts",
+        "forType": "GetPaymentsRequest",
+        "rules": [
+          {
+            "field": "userId",
+            "zod": "z.string().uuid().optional()"
+          },
+          {
+            "field": "bookingId",
+            "zod": "z.string().uuid().optional()"
+          }
+        ]
+      },
+      {
+        "name": "CreatePaymentSchema",
+        "file": "src/shared/schemas/payment.schemas.ts",
+        "forType": "CreatePaymentRequest",
+        "rules": [
+          {
+            "field": "bookingId",
+            "zod": "z.string().uuid()"
+          },
+          {
+            "field": "amount",
+            "zod": "z.number().positive()"
+          },
+          {
+            "field": "currency",
+            "zod": "z.enum(['EUR', 'USD'])"
+          }
+        ]
+      }
+    ],
+    "databaseIndex": {
+      "tables": [
+        {
+          "name": "users",
+          "primaryKey": "id"
+        },
+        {
+          "name": "courts",
+          "primaryKey": "id"
+        },
+        {
+          "name": "bookings",
+          "primaryKey": "id"
+        },
+        {
+          "name": "payments",
+          "primaryKey": "id"
+        }
+      ]
+    }
+  }
+}
