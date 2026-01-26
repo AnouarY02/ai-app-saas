@@ -1,3 +1,17 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; }
-body { font-family: system-ui, sans-serif; background: #f8fafc; min-height: 100vh; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #2d9d5f;
+    --secondary: #d2691e;
+    --radius: 0.5rem;
+  }
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  *:focus-visible { @apply outline-none ring-2 ring-primary-500; }
+}

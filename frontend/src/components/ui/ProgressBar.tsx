@@ -6,12 +6,14 @@ interface ProgressBarProps {
 
 const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(({ progress }, ref) => {
   return (
-    <div className="w-full bg-gray-200 rounded-full h-4">
+    <div className="w-full bg-gray-200 rounded">
       <div
         ref={ref}
-        className="bg-blue-600 h-4 rounded-full"
+        className="bg-success-600 text-xs leading-none py-1 text-center text-white rounded"
         style={{ width: `${progress}%` }}
-      />
+      >
+        {progress}%
+      </div>
     </div>
   );
 });

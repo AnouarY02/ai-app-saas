@@ -1,63 +1,63 @@
 /**
- * Test App Design Tokens
- * A sophisticated and trustworthy design system that balances professionalism with approachability for modern SaaS applications. The color palette emphasizes clarity and reliability while maintaining visual interest through carefully balanced contrasts and semantic meaning.
+ * Padel Club Pro Design Tokens
+ * Padel Club Pro embodies the energy and precision of padel sports through a sophisticated color palette inspired by tennis court greens and clay court terracotta. The design balances athletic dynamism with professional SaaS aesthetics, creating a trustworthy yet energetic brand identity.
  */
 
 export const designTokens = {
   "colors": {
     "brand": {
       "primary": {
-        "50": "#f0f9ff",
-        "100": "#e0f2fe",
-        "200": "#bae6fd",
-        "300": "#7dd3fc",
-        "400": "#38bdf8",
-        "500": "#0284c7",
-        "600": "#0369a1",
-        "700": "#0c4a6e",
-        "800": "#075985",
-        "900": "#0c4a6e",
-        "950": "#082f49"
+        "50": "#f0f9f4",
+        "100": "#dcf2e3",
+        "200": "#bce5ca",
+        "300": "#8dd3a6",
+        "400": "#57ba7b",
+        "500": "#2d9d5f",
+        "600": "#247d4a",
+        "700": "#1e633c",
+        "800": "#1a4f32",
+        "900": "#16412a",
+        "950": "#0a2416"
       },
       "secondary": {
-        "50": "#f8fafc",
-        "100": "#f1f5f9",
-        "200": "#e2e8f0",
-        "300": "#cbd5e1",
-        "400": "#94a3b8",
-        "500": "#64748b",
-        "600": "#475569",
-        "700": "#334155",
-        "800": "#1e293b",
-        "900": "#0f172a",
-        "950": "#020617"
+        "50": "#fdf6f0",
+        "100": "#faeadb",
+        "200": "#f4d2b7",
+        "300": "#ecb388",
+        "400": "#e18d57",
+        "500": "#d2691e",
+        "600": "#c4541a",
+        "700": "#a34118",
+        "800": "#82351a",
+        "900": "#692d17",
+        "950": "#38160a"
       },
       "accent": {
-        "50": "#fef3c7",
-        "100": "#fde68a",
-        "200": "#fcd34d",
-        "300": "#fbbf24",
-        "400": "#f59e0b",
-        "500": "#d97706",
-        "600": "#b45309",
-        "700": "#92400e",
-        "800": "#78350f",
-        "900": "#451a03",
-        "950": "#365314"
+        "50": "#fefdf2",
+        "100": "#fefbe8",
+        "200": "#fef7c3",
+        "300": "#feef8e",
+        "400": "#fde047",
+        "500": "#eab308",
+        "600": "#ca8a04",
+        "700": "#a16207",
+        "800": "#854d0e",
+        "900": "#713f12",
+        "950": "#422006"
       }
     },
     "neutral": {
       "50": "#fafafa",
-      "100": "#f4f4f5",
-      "200": "#e4e4e7",
-      "300": "#d4d4d8",
-      "400": "#a1a1aa",
-      "500": "#71717a",
-      "600": "#52525b",
-      "700": "#3f3f46",
-      "800": "#27272a",
-      "900": "#18181b",
-      "950": "#09090b"
+      "100": "#f5f5f5",
+      "200": "#e5e5e5",
+      "300": "#d4d4d4",
+      "400": "#a3a3a3",
+      "500": "#737373",
+      "600": "#525252",
+      "700": "#404040",
+      "800": "#262626",
+      "900": "#171717",
+      "950": "#0a0a0a"
     },
     "semantic": {
       "success": {
@@ -87,10 +87,10 @@ export const designTokens = {
       "info": {
         "50": "#f0f9ff",
         "100": "#e0f2fe",
-        "500": "#0284c7",
-        "600": "#0369a1",
-        "700": "#0c4a6e",
-        "900": "#082f49"
+        "500": "#0891b2",
+        "600": "#0e7490",
+        "700": "#155e75",
+        "900": "#164e63"
       }
     }
   },

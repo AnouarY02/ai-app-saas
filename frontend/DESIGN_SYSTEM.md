@@ -1,6 +1,6 @@
-# Test App Design System
+# Padel Club Pro Design System
 
-🎨 **A sophisticated and trustworthy design system that balances professionalism with approachability for modern SaaS applications. The color palette emphasizes clarity and reliability while maintaining visual interest through carefully balanced contrasts and semantic meaning.**
+🎨 **Padel Club Pro embodies the energy and precision of padel sports through a sophisticated color palette inspired by tennis court greens and clay court terracotta. The design balances athletic dynamism with professional SaaS aesthetics, creating a trustworthy yet energetic brand identity.**
 
 ## Stats
 - Components: 18
@@ -9,8 +9,8 @@
 - Quality: 9.5/10
 
 ## Colors
-- Primary: #0284c7
-- Secondary: #64748b
+- Primary: #2d9d5f
+- Secondary: #d2691e
 
 ## Components
 1. **Spinner** - Component
@@ -25,9 +25,9 @@
 10. **Textarea** - Component
 11. **Switch** - Component
 12. **Label** - Component
-13. **Alert** - A component to display alert messages with different variants.
+13. **Alert** - A feedback component to display alert messages with different variants.
 14. **Dialog** - A modal dialog component with a backdrop.
-15. **Tooltip** - A tooltip component to display additional information.
+15. **Tooltip** - A tooltip component to display additional information on hover.
 16. **ProgressBar** - A progress bar component to indicate progress.
 17. **Avatar** - An avatar component with fallback initials.
 18. **Toast** - A toast notification component.

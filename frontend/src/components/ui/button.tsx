@@ -19,7 +19,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ variant, className, ...props }, ref) => {
-  return <button ref={ref} className={buttonVariants({ variant, className })} {...props} />;
+  return <button ref={ref} className={`${buttonVariants({ variant })} ${className}`} {...props} />;
 });
 
 Button.displayName = 'Button';

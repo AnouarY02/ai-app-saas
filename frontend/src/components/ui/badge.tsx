@@ -1,7 +1,7 @@
 import React from 'react';
 import { cva } from 'class-variance-authority';
 
-const badgeVariants = cva('px-2 py-1 text-sm font-semibold rounded-full', {
+const badgeVariants = cva('px-2 py-1 text-sm rounded-full', {
   variants: {
     status: {
       success: 'bg-green-600 text-white',
@@ -19,7 +19,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(({ status, className, ...props }, ref) => {
-  return <span ref={ref} className={badgeVariants({ status, className })} {...props} />;
+  return <span ref={ref} className={`${badgeVariants({ status })} ${className}`} {...props} />;
 });
 
 Badge.displayName = 'Badge';

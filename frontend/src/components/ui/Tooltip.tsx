@@ -7,9 +7,9 @@ interface TooltipProps {
 
 const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(({ content, children }, ref) => {
   return (
-    <div className="relative inline-block" ref={ref}>
+    <div className="relative group" ref={ref}>
       {children}
-      <div className="absolute bottom-full mb-2 w-max bg-gray-800 text-white text-sm p-2 rounded shadow-lg">
+      <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-sm p-2 rounded">
         {content}
       </div>
     </div>

@@ -18,7 +18,7 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(({ shape, className, ...props }, ref) => {
-  return <div ref={ref} className={skeletonVariants({ shape, className })} {...props} />;
+  return <div ref={ref} className={`${skeletonVariants({ shape })} ${className}`} {...props} />;
 });
 
 Skeleton.displayName = 'Skeleton';
