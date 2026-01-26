@@ -1,0 +1,249 @@
+{
+  "appName": "Padel Club Pro",
+  "description": "Een professionele, visueel sterke padel app voor een club: leden kunnen banen boeken, betalen, annuleren en inschrijven voor activiteiten. Inclusief admin dashboard voor banenbeheer, prijzen, openingstijden, staff-rollen, kortingscodes, rapportages en anti-fraude regels.",
+  "tier": "high",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "Gebruik van moderne tools voor een premium gebruikerservaring."
+  },
+  "domains": [
+    {
+      "name": "User",
+      "description": "Beheer van gebruikers en hun rollen binnen de app.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Een gebruiker van de app.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de gebruiker."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van de gebruiker."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Emailadres van de gebruiker."
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "required": true,
+              "description": "Rol van de gebruiker (member, staff, admin, superadmin)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Booking",
+      "description": "Beheer van baanboekingen en gerelateerde activiteiten.",
+      "entities": [
+        {
+          "name": "Court",
+          "description": "Een padelbaan die geboekt kan worden.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de baan."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van de baan."
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "required": true,
+              "description": "Locatie van de baan."
+            }
+          ]
+        },
+        {
+          "name": "Booking",
+          "description": "Een boeking voor een padelbaan.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de boeking."
+            },
+            {
+              "name": "courtId",
+              "type": "string",
+              "required": true,
+              "description": "De ID van de geboekte baan."
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "De ID van de gebruiker die de boeking heeft gemaakt."
+            },
+            {
+              "name": "startTime",
+              "type": "Date",
+              "required": true,
+              "description": "Starttijd van de boeking."
+            },
+            {
+              "name": "endTime",
+              "type": "Date",
+              "required": true,
+              "description": "Eindtijd van de boeking."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "description": "Beheer van betalingen en facturatie.",
+      "entities": [
+        {
+          "name": "Payment",
+          "description": "Een betaling voor een boeking.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de betaling."
+            },
+            {
+              "name": "bookingId",
+              "type": "string",
+              "required": true,
+              "description": "De ID van de gerelateerde boeking."
+            },
+            {
+              "name": "amount",
+              "type": "number",
+              "required": true,
+              "description": "Het bedrag van de betaling."
+            },
+            {
+              "name": "currency",
+              "type": "string",
+              "required": true,
+              "description": "De valuta van de betaling."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "De status van de betaling (pending, completed, refunded)."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Homepagina van de app.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/bookings",
+      "type": "page",
+      "description": "Pagina voor het bekijken en beheren van boekingen.",
+      "file": "app/bookings/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/admin",
+      "type": "page",
+      "description": "Admin dashboard voor het beheren van de club.",
+      "file": "app/admin/page.tsx",
+      "layout": "app/admin/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/users",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API voor het ophalen en aanmaken van gebruikers."
+    },
+    {
+      "path": "/api/bookings",
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE"
+      ],
+      "description": "API voor het beheren van boekingen."
+    },
+    {
+      "path": "/api/payments",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API voor het beheren van betalingen."
+    }
+  ],
+  "components": [
+    {
+      "name": "Navbar",
+      "description": "Navigatiebalk voor de app.",
+      "file": "components/Navbar.tsx",
+      "usedOn": [
+        "/",
+        "/bookings",
+        "/admin"
+      ]
+    },
+    {
+      "name": "BookingForm",
+      "description": "Formulier voor het maken van een nieuwe boeking.",
+      "file": "components/BookingForm.tsx",
+      "usedOn": [
+        "/bookings"
+      ]
+    },
+    {
+      "name": "AdminDashboard",
+      "description": "Dashboard component voor admin functionaliteiten.",
+      "file": "components/AdminDashboard.tsx",
+      "usedOn": [
+        "/admin"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React Context API",
+    "notes": "Gebruik van Context API voor het beheren van globale staat zoals gebruikersinformatie en boekingsstatus."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store met fallback naar eenvoudige persistentie",
+    "notes": "Gebruik van een in-memory store voor snelle toegang met een eenvoudige persistentielaag voor data die moet worden opgeslagen."
+  }
+}
