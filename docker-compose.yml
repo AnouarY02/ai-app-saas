@@ -1,56 +1,7 @@
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "4000:4000"
-    environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - PORT=4000
-      - DATABASE_URL=${DATABASE_URL}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - JWT_ALGORITHM=${JWT_ALGORITHM}
-      - BACKEND_URL=${BACKEND_URL}
-      - FRONTEND_URL=${FRONTEND_URL}
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - CORS_ORIGINS=${CORS_ORIGINS:-*}
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    depends_on:
-      db:
-        condition: service_healthy
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "3000:80"
-    depends_on:
-      backend:
-        condition: service_healthy
-    environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - FRONTEND_URL=${FRONTEND_URL}
-      - BACKEND_URL=${BACKEND_URL}
-  db:
-    image: postgres:15
-    restart: unless-stopped
-    environment:
-      - POSTGRES_DB=testapp
-      - POSTGRES_USER=testapp
-      - POSTGRES_PASSWORD=testapp
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U testapp"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-volumes:
-  db_data:

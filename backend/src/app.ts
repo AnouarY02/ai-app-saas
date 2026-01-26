@@ -2,8 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import healthRouter from './routes/health';
-import authRouter from './routes/auth';
-import dashboardRouter from './routes/dashboard';
 import { notFoundHandler, errorHandler } from './middleware/errorHandlers';
 import { logWithTimestamp } from './utils/logger';
 
@@ -11,21 +9,11 @@ dotenv.config();
 
 const app = express();
 
-// CORS
-const corsOptions = {
-  origin: process.env.CORS_ORIGINS?.split(',') || '*',
-  credentials: true
-};
-if (process.env.NODE_ENV === 'development') {
-  app.use(cors());
-} else {
-  app.use(cors(corsOptions));
-}
-
+// Enable CORS for all origins in development
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Logging middleware
+// Request logging
 app.use((req, res, next) => {
   logWithTimestamp(`${req.method} ${req.url}`);
   next();
@@ -33,11 +21,10 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/health', healthRouter);
-app.use('/auth', authRouter);
-app.use('/dashboard', dashboardRouter);
 
-// 404 and error handlers
+// 404 handler
 app.use(notFoundHandler);
+// Error handler
 app.use(errorHandler);
 
 export default app;

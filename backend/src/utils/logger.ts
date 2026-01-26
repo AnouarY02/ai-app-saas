@@ -1,5 +1,5 @@
 export function logWithTimestamp(message: string) {
-  const ts = new Date().toISOString();
+  const timestamp = new Date().toISOString();
   // eslint-disable-next-line no-console
-  console.log(`[${ts}] ${message}`);
+  console.log(`[${timestamp}] ${message}`);
 }
