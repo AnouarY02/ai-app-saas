@@ -1,20 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyJwt } from '../utils/jwt';
-import { usersDb } from '../config/database';
+import jwt from 'jsonwebtoken';
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
-  const auth = req.headers.authorization;
-  if (!auth || !auth.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Missing or invalid Authorization header' });
-  }
-  const token = auth.slice(7);
-  try {
-    const payload = verifyJwt(token);
-    const user = usersDb.find(u => u.id === payload.id);
-    if (!user) return res.status(401).json({ message: 'Invalid token user' });
-    (req as any).user = { id: user.id, email: user.email };
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized', code: 'UNAUTHORIZED', message: 'No token provided' });
+
+  const token = authHeader.split(' ')[1];
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(401).json({ error: 'Unauthorized', code: 'UNAUTHORIZED', message: 'Invalid token' });
+    req.user = user;
     next();
-  } catch (err) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
-  }
-}
+  });
+};
+
+export default authMiddleware;

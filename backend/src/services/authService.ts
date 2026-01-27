@@ -1,63 +1,41 @@
-import { User, UserPublic } from '../models/User';
-import { RegisterRequest, LoginRequest, UpdateProfileRequest, AuthResponse } from '../types/api';
-import { usersDb } from '../config/database';
-import bcrypt from 'bcryptjs';
-import { signJwt } from '../utils/jwt';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import { RegisterRequest, LoginRequest, RefreshRequest, LogoutRequest } from '../types/authTypes';
+import { User } from '../types/userTypes';
 
-export async function register(data: RegisterRequest): Promise<AuthResponse> {
-  const existing = usersDb.find(u => u.email === data.email);
-  if (existing) {
-    throw { status: 409, message: 'Email already registered' };
-  }
-  const now = new Date();
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+
+export const createUser = async (data: RegisterRequest): Promise<User> => {
+  const passwordHash = await bcrypt.hash(data.password, 10);
   const user: User = {
     id: uuidv4(),
+    username: data.username,
     email: data.email,
-    passwordHash: await bcrypt.hash(data.password, 10),
-    name: data.name,
-    createdAt: now,
-    updatedAt: now
+    passwordHash,
+    role: 'User',
+    createdAt: new Date(),
+    updatedAt: new Date()
   };
-  usersDb.push(user);
-  const token = signJwt({ id: user.id });
-  return { token, user: toUserPublic(user) };
-}
+  // Save user to database (mocked)
+  return user;
+};
 
-export async function login(data: LoginRequest): Promise<AuthResponse> {
-  const user = usersDb.find(u => u.email === data.email);
-  if (!user) {
-    throw { status: 401, message: 'Invalid credentials' };
-  }
-  const valid = await bcrypt.compare(data.password, user.passwordHash);
-  if (!valid) {
-    throw { status: 401, message: 'Invalid credentials' };
-  }
-  const token = signJwt({ id: user.id });
-  return { token, user: toUserPublic(user) };
-}
+export const authenticateUser = async (data: LoginRequest): Promise<{ token: string }> => {
+  // Fetch user from database (mocked)
+  const user: User = { id: '1', username: 'test', email: 'test@example.com', passwordHash: '$2b$10$...', role: 'User', createdAt: new Date(), updatedAt: new Date() };
+  const isPasswordValid = await bcrypt.compare(data.password, user.passwordHash);
+  if (!isPasswordValid) throw new Error('Invalid credentials');
+  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+  return { token };
+};
 
-export async function getProfile(userId: string): Promise<UserPublic> {
-  const user = usersDb.find(u => u.id === userId);
-  if (!user) throw { status: 404, message: 'User not found' };
-  return toUserPublic(user);
-}
+export const refreshUserToken = async (data: RefreshRequest): Promise<{ token: string }> => {
+  // Validate and refresh token (mocked)
+  const token = jwt.sign({ userId: data.userId, role: 'User' }, JWT_SECRET, { expiresIn: '1h' });
+  return { token };
+};
 
-export async function updateProfile(userId: string, data: UpdateProfileRequest): Promise<UserPublic> {
-  const user = usersDb.find(u => u.id === userId);
-  if (!user) throw { status: 404, message: 'User not found' };
-  if (data.name !== undefined) user.name = data.name;
-  if (data.password) user.passwordHash = await bcrypt.hash(data.password, 10);
-  user.updatedAt = new Date();
-  return toUserPublic(user);
-}
-
-function toUserPublic(user: User): UserPublic {
-  return {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt
-  };
-}
+export const invalidateUserSession = async (data: LogoutRequest): Promise<void> => {
+  // Invalidate session (mocked)
+};

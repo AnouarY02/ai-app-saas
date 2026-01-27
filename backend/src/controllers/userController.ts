@@ -1,19 +1,53 @@
 import { Request, Response, NextFunction } from 'express';
-import userService from '../services/userService';
+import { listUsersSchema, getUserSchema, updateUserSchema, partialUpdateUserSchema, deleteUserSchema } from '../validators/userValidators';
+import { fetchUsers, fetchUserById, modifyUser, partiallyModifyUser, removeUser } from '../services/userService';
 
-export async function getMe(req: Request, res: Response, next: NextFunction) {
+export const listUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    const user = await userService.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    const { id, email, createdAt, lastLoginAt } = user;
-    res.json({ id, email, createdAt, lastLoginAt });
-  } catch (err) {
-    next(err);
+    const data = listUsersSchema.parse(req.query);
+    const result = await fetchUsers(data);
+    res.json({ data: result, meta: {} });
+  } catch (error) {
+    next(error);
   }
-}
+};
+
+export const getUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = getUserSchema.parse(req.params);
+    const result = await fetchUserById(data.id);
+    res.json({ data: result, meta: {} });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = updateUserSchema.parse({ ...req.params, ...req.body });
+    const result = await modifyUser(data);
+    res.json({ data: result, meta: {} });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const partialUpdateUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = partialUpdateUserSchema.parse({ ...req.params, ...req.body });
+    const result = await partiallyModifyUser(data);
+    res.json({ data: result, meta: {} });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = deleteUserSchema.parse(req.params);
+    await removeUser(data.id);
+    res.json({ data: { success: true }, meta: {} });
+  } catch (error) {
+    next(error);
+  }
+};

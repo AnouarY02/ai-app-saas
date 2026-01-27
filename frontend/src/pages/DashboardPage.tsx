@@ -1,17 +1,19 @@
-import React from 'react'
-import { useAuth } from '../context/AuthContext'
+import React from 'react';
 
-const DashboardPage: React.FC = () => {
-  const { user } = useAuth()
+const DashboardPage = () => {
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Welcome to Padel Club Pro!</h2>
-      <div className="bg-white rounded shadow p-6">
-        <p className="text-gray-700 mb-2">You are logged in as <span className="font-semibold">{user?.email}</span>.</p>
-        <p className="text-gray-500 text-sm">Last login: {user?.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : 'N/A'}</p>
-      </div>
+    <div className="flex h-screen">
+      <aside className="w-64 bg-gray-900 text-white">
+        <nav className="space-y-4 p-4">
+          <a href="/dashboard" className="block text-lg font-bold">Dashboard</a>
+          <a href="/settings" className="block text-lg font-bold">Settings</a>
+        </nav>
+      </aside>
+      <main className="flex-1 p-6">
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+      </main>
     </div>
-  )
-}
+  );
+};
 
-export default DashboardPage
+export default DashboardPage;

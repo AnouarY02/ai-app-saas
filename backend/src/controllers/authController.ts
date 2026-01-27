@@ -1,39 +1,43 @@
 import { Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
-import { loginRequestSchema } from '../validators/authValidators';
-import userService from '../services/userService';
-import { generateToken, invalidateToken } from '../services/jwtService';
+import { registerUserSchema, loginUserSchema, refreshTokenSchema, logoutUserSchema } from '../validators/authValidators';
+import { createUser, authenticateUser, refreshUserToken, invalidateUserSession } from '../services/authService';
 
-export async function login(req: Request, res: Response, next: NextFunction) {
+export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const parsed = loginRequestSchema.safeParse(req.body);
-    if (!parsed.success) {
-      return res.status(400).json({ error: 'Invalid request', details: parsed.error.errors });
-    }
-    const { email, password } = parsed.data;
-    const user = await userService.findByEmail(email);
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
-    const valid = await userService.verifyPassword(user, password);
-    if (!valid) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
-    await userService.updateLastLogin(user.id);
-    const token = generateToken(user);
-    res.json({ token, user: { id: user.id, email: user.email } });
-  } catch (err) {
-    next(err);
+    const data = registerUserSchema.parse(req.body);
+    const result = await createUser(data);
+    res.json({ data: result, meta: {} });
+  } catch (error) {
+    next(error);
   }
-}
+};
 
-export async function logout(req: Request, res: Response, next: NextFunction) {
+export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // For stateless JWT, logout is handled on client by deleting token.
-    // Optionally, implement token blacklist if needed.
-    invalidateToken(req.user?.token); // No-op for now
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
+    const data = loginUserSchema.parse(req.body);
+    const result = await authenticateUser(data);
+    res.json({ data: result, meta: {} });
+  } catch (error) {
+    next(error);
   }
-}
+};
+
+export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = refreshTokenSchema.parse(req.body);
+    const result = await refreshUserToken(data);
+    res.json({ data: result, meta: {} });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = logoutUserSchema.parse(req.body);
+    await invalidateUserSession(data);
+    res.json({ data: { success: true }, meta: {} });
+  } catch (error) {
+    next(error);
+  }
+};

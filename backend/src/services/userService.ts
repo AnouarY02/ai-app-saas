@@ -1,42 +1,26 @@
-import { User } from '../types/user';
-import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
+import { User } from '../types/userTypes';
+import { ListUsersRequest, UpdateUserRequest, PartialUpdateUserRequest } from '../types/userTypes';
 
-// In-memory user store for MVP
-const users: User[] = [
-  {
-    id: 'd0c9e8b2-1111-4e6b-9b6a-000000000001',
-    email: 'user@padelclubpro.com',
-    passwordHash: bcrypt.hashSync('password123', 10),
-    createdAt: new Date('2024-01-01T10:00:00.000Z').toISOString(),
-    updatedAt: new Date('2024-01-01T10:00:00.000Z').toISOString(),
-    lastLoginAt: new Date('2024-01-01T10:00:00.000Z').toISOString()
-  }
-];
+export const fetchUsers = async (data: ListUsersRequest): Promise<User[]> => {
+  // Fetch users from database (mocked)
+  return [];
+};
 
-async function findByEmail(email: string): Promise<User | undefined> {
-  return users.find(u => u.email.toLowerCase() === email.toLowerCase());
-}
+export const fetchUserById = async (id: string): Promise<User> => {
+  // Fetch user by ID from database (mocked)
+  return { id, username: 'test', email: 'test@example.com', passwordHash: '', role: 'User', createdAt: new Date(), updatedAt: new Date() };
+};
 
-async function findById(id: string): Promise<User | undefined> {
-  return users.find(u => u.id === id);
-}
+export const modifyUser = async (data: UpdateUserRequest): Promise<User> => {
+  // Update user in database (mocked)
+  return { id: data.id, username: data.username, email: data.email, passwordHash: '', role: 'User', createdAt: new Date(), updatedAt: new Date() };
+};
 
-async function verifyPassword(user: User, password: string): Promise<boolean> {
-  return bcrypt.compare(password, user.passwordHash);
-}
+export const partiallyModifyUser = async (data: PartialUpdateUserRequest): Promise<User> => {
+  // Partially update user in database (mocked)
+  return { id: data.id, username: data.username || 'test', email: data.email || 'test@example.com', passwordHash: '', role: 'User', createdAt: new Date(), updatedAt: new Date() };
+};
 
-async function updateLastLogin(id: string): Promise<void> {
-  const user = users.find(u => u.id === id);
-  if (user) {
-    user.lastLoginAt = new Date().toISOString();
-    user.updatedAt = new Date().toISOString();
-  }
-}
-
-export default {
-  findByEmail,
-  findById,
-  verifyPassword,
-  updateLastLogin
+export const removeUser = async (id: string): Promise<void> => {
+  // Remove user from database (mocked)
 };

@@ -1,50 +1,25 @@
-// API contract types
-import type { UserPublic, Task } from './user';
-import type { TaskStatus } from './task';
-
-export interface AuthResponse {
-  token: string;
-  user: UserPublic;
-}
-
-export interface SuccessResponse {
-  message: string;
-}
-
-export interface RegisterRequest {
+export type LoginRequest = {
   email: string;
   password: string;
-  name?: string;
-}
+};
 
-export interface LoginRequest {
+export type LoginResponse = AuthResponse;
+
+export type RegisterRequest = {
+  username: string;
   email: string;
   password: string;
-}
+};
 
-export interface UpdateProfileRequest {
-  name?: string;
-  password?: string;
-}
+export type RegisterResponse = AuthResponse;
 
-export interface CreateTaskRequest {
-  title: string;
-  description?: string;
-  dueDate?: string;
-}
+export type GetUserResponse = UserResponse;
 
-export interface UpdateTaskRequest {
-  title?: string;
-  description?: string;
-  status?: TaskStatus;
-  dueDate?: string;
-}
+export type CreateUserRequest = RegisterRequest;
 
-export interface QueryParams {
-  status?: TaskStatus;
-  dueDate?: string;
-}
+export type UpdateUserRequest = Partial<User>;
 
-export interface PathParams {
-  id: string;
-}
+export type PaginatedResponse<T> = {
+  data: T[];
+  meta: PaginationMeta;
+};

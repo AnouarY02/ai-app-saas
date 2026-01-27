@@ -1,11 +1,15 @@
-import express from 'express';
-import { getMe, updateMe } from '../controllers/userController';
-import { authMiddleware } from '../middleware/authMiddleware';
-import { validateUpdateUser } from '../utils/validators';
+import { Router } from 'express';
+import { listUsers, getUser, updateUser, partialUpdateUser, deleteUser } from '../controllers/userController';
+import authMiddleware from '../middleware/authMiddleware';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/me', authMiddleware, getMe);
-router.put('/me', authMiddleware, validateUpdateUser, updateMe);
+router.use(authMiddleware);
+
+router.get('/', listUsers);
+router.get('/:id', getUser);
+router.put('/:id', updateUser);
+router.patch('/:id', partialUpdateUser);
+router.delete('/:id', deleteUser);
 
 export default router;
