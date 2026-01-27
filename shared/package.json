@@ -1,13 +1,8 @@
 {
   "name": "@padel-club-pro/shared",
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "description": "Shared types and utilities for Padel Club Pro",
   "main": "index.ts",
   "types": "index.ts",
-  "license": "MIT",
-  "dependencies": {
-    "zod": "^3.22.4",
-    "jsonwebtoken": "^9.0.0",
-    "bcryptjs": "^2.4.3",
-    "axios": "^1.6.0"
-  }
+  "license": "MIT"
 }

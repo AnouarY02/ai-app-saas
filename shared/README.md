@@ -1,10 +1,11 @@
-# Shared Layer
+# Padel Club Pro – Shared Layer
 
-This directory contains shared code for the Test App. As the application is a static landing page with no entities, data flows, or authentication, there are currently no shared contracts, types, or utilities.
+This directory contains shared code and type definitions for the Padel Club Pro app. 
 
-## Purpose
-- Provide a place for shared types, constants, and utilities if the app grows in the future.
-- Enable stable imports for any cross-cutting concerns.
+## Overview
+Currently, the app consists only of a public landing page. No shared contracts, types, or business logic are required at this stage.
 
-## Current State
-- No shared modules are required for this version of the app.
+## Structure
+- `shared/index.ts`: Main entry point for shared exports (empty for now).
+
+This layer can be expanded in the future as the app grows.

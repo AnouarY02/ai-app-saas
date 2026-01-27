@@ -1,8 +1,4 @@
-// shared/index.ts
+// Shared exports for Padel Club Pro
+// Currently empty – add shared types, constants, or utilities here as the app grows.
 
-export * from './types';
-export * from './validators';
-export * from './jwtUtils';
-export * from './passwordHashing';
-export * from './apiClient';
-export * from './errorTypes';
+export {};

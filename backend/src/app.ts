@@ -1,18 +1,33 @@
-import express from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
-import morgan from 'morgan';
-import routes from './routes/api';
-import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import dotenv from 'dotenv';
+import healthRouter from './routes/health';
+import { notFoundHandler, errorHandler } from './middleware/errorHandlers';
+import { logWithTimestamp } from './utils/logger';
 
-const app = express();
+dotenv.config();
 
+const app: Application = express();
+
+// CORS: allow all origins in development
 app.use(cors());
+
+// JSON parsing
 app.use(express.json());
-app.use(morgan(':date[iso] :method :url :status :response-time ms'));
 
-app.use('/', routes);
+// Request logging
+app.use((req, res, next) => {
+  logWithTimestamp(`${req.method} ${req.url}`);
+  next();
+});
 
+// Routes
+app.use('/health', healthRouter);
+
+// 404 handler
 app.use(notFoundHandler);
+
+// Error handler
 app.use(errorHandler);
 
 export default app;

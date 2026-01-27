@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 
-export const healthCheck = (req: Request, res: Response, next: NextFunction) => {
+export const getHealth = (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json({ ok: true, timestamp: new Date().toISOString() });
+    res.status(200).json({ ok: true, timestamp: new Date().toISOString() });
   } catch (err) {
     next(err);
   }
