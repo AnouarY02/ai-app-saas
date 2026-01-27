@@ -1,28 +1,42 @@
-import { User, UserProfile } from '../types/user';
-import bcrypt from 'bcrypt';
+import { User } from '../types/user';
+import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
-// In-memory user store for demo (replace with DB in production)
+// In-memory user store for MVP
 const users: User[] = [
   {
-    id: uuidv4(),
-    email: 'user@example.com',
-    hashed_password: bcrypt.hashSync('password123', 10),
-    full_name: 'Test User',
-    is_active: true,
-    created_at: new Date(),
-    updated_at: new Date()
+    id: 'd0c9e8b2-1111-4e6b-9b6a-000000000001',
+    email: 'user@padelclubpro.com',
+    passwordHash: bcrypt.hashSync('password123', 10),
+    createdAt: new Date('2024-01-01T10:00:00.000Z').toISOString(),
+    updatedAt: new Date('2024-01-01T10:00:00.000Z').toISOString(),
+    lastLoginAt: new Date('2024-01-01T10:00:00.000Z').toISOString()
   }
 ];
 
-export async function findUserByEmail(email: string): Promise<User | undefined> {
-  return users.find(u => u.email === email);
+async function findByEmail(email: string): Promise<User | undefined> {
+  return users.find(u => u.email.toLowerCase() === email.toLowerCase());
 }
 
-export async function getUserById(id: string): Promise<User | undefined> {
+async function findById(id: string): Promise<User | undefined> {
   return users.find(u => u.id === id);
 }
 
-export async function verifyPassword(plain: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(plain, hash);
+async function verifyPassword(user: User, password: string): Promise<boolean> {
+  return bcrypt.compare(password, user.passwordHash);
 }
+
+async function updateLastLogin(id: string): Promise<void> {
+  const user = users.find(u => u.id === id);
+  if (user) {
+    user.lastLoginAt = new Date().toISOString();
+    user.updatedAt = new Date().toISOString();
+  }
+}
+
+export default {
+  findByEmail,
+  findById,
+  verifyPassword,
+  updateLastLogin
+};

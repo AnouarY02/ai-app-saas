@@ -1,17 +1,11 @@
 // shared/apiClient.ts
-
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { getTokenFromStorage } from './authUtils';
 
-export interface ApiClientOptions {
-  baseURL: string;
-}
-
-export function createApiClient(options: ApiClientOptions): AxiosInstance {
-  const instance = axios.create({ baseURL: options.baseURL });
+export function createApiClient(baseURL: string, getToken?: () => string | undefined): AxiosInstance {
+  const instance = axios.create({ baseURL });
 
   instance.interceptors.request.use((config: AxiosRequestConfig) => {
-    const token = getTokenFromStorage();
+    const token = getToken ? getToken() : undefined;
     if (token) {
       config.headers = config.headers || {};
       config.headers['Authorization'] = `Bearer ${token}`;

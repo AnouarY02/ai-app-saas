@@ -1,11 +1,10 @@
-import { Router } from 'express';
-import { loginUser, logoutUser, getCurrentUser } from '../controllers/authController';
-import { jwtAuthMiddleware } from '../middleware/jwtAuth';
+import express from 'express';
+import { login, logout } from '../controllers/authController';
+import { requireAuth } from '../middleware/auth';
 
-const router = Router();
+const router = express.Router();
 
-router.post('/login', loginUser);
-router.post('/logout', jwtAuthMiddleware, logoutUser);
-router.get('/me', jwtAuthMiddleware, getCurrentUser);
+router.post('/login', login);
+router.post('/logout', requireAuth, logout);
 
 export default router;

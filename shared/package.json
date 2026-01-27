@@ -1,8 +1,13 @@
 {
-  "name": "@ai-app-saas/shared",
+  "name": "@padel-club-pro/shared",
   "version": "1.0.0",
-  "description": "Shared types and utilities for Test App (static landing page)",
   "main": "index.ts",
   "types": "index.ts",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "zod": "^3.22.4",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3",
+    "axios": "^1.6.0"
+  }
 }

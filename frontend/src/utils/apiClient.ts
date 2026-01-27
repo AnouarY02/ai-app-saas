@@ -1,83 +1,62 @@
-// No API endpoints defined for this static landing page.
-// This file is provided for future extensibility.
+const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000'
 
-export const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000'
-
-// Additional type exports
-export interface Activity {
-  id: string;
-  type: string;
-  description: string;
-  timestamp: string;
+export interface UserProfile {
+  id: string
+  email: string
+  createdAt: string
+  lastLoginAt: string
 }
 
-export interface Booking {
-  id: string;
-  courtId: string;
-  userId: string;
-  startTime: string;
-  endTime: string;
+export interface LoginRequest {
+  email: string
+  password: string
 }
 
-export interface Court {
-  id: string;
-  name: string;
-  type: string;
-  available: boolean;
+export interface AuthResponse {
+  token: string
+  user: { id: string; email: string }
 }
 
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  priority: string;
+export interface LogoutResponse {
+  success: boolean
 }
 
-export interface Comment {
-  id: string;
-  taskId: string;
-  userId: string;
-  content: string;
-  createdAt: string;
+export async function login(data: LoginRequest): Promise<AuthResponse> {
+  const res = await fetch(`${apiUrl}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.message || 'Invalid credentials')
+  }
+  return res.json()
 }
 
-export interface Metric {
-  name: string;
-  value: number;
-  change: number;
+export async function logout(token: string): Promise<LogoutResponse> {
+  const res = await fetch(`${apiUrl}/auth/logout`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({})
+  })
+  if (!res.ok) {
+    throw new Error('Logout failed')
+  }
+  return res.json()
 }
 
-export interface Workout {
-  id: string;
-  type: string;
-  duration: number;
-  calories: number;
-  date: string;
-}
-
-export interface Board {
-  id: string;
-  name: string;
-  columns: string[];
-}
-
-// API functions
-export const getTasks = async () => { return []; };
-export const getTask = async (id: string) => { return null; };
-export const getComments = async (taskId: string) => { return []; };
-export const createComment = async (data: any) => { return null; };
-export const createWorkout = async (data: any) => { return null; };
-export const updateCurrentUser = async (data: any) => { return null; };
-
-export interface WorkoutCreateRequest {
-  type: string;
-  duration: number;
-  calories: number;
-}
-
-export interface UserProfileUpdateRequest {
-  name?: string;
-  email?: string;
-  avatar?: string;
+export async function getMe(token: string): Promise<UserProfile> {
+  const res = await fetch(`${apiUrl}/users/me`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  if (!res.ok) {
+    throw new Error('Not authenticated')
+  }
+  return res.json()
 }

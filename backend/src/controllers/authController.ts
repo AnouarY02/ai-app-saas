@@ -1,44 +1,38 @@
 import { Request, Response, NextFunction } from 'express';
-import { validateLoginRequest } from '../validators/authValidators';
-import { findUserByEmail, verifyPassword } from '../services/userService';
-import { signJwt, getUserProfileFromUser } from '../services/jwtService';
-import { ApiError } from '../types/api';
+import { z } from 'zod';
+import { loginRequestSchema } from '../validators/authValidators';
+import userService from '../services/userService';
+import { generateToken, invalidateToken } from '../services/jwtService';
 
-export async function loginUser(req: Request, res: Response, next: NextFunction) {
+export async function login(req: Request, res: Response, next: NextFunction) {
   try {
-    const { error } = validateLoginRequest(req.body);
-    if (error) {
-      return res.status(400).json({ error: 'Invalid login payload' });
+    const parsed = loginRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Invalid request', details: parsed.error.errors });
     }
-    const { email, password } = req.body;
-    const user = await findUserByEmail(email);
-    if (!user || !(await verifyPassword(password, user.hashed_password))) {
+    const { email, password } = parsed.data;
+    const user = await userService.findByEmail(email);
+    if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
-    if (!user.is_active) {
-      return res.status(403).json({ error: 'User is inactive' });
+    const valid = await userService.verifyPassword(user, password);
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
-    const userProfile = getUserProfileFromUser(user);
-    const access_token = signJwt(userProfile);
-    res.json({ access_token, token_type: 'bearer', user: userProfile });
+    await userService.updateLastLogin(user.id);
+    const token = generateToken(user);
+    res.json({ token, user: { id: user.id, email: user.email } });
   } catch (err) {
     next(err);
   }
 }
 
-export async function logoutUser(req: Request, res: Response, next: NextFunction) {
+export async function logout(req: Request, res: Response, next: NextFunction) {
   try {
-    // Stateless JWT: logout is handled client-side by deleting token
+    // For stateless JWT, logout is handled on client by deleting token.
+    // Optionally, implement token blacklist if needed.
+    invalidateToken(req.user?.token); // No-op for now
     res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function getCurrentUser(req: Request, res: Response, next: NextFunction) {
-  try {
-    const userProfile = req.user;
-    res.json(userProfile);
   } catch (err) {
     next(err);
   }

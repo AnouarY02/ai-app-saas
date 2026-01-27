@@ -1,7 +1,11 @@
 node_modules
 npm-debug.log
 dist
+.env
 .git
 .gitignore
-Dockerfile
-.env
+frontend/node_modules
+backend/node_modules
+shared/node_modules
+frontend/build
+backend/dist

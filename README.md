@@ -1,65 +1,81 @@
-# Test App
+# Padel Club Pro
 
 ## Project Overview
-A modern React single-page application, built with Vite and TypeScript. This project is designed as a frontend-only static site, suitable for SaaS and AI-driven interfaces.
+A SaaS platform for padel club management, featuring authentication and a modern web stack.
 
 ## Tech Stack
-- React
-- TypeScript
-- Vite
-- ESLint
-- Prettier
+- **Backend:** Node.js, Express, TypeScript, JWT, Zod, BcryptJS, Dotenv, CORS
+- **Frontend:** React, React Router DOM, Axios
+- **Dev Tools:** Nodemon, ts-node, Typescript, Jest, ESLint
+- **Containerization:** Docker, Docker Compose
 
 ## Getting Started
-
-1. **Clone the repository:**
+1. Clone the repository:
    ```sh
    git clone https://github.com/AnouarY02/ai-app-saas.git
    cd ai-app-saas
    ```
-2. **Install dependencies:**
+2. Install dependencies:
    ```sh
    npm install
    ```
-3. **Start the development server:**
+3. Copy and configure environment variables:
    ```sh
-   npm run dev
+   cp .env.example .env
+   # Edit .env as needed
    ```
 
+## Environment Variables
+- `JWT_SECRET` (required): Secret key for JWT authentication
+- `PORT` (required): Backend server port (default: 4000)
+- `NODE_ENV` (optional): Node environment (default: development)
+- `FRONTEND_URL` (optional): URL where frontend is served
+- `BACKEND_URL` (optional): URL where backend is served
+
+## Running Locally
+- **Backend:**
+  ```sh
+  cd backend
+  npm install
+  npm run dev
+  ```
+- **Frontend:**
+  ```sh
+  cd frontend
+  npm install
+  npm start
+  ```
+
 ## Available Scripts
-- `npm run dev` — Start the Vite development server.
-- `npm run build` — Build the app for production.
-- `npm run preview` — Preview the production build locally.
-- `npm run lint` — Run ESLint on the codebase.
-- `npm run format` — Format code using Prettier.
+- `npm run dev` – Start backend with live reload (nodemon + ts-node)
+- `npm run build` – Compile TypeScript backend
+- `npm start` – Run compiled backend
+- `npm run lint` – Lint codebase
+- `npm run test` – Run tests
 
-## Development Workflow
-- Commit early and often.
-- Use `npm run lint` and `npm run format` before pushing code.
-- Pull the latest changes from `main` regularly.
+## Docker Usage
+1. Build and start all services:
+   ```sh
+   docker-compose up --build
+   ```
+2. Access frontend at [http://localhost:3000](http://localhost:3000)
+3. Backend API at [http://localhost:4000](http://localhost:4000)
 
-## Building for Production
-To build the app for production:
-```sh
-npm run build
-```
-The output will be in the `dist/` directory inside the `frontend/` folder.
+## Authentication Flow
+- User registers or logs in via frontend
+- Backend issues JWT on successful authentication
+- JWT is used for protected API requests
 
-## Deployment
-You can deploy the production build using any static site host (e.g., Vercel, Netlify, GitHub Pages) or via Docker Compose:
+## API Endpoints
+- `POST /api/auth/register` – Register a new user
+- `POST /api/auth/login` – Authenticate and receive JWT
+- `GET /api/profile` – Get user profile (JWT required)
 
-```sh
-docker-compose up --build
-```
-The app will be available at [http://localhost:3000](http://localhost:3000).
+## Extending the App
+- Add database service to `docker-compose.yml` for persistence
+- Expand API endpoints and frontend features as needed
 
-## Project Structure
-- `frontend/` — React app source code
-- `shared/` — Shared utilities/types (if any)
-- `infra/` — Infrastructure and configuration files
-
-## Contributing
-Pull requests are welcome! Please open an issue first to discuss any major changes.
-
-## License
-[MIT](LICENSE)
+## Troubleshooting
+- Ensure `.env` is configured
+- Check Docker Compose logs for errors: `docker-compose logs`
+- For port conflicts, adjust `PORT` in `.env` and `docker-compose.yml`

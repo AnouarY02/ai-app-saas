@@ -1,32 +1,25 @@
 import jwt from 'jsonwebtoken';
-import { UserProfile, User } from '../types/user';
-import dotenv from 'dotenv';
-dotenv.config();
+import { User } from '../types/user';
 
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'changeme';
-const JWT_ALGORITHM = process.env.JWT_ALGORITHM || 'HS256';
-const JWT_EXPIRES_IN = '1h';
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
+const JWT_EXPIRES_IN = '2h';
 
-export function signJwt(user: UserProfile): string {
-  return jwt.sign(user, JWT_SECRET_KEY, {
-    algorithm: JWT_ALGORITHM as jwt.Algorithm,
-    expiresIn: JWT_EXPIRES_IN
-  });
+export function generateToken(user: User): string {
+  return jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      role: 'user'
+    },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN }
+  );
 }
 
-export function verifyJwt(token: string): UserProfile | null {
-  try {
-    return jwt.verify(token, JWT_SECRET_KEY) as UserProfile;
-  } catch {
-    return null;
-  }
+export function verifyToken(token: string): any {
+  return jwt.verify(token, JWT_SECRET);
 }
 
-export function getUserProfileFromUser(user: User): UserProfile {
-  return {
-    id: user.id,
-    email: user.email,
-    full_name: user.full_name,
-    is_active: user.is_active
-  };
+export function invalidateToken(_token: string | undefined) {
+  // No-op for stateless JWT
 }

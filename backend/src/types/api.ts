@@ -1,25 +1,30 @@
-import { UserProfile } from './user';
-
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
 export interface AuthResponse {
-  access_token: string;
-  token_type: string;
-  user: UserProfile;
+  token: string;
+  user: {
+    id: string;
+    email: string;
+  };
 }
+
+export interface LogoutRequest {}
 
 export interface LogoutResponse {
   success: boolean;
 }
 
-export interface DashboardData {
-  user: UserProfile;
-  stats?: object;
+export interface UserProfile {
+  id: string;
+  email: string;
+  createdAt: string;
+  lastLoginAt: string;
 }
 
 export interface ApiError {
   error: string;
+  details?: any;
 }

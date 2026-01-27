@@ -1,14 +1,19 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import Header from './Header'
+import Sidebar from './Sidebar'
 
 const MainLayout: React.FC = () => {
+  const location = useLocation()
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      <Header />
-      <main className="flex-1 flex flex-col items-center justify-center px-4">
-        <Outlet />
-      </main>
+    <div className="min-h-screen flex bg-gray-100">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="flex-1 p-6">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }

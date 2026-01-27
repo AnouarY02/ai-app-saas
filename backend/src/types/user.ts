@@ -1,16 +1,21 @@
 export interface User {
   id: string;
   email: string;
-  hashed_password: string;
-  full_name: string;
-  is_active: boolean;
-  created_at: Date;
-  updated_at: Date;
+  passwordHash: string;
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt: string;
 }
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  full_name: string;
-  is_active: boolean;
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        role: string;
+        token?: string;
+      };
+    }
+  }
 }

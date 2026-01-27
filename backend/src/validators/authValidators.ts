@@ -1,8 +1,8 @@
-import { LoginRequest } from '../types/api';
+import { z } from 'zod';
 
-export function validateLoginRequest(body: any): { error?: string } {
-  if (!body || typeof body.email !== 'string' || typeof body.password !== 'string') {
-    return { error: 'Invalid payload' };
-  }
-  return {};
-}
+export const loginRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6)
+});
+
+export const logoutRequestSchema = z.object({});

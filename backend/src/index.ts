@@ -1,22 +1,20 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import app from './app';
-import { logWithTimestamp } from './utils/logger';
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+
 const server = app.listen(PORT, () => {
-  logWithTimestamp(`Server started on port ${PORT}`);
+  console.log(`[${new Date().toISOString()}] Server listening on port ${PORT}`);
 });
 
-const shutdown = (signal: string) => {
-  logWithTimestamp(`Received ${signal}. Shutting down gracefully...`);
+const shutdown = () => {
+  console.log(`[${new Date().toISOString()}] Shutting down server...`);
   server.close(() => {
-    logWithTimestamp('Server closed. Exiting process.');
+    console.log(`[${new Date().toISOString()}] Server closed.`);
     process.exit(0);
   });
-  setTimeout(() => {
-    logWithTimestamp('Force exiting after 5s.');
-    process.exit(1);
-  }, 5000);
 };
 
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

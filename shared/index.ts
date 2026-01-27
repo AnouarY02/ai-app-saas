@@ -1,4 +1,8 @@
-// Shared root barrel file
-// No exports required for this static landing page app
+// shared/index.ts
 
-export {};
+export * from './types';
+export * from './validators';
+export * from './jwtUtils';
+export * from './passwordHashing';
+export * from './apiClient';
+export * from './errorTypes';
