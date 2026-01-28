@@ -17,13 +17,13 @@ export interface User {
 
 export interface Task {
   id: string;
-  userId: string;
   title: string;
   description: string;
   status: string;
   dueDate: string;
   createdAt: string;
   updatedAt: string;
+  userId: string;
 }
 
 export async function login(email: string, password: string) {
@@ -62,6 +62,7 @@ export async function getCurrentUser() {
 
 export async function getTasks() {
   const response = await fetch(`${API_URL}/api/tasks`, {
+    method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();
@@ -69,6 +70,7 @@ export async function getTasks() {
 
 export async function getTask(id: string) {
   const response = await fetch(`${API_URL}/api/tasks/${id}`, {
+    method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();

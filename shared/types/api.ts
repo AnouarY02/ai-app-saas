@@ -12,6 +12,14 @@ export type RegisterRequest = {
 
 export type RegisterResponse = AuthResponse;
 
+export type RefreshRequest = {
+  refreshToken: string;
+};
+
+export type LogoutRequest = {};
+
+export type LogoutResponse = {};
+
 export type GetUserResponse = User;
 
 export type CreateUserRequest = RegisterRequest;
@@ -29,7 +37,7 @@ export type GetTaskRequest = {
   id: string;
 };
 
-export type TaskResponse = ApiResponse<Task>;
+export type TaskResponse = Task;
 
 export type CreateTaskRequest = {
   title: string;
@@ -45,3 +53,5 @@ export type PartialUpdateTaskRequest = Partial<CreateTaskRequest>;
 export type DeleteTaskRequest = {
   id: string;
 };
+
+export type DeleteTaskResponse = {};

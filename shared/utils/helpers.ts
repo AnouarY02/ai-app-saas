@@ -3,11 +3,6 @@ export const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString(undefined, options);
 };
 
-export const parseJSON = <T>(jsonString: string): T | null => {
-  try {
-    return JSON.parse(jsonString);
-  } catch (error) {
-    console.error('Failed to parse JSON:', error);
-    return null;
-  }
+export const parseDate = (dateString: string): Date => {
+  return new Date(dateString);
 };

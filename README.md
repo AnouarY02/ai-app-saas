@@ -14,13 +14,14 @@ TaskFlow Pro is a comprehensive task management application designed to streamli
 - Docker
 - Docker Compose
 
-### Environment Variables
-Ensure you have the following environment variables set:
-- `DATABASE_URL`: Connection string for the PostgreSQL database
-- `JWT_SECRET`: Secret key for JWT authentication
-- `NODE_ENV`: Set to `production` or `development`
+### Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/AnouarY02/ai-app-saas.git
+   cd ai-app-saas
+   ```
 
-## Running the Application
+## Running the App
 
 ### Development
 To run the application in development mode, use the following command:
@@ -34,22 +35,26 @@ For production, ensure all environment variables are set and run:
 docker-compose up -d
 ```
 
+## Environment Variables
+Ensure the following environment variables are set:
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `NODE_ENV`
+
+## Docker Setup
+The application uses Docker to manage services:
+- **Frontend**: Accessible at `http://localhost:3000`
+- **Backend**: Accessible at `http://localhost:4000`
+- **Database**: PostgreSQL running on port `5432`
+
 ## Testing
 Run tests using:
 ```bash
 docker-compose exec backend npm test
 ```
 
-## Deployment
-Deploy the application using your preferred CI/CD pipeline and ensure Docker is configured on the target environment.
-
 ## Contributing
-Contributions are welcome! Please fork the repository and submit a pull request.
+Contributions are welcome! Please follow the guidelines in `CONTRIBUTING.md`.
 
 ## License
 This project is licensed under the MIT License.
-
-## Port Mappings
-- Frontend: http://localhost:3000
-- Backend: http://localhost:4000
-- Database: localhost:5432
