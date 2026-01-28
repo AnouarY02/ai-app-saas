@@ -1,0 +1,161 @@
+{
+  "appName": "AI App",
+  "description": "A SaaS application leveraging AI capabilities to provide insights and analytics.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "The app uses a modern stack with a focus on performance and scalability."
+  },
+  "domains": [
+    {
+      "name": "User",
+      "description": "Domain for managing user data and authentication.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Represents a user of the application.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Email address of the user."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Name of the user."
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Timestamp of when the user was created."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Insight",
+      "description": "Domain for managing AI-generated insights.",
+      "entities": [
+        {
+          "name": "Insight",
+          "description": "Represents an AI-generated insight.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the insight."
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Identifier of the user who owns the insight."
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "required": true,
+              "description": "Content of the insight."
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Timestamp of when the insight was created."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Home page displaying an overview of the application.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "page",
+      "description": "User dashboard displaying insights and analytics.",
+      "file": "app/dashboard/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/insights",
+      "type": "page",
+      "description": "Page for viewing and managing AI-generated insights.",
+      "file": "app/insights/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/users",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API endpoint for retrieving and creating users."
+    },
+    {
+      "path": "/api/insights",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API endpoint for retrieving and creating insights."
+    }
+  ],
+  "components": [
+    {
+      "name": "Header",
+      "description": "Component for the application header.",
+      "file": "components/Header.tsx",
+      "usedOn": [
+        "/",
+        "/dashboard",
+        "/insights"
+      ]
+    },
+    {
+      "name": "InsightCard",
+      "description": "Component for displaying a single insight.",
+      "file": "components/InsightCard.tsx",
+      "usedOn": [
+        "/dashboard",
+        "/insights"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "Context API",
+    "notes": "Using React Context API for managing global state across the application."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store",
+    "notes": "Using an in-memory store for simplicity and performance in this MVP version."
+  }
+}
