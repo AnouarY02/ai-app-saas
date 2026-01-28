@@ -29,3 +29,6 @@ runs/
 wf4-runner/package-lock.json
 wf4-runner/.env
 .env
+
+# AI-Fabriek local build artifacts
+builds/
