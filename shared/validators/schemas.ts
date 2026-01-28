@@ -1,43 +1,44 @@
 import { z } from 'zod';
 
-export const loginRequestSchema = z.object({
+export const registerUserSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8)
 });
 
-export const registerRequestSchema = z.object({
-  username: z.string().min(3),
+export const loginUserSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8)
 });
 
-export const refreshRequestSchema = z.object({
+export const refreshTokenSchema = z.object({
   refreshToken: z.string()
 });
 
-export const logoutRequestSchema = z.object({});
+export const logoutUserSchema = z.object({});
 
-export const listTasksRequestSchema = z.object({
+export const listTasksSchema = z.object({
   page: z.number().min(1),
   limit: z.number().min(1)
 });
 
-export const getTaskRequestSchema = z.object({
+export const getTaskSchema = z.object({
   id: z.string().uuid()
 });
 
-export const createTaskRequestSchema = z.object({
+export const createTaskSchema = z.object({
   title: z.string().min(1),
-  description: z.string().optional(),
+  description: z.string().min(1),
   status: z.string().min(1),
   priority: z.string().min(1),
-  dueDate: z.string().optional()
+  dueDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: 'Invalid date format'
+  })
 });
 
-export const updateTaskRequestSchema = createTaskRequestSchema.partial();
+export const updateTaskSchema = createTaskSchema;
 
-export const partialUpdateTaskRequestSchema = createTaskRequestSchema.partial();
+export const partialUpdateTaskSchema = createTaskSchema.partial();
 
-export const deleteTaskRequestSchema = z.object({
+export const deleteTaskSchema = z.object({
   id: z.string().uuid()
 });

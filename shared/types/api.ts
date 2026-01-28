@@ -6,7 +6,6 @@ export type LoginRequest = {
 export type LoginResponse = AuthResponse;
 
 export type RegisterRequest = {
-  username: string;
   email: string;
   password: string;
 };
@@ -19,14 +18,22 @@ export type RefreshRequest = {
 
 export type LogoutRequest = {};
 
+export type SuccessResponse = {
+  success: boolean;
+};
+
 export type ListTasksRequest = {
   page: number;
   limit: number;
 };
 
+export type ListTasksResponse = PaginatedResponse<Task>;
+
 export type GetTaskRequest = {
   id: string;
 };
+
+export type TaskResponse = ApiResponse<Task>;
 
 export type CreateTaskRequest = {
   title: string;
@@ -36,27 +43,10 @@ export type CreateTaskRequest = {
   dueDate: string;
 };
 
-export type UpdateTaskRequest = Partial<CreateTaskRequest>;
+export type UpdateTaskRequest = CreateTaskRequest;
 
 export type PartialUpdateTaskRequest = Partial<CreateTaskRequest>;
 
 export type DeleteTaskRequest = {
   id: string;
-};
-
-export type AuthResponse = {
-  token: string;
-  refreshToken: string;
-  user: User;
-};
-
-export type TaskResponse = {
-  task: Task;
-};
-
-export type ListTasksResponse = PaginatedResponse<Task>;
-
-export type SuccessResponse = {
-  success: boolean;
-  message: string;
 };

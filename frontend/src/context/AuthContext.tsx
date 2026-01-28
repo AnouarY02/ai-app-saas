@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { User, login as apiLogin, register as apiRegister } from '../utils/apiClient';
+import { User, login, register } from '../utils/apiClient';
 
 interface AuthContextType {
   user: User | null;
@@ -7,10 +7,9 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
-  login: (username: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  refresh: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,10 +20,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const login = async (username: string, password: string) => {
+  const loginHandler = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const { token, user } = await apiLogin(username, password);
+      const { token, user } = await login(email, password);
       setUser(user);
       setToken(token);
       localStorage.setItem('token', token);
@@ -35,10 +34,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (username: string, email: string, password: string) => {
+  const registerHandler = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const { token, user } = await apiRegister(username, email, password);
+      const { token, user } = await register(email, password);
       setUser(user);
       setToken(token);
       localStorage.setItem('token', token);
@@ -49,18 +48,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = () => {
+  const logoutHandler = () => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
   };
 
-  const refresh = async () => {
-    // Implement token refresh logic
-  };
-
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!user, loading, error, login, register, logout, refresh }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated: !!user, loading, error, login: loginHandler, register: registerHandler, logout: logoutHandler }}>
       {children}
     </AuthContext.Provider>
   );

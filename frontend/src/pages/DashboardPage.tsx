@@ -1,17 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getTasks, Task } from '../utils/apiClient';
 
 const DashboardPage = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const tasks = await getTasks();
+        setTasks(tasks);
+      } catch (err) {
+        setError('Failed to load tasks');
+      }
+    };
+    fetchTasks();
+  }, []);
+
   return (
-    <div className="flex h-screen">
-      <aside className="w-64 bg-gray-900 text-white">
-        <nav className="space-y-4 p-4">
-          <a href="/dashboard" className="block text-lg font-bold">Dashboard</a>
-          <a href="/settings" className="block text-lg font-bold">Settings</a>
-        </nav>
-      </aside>
-      <main className="flex-1 p-6">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-      </main>
+    <div className="dashboard-page">
+      <h1>Dashboard</h1>
+      {error && <p>{error}</p>}
+      <ul>
+        {tasks.map(task => (
+          <li key={task.id}>{task.title}</li>
+        ))}
+      </ul>
     </div>
   );
 };
