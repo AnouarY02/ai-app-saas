@@ -1,60 +1,54 @@
 # TaskFlow Pro
 
 ## Introduction
-TaskFlow Pro is a comprehensive task management application designed to streamline your workflow and enhance productivity.
+TaskFlow Pro is a SaaS application designed to streamline task management and enhance productivity.
 
 ## Features
 - Task creation and management
 - User authentication
 - Real-time updates
 
+## Architecture Overview
+The application consists of a frontend, backend, and a PostgreSQL database.
+
 ## Installation
+Clone the repository and navigate to the project directory.
 
-### Prerequisites
-- Docker
-- Docker Compose
+## Running Locally
+Ensure you have Docker installed. Run the following command to start the application:
 
-### Setup
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/AnouarY02/ai-app-saas.git
-   cd ai-app-saas
-   ```
-
-## Running the App
-
-### Development
-To run the application in development mode, use the following command:
 ```bash
 docker-compose up --build
 ```
 
-### Production
-For production, ensure all environment variables are set and run:
-```bash
-docker-compose up -d
-```
-
 ## Environment Variables
-Ensure the following environment variables are set:
-- `DATABASE_URL`
-- `JWT_SECRET`
-- `NODE_ENV`
+The application requires the following environment variables:
+- `DATABASE_URL`: Connection string for the PostgreSQL database
+- `JWT_SECRET`: Secret key for JWT authentication
+- `NODE_ENV`: Set to `production` or `development`
+
+Optional:
+- `PORT`: Port for the backend service
+- `LOG_LEVEL`: Logging level
 
 ## Docker Setup
 The application uses Docker to manage services:
-- **Frontend**: Accessible at `http://localhost:3000`
-- **Backend**: Accessible at `http://localhost:4000`
-- **Database**: PostgreSQL running on port `5432`
+- **Frontend**: Accessible at `localhost:3000`
+- **Backend**: Accessible at `localhost:4000`
+- **Database**: Accessible at `localhost:5432`
 
 ## Testing
 Run tests using:
+
 ```bash
-docker-compose exec backend npm test
+npm test
 ```
 
+## Deployment
+Deploy the application using your preferred cloud service.
+
 ## Contributing
-Contributions are welcome! Please follow the guidelines in `CONTRIBUTING.md`.
+Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## License
 This project is licensed under the MIT License.

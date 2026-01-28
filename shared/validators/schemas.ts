@@ -11,16 +11,29 @@ export const loginUserSchema = z.object({
 });
 
 export const refreshTokenSchema = z.object({
-  refreshToken: z.string()
+  token: z.string()
 });
 
-export const logoutUserSchema = z.object({});
+export const logoutUserSchema = z.object({
+  token: z.string()
+});
+
+export const listTasksSchema = z.object({
+  page: z.number().min(1).optional(),
+  limit: z.number().min(1).max(100).optional()
+});
+
+export const getTaskSchema = z.object({
+  id: z.string()
+});
 
 export const createTaskSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().min(1),
+  title: z.string(),
+  description: z.string(),
   status: z.string(),
-  dueDate: z.string()
+  priority: z.string(),
+  dueDate: z.date(),
+  userId: z.string()
 });
 
 export const updateTaskSchema = createTaskSchema.partial();
@@ -28,14 +41,5 @@ export const updateTaskSchema = createTaskSchema.partial();
 export const partialUpdateTaskSchema = createTaskSchema.partial();
 
 export const deleteTaskSchema = z.object({
-  id: z.string()
-});
-
-export const listTasksSchema = z.object({
-  page: z.number().min(1),
-  limit: z.number().min(1)
-});
-
-export const getTaskSchema = z.object({
   id: z.string()
 });

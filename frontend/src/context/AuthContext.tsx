@@ -18,30 +18,31 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (token) {
-      getCurrentUser().then(response => {
-        setUser(response.user);
-        setIsAuthenticated(true);
-      }).catch(() => {
-        setUser(null);
-        setIsAuthenticated(false);
-      });
-    }
+    const fetchUser = async () => {
+      if (token) {
+        try {
+          const userData = await getCurrentUser();
+          setUser(userData);
+        } catch (err) {
+          setError('Failed to fetch user');
+        }
+      }
+      setLoading(false);
+    };
+    fetchUser();
   }, [token]);
 
   const handleLogin = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const response = await login(email, password);
-      setToken(response.token);
-      localStorage.setItem('token', response.token);
-      setUser(response.user);
-      setIsAuthenticated(true);
+      const { token, user } = await login(email, password);
+      setToken(token);
+      setUser(user);
+      localStorage.setItem('token', token);
     } catch (err) {
       setError('Login failed');
     } finally {
@@ -52,11 +53,10 @@ export const AuthProvider: React.FC = ({ children }) => {
   const handleSignup = async (email: string, password: string, name: string) => {
     setLoading(true);
     try {
-      const response = await register(email, password, name);
-      setToken(response.token);
-      localStorage.setItem('token', response.token);
-      setUser(response.user);
-      setIsAuthenticated(true);
+      const { token, user } = await register(email, password, name);
+      setToken(token);
+      setUser(user);
+      localStorage.setItem('token', token);
     } catch (err) {
       setError('Signup failed');
     } finally {
@@ -69,9 +69,8 @@ export const AuthProvider: React.FC = ({ children }) => {
     try {
       await logout();
       setToken(null);
-      localStorage.removeItem('token');
       setUser(null);
-      setIsAuthenticated(false);
+      localStorage.removeItem('token');
     } catch (err) {
       setError('Logout failed');
     } finally {
@@ -79,20 +78,12 @@ export const AuthProvider: React.FC = ({ children }) => {
     }
   };
 
-  const handleRefresh = async () => {
-    setLoading(true);
-    try {
-      const response = await getCurrentUser();
-      setUser(response.user);
-    } catch (err) {
-      setError('Session refresh failed');
-    } finally {
-      setLoading(false);
-    }
+  const refresh = async () => {
+    // Implement token refresh logic
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated, loading, error, login: handleLogin, signup: handleSignup, logout: handleLogout, refresh: handleRefresh }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated: !!user, loading, error, login: handleLogin, signup: handleSignup, logout: handleLogout, refresh }}>
       {children}
     </AuthContext.Provider>
   );

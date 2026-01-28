@@ -20,10 +20,11 @@ export interface Task {
   title: string;
   description: string;
   status: string;
+  priority: string;
   dueDate: string;
+  userId: string;
   createdAt: string;
   updatedAt: string;
-  userId: string;
 }
 
 export async function login(email: string, password: string) {
@@ -53,8 +54,8 @@ export async function logout() {
 }
 
 export async function getCurrentUser() {
-  const response = await fetch(`${API_URL}/api/auth/refresh`, {
-    method: 'POST',
+  const response = await fetch(`${API_URL}/api/auth/me`, {
+    method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();

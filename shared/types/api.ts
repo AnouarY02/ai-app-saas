@@ -12,46 +12,29 @@ export type RegisterRequest = {
 
 export type RegisterResponse = AuthResponse;
 
-export type RefreshRequest = {
-  refreshToken: string;
-};
-
-export type LogoutRequest = {};
-
-export type LogoutResponse = {};
-
 export type GetUserResponse = User;
 
 export type CreateUserRequest = RegisterRequest;
 
-export type UpdateUserRequest = Partial<User>;
+export type UpdateUserRequest = Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>;
 
-export type ListTasksRequest = {
-  page: number;
-  limit: number;
+export type PaginatedResponse<T> = {
+  data: T[];
+  meta: PaginationMeta;
 };
 
 export type ListTasksResponse = PaginatedResponse<Task>;
 
-export type GetTaskRequest = {
-  id: string;
-};
+export type TaskResponse = ApiResponse<Task>;
 
-export type TaskResponse = Task;
-
-export type CreateTaskRequest = {
-  title: string;
-  description: string;
-  status: string;
-  dueDate: string;
-};
+export type CreateTaskRequest = Omit<Task, 'id' | 'createdAt' | 'updatedAt'>;
 
 export type UpdateTaskRequest = Partial<CreateTaskRequest>;
 
 export type PartialUpdateTaskRequest = Partial<CreateTaskRequest>;
 
-export type DeleteTaskRequest = {
-  id: string;
-};
+export type DeleteTaskRequest = { id: string; };
 
-export type DeleteTaskResponse = {};
+export type RefreshTokenRequest = { token: string; };
+
+export type LogoutRequest = { token: string; };
