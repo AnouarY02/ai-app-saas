@@ -18,12 +18,6 @@ export type PaginationMeta = {
 };
 
 export type PaginatedResponse<T> = {
-  data: T[];
+  items: T[];
   meta: PaginationMeta;
-};
-
-export type AuthResponse = {
-  token: string;
-  refreshToken: string;
-  user: User;
 };

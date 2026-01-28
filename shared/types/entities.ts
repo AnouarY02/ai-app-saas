@@ -1,5 +1,6 @@
 export type User = {
   id: string;
+  username: string;
   email: string;
   passwordHash: string;
   role: string;
@@ -14,7 +15,7 @@ export type Task = {
   status: string;
   priority: string;
   dueDate: string;
+  userId: string;
   createdAt: string;
   updatedAt: string;
-  userId: string;
 };
