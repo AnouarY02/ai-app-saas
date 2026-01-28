@@ -1,10 +1,10 @@
 import React from 'react';
 
-const SettingsPage = () => {
+const SettingsPage: React.FC = () => {
   return (
-    <div className="settings-page">
-      <h1>Settings</h1>
-      <p>Manage your account settings here.</p>
+    <div className="p-4">
+      <h1 className="text-3xl font-bold">Settings</h1>
+      <p>Manage your TaskFlow Pro account settings here.</p>
     </div>
   );
 };

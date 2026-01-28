@@ -9,12 +9,11 @@ export type User = {
 
 export type Task = {
   id: string;
+  userId: string;
   title: string;
   description: string;
   status: string;
-  priority: string;
   dueDate: string;
-  userId: string;
   createdAt: string;
   updatedAt: string;
 };

@@ -6,6 +6,7 @@ import userRouter from './routes/user';
 import taskRouter from './routes/task';
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
@@ -14,9 +15,12 @@ app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/tasks', taskRouter);
+// Add all other entity routes with /api prefix
 
 // 404 handler
-app.use((req, res) => res.status(404).json({ error: 'Not Found' }));
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not Found', path: req.path });
+});
 
 // Error handler
 app.use((err, req, res, next) => {

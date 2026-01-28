@@ -1,32 +1,48 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { User, login, register } from '../utils/apiClient';
+import React, { createContext, useState, useEffect } from 'react';
+import { login, register, logout, getCurrentUser, User } from '../utils/apiClient';
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  signup: (email: string, password: string, name: string) => Promise<void>;
+  logout: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loginHandler = async (email: string, password: string) => {
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await getCurrentUser();
+        setUser(data.user);
+        setToken(data.token);
+      } catch (err) {
+        setError('Failed to fetch user');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const handleLogin = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const { token, user } = await login(email, password);
-      setUser(user);
-      setToken(token);
-      localStorage.setItem('token', token);
+      const data = await login(email, password);
+      setUser(data.user);
+      setToken(data.token);
+      localStorage.setItem('token', data.token);
     } catch (err) {
       setError('Login failed');
     } finally {
@@ -34,37 +50,50 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const registerHandler = async (email: string, password: string) => {
+  const handleSignup = async (email: string, password: string, name: string) => {
     setLoading(true);
     try {
-      const { token, user } = await register(email, password);
-      setUser(user);
-      setToken(token);
-      localStorage.setItem('token', token);
+      const data = await register(email, password, name);
+      setUser(data.user);
+      setToken(data.token);
+      localStorage.setItem('token', data.token);
     } catch (err) {
-      setError('Registration failed');
+      setError('Signup failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const logoutHandler = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
+  const handleLogout = async () => {
+    setLoading(true);
+    try {
+      await logout();
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem('token');
+    } catch (err) {
+      setError('Logout failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      const data = await getCurrentUser();
+      setUser(data.user);
+      setToken(data.token);
+    } catch (err) {
+      setError('Refresh failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!user, loading, error, login: loginHandler, register: registerHandler, logout: logoutHandler }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated: !!user, loading, error, login: handleLogin, signup: handleSignup, logout: handleLogout, refresh: handleRefresh }}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

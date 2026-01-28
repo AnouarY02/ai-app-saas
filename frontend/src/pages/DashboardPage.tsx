@@ -1,31 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { getTasks, Task } from '../utils/apiClient';
+import React from 'react';
 
-const DashboardPage = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const tasks = await getTasks();
-        setTasks(tasks);
-      } catch (err) {
-        setError('Failed to load tasks');
-      }
-    };
-    fetchTasks();
-  }, []);
-
+const DashboardPage: React.FC = () => {
   return (
-    <div className="dashboard-page">
-      <h1>Dashboard</h1>
-      {error && <p>{error}</p>}
-      <ul>
-        {tasks.map(task => (
-          <li key={task.id}>{task.title}</li>
-        ))}
-      </ul>
+    <div className="p-4">
+      <h1 className="text-3xl font-bold">Dashboard</h1>
+      <p>Welcome to your TaskFlow Pro dashboard.</p>
     </div>
   );
 };

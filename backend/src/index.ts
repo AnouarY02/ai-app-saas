@@ -1,11 +1,9 @@
 import app from './app';
-import { seedTestUser } from './seed';
+import './seed'; // Initialize seed data
 
 const PORT = process.env.PORT || 4000;
 
-// Seed the test user
-seedTestUser();
-
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Health check: http://localhost:${PORT}/api/health`);
 });

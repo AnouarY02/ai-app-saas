@@ -12,15 +12,11 @@ export type RegisterRequest = {
 
 export type RegisterResponse = AuthResponse;
 
-export type RefreshRequest = {
-  refreshToken: string;
-};
+export type GetUserResponse = User;
 
-export type LogoutRequest = {};
+export type CreateUserRequest = RegisterRequest;
 
-export type SuccessResponse = {
-  success: boolean;
-};
+export type UpdateUserRequest = Partial<User>;
 
 export type ListTasksRequest = {
   page: number;
@@ -39,11 +35,10 @@ export type CreateTaskRequest = {
   title: string;
   description: string;
   status: string;
-  priority: string;
   dueDate: string;
 };
 
-export type UpdateTaskRequest = CreateTaskRequest;
+export type UpdateTaskRequest = Partial<CreateTaskRequest>;
 
 export type PartialUpdateTaskRequest = Partial<CreateTaskRequest>;
 
