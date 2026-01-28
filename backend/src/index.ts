@@ -1,4 +1,5 @@
 import app from './app';
+import { TEST_USER, users } from './seed';
 
 const PORT = process.env.PORT || 4000;
 

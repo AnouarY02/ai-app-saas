@@ -1,43 +1,30 @@
-import { Request, Response, NextFunction } from 'express';
-import { registerUserSchema, loginUserSchema, refreshTokenSchema, logoutUserSchema } from '../validators/authValidators';
-import { createUser, authenticateUser, refreshUserToken, invalidateUserSession } from '../services/authService';
+import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { users } from '../seed';
 
-export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const data = registerUserSchema.parse(req.body);
-    const result = await createUser(data);
-    res.json({ data: result, meta: {} });
-  } catch (error) {
-    next(error);
-  }
+export const registerUser = async (req: Request, res: Response) => {
+  // Registration logic
 };
 
-export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const data = loginUserSchema.parse(req.body);
-    const result = await authenticateUser(data);
-    res.json({ data: result, meta: {} });
-  } catch (error) {
-    next(error);
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const user = users.get(email);
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid credentials' });
   }
+  const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+  if (!isPasswordValid) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' });
+  res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
 };
 
-export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const data = refreshTokenSchema.parse(req.body);
-    const result = await refreshUserToken(data);
-    res.json({ data: result, meta: {} });
-  } catch (error) {
-    next(error);
-  }
+export const refreshToken = (req: Request, res: Response) => {
+  // Refresh token logic
 };
 
-export const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const data = logoutUserSchema.parse(req.body);
-    await invalidateUserSession(data);
-    res.json({ data: { success: true }, meta: {} });
-  } catch (error) {
-    next(error);
-  }
+export const logoutUser = (req: Request, res: Response) => {
+  // Logout logic
 };

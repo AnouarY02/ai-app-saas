@@ -16,3 +16,14 @@ export type PaginationMeta = {
   total: number;
   pages: number;
 };
+
+export type PaginatedResponse<T> = {
+  data: T[];
+  meta: PaginationMeta;
+};
+
+export type AuthResponse = {
+  token: string;
+  refreshToken: string;
+  user: User;
+};

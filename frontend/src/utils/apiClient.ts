@@ -1,57 +1,104 @@
-const apiUrl = import.meta.env?.VITE_API_URL || 'http://localhost:4000';
+const API_URL = import.meta.env?.VITE_API_URL || 'http://localhost:4000';
 
-export const login = async (email: string, password: string) => {
-  const response = await fetch(`${apiUrl}/api/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!response.ok) {
-    throw new Error('Login failed');
-  }
-  return response.json();
-};
+function getAuthHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    ...(localStorage.getItem('token') ? { Authorization: `Bearer ${localStorage.getItem('token')}` } : {})
+  };
+}
 
-export const register = async (email: string, password: string) => {
-  const response = await fetch(`${apiUrl}/api/auth/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!response.ok) {
-    throw new Error('Registration failed');
-  }
-  return response.json();
-};
+export interface User {
+  id: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
-export const refreshToken = async (token: string) => {
-  const response = await fetch(`${apiUrl}/api/auth/refresh`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  if (!response.ok) {
-    throw new Error('Token refresh failed');
-  }
-  return response.json();
-};
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  dueDate: string;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+}
 
-export const logout = async (token: string) => {
-  const response = await fetch(`${apiUrl}/api/auth/logout`, {
+export async function login(email: string, password: string) {
+  const response = await fetch(`${API_URL}/api/auth/login`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    }
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
   });
-  if (!response.ok) {
-    throw new Error('Logout failed');
-  }
   return response.json();
-};
+}
+
+export async function register(email: string, password: string, name: string) {
+  const response = await fetch(`${API_URL}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, name })
+  });
+  return response.json();
+}
+
+export async function logout() {
+  const response = await fetch(`${API_URL}/api/auth/logout`, {
+    method: 'POST',
+    headers: getAuthHeaders()
+  });
+  return response.json();
+}
+
+export async function getCurrentUser() {
+  const response = await fetch(`${API_URL}/api/auth/user`, {
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
+  return response.json();
+}
+
+export async function getTasks() {
+  const response = await fetch(`${API_URL}/api/tasks`, {
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
+  return response.json();
+}
+
+export async function getTask(id: string) {
+  const response = await fetch(`${API_URL}/api/tasks/${id}`, {
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
+  return response.json();
+}
+
+export async function createTask(task: Partial<Task>) {
+  const response = await fetch(`${API_URL}/api/tasks`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(task)
+  });
+  return response.json();
+}
+
+export async function updateTask(id: string, task: Partial<Task>) {
+  const response = await fetch(`${API_URL}/api/tasks/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(task)
+  });
+  return response.json();
+}
+
+export async function deleteTask(id: string) {
+  const response = await fetch(`${API_URL}/api/tasks/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
+  return response.json();
+}

@@ -1,53 +1,56 @@
-# Test App - Full Validation
+# TaskFlow Pro
 
 ## Introduction
-This application is a SaaS platform built using modern web technologies including React for the frontend and Express for the backend. It uses PostgreSQL for data persistence.
+TaskFlow Pro is a comprehensive solution for managing tasks efficiently.
+
+## Features
+- Task management
+- User authentication
+- Real-time updates
 
 ## Installation
-Ensure you have Docker and Docker Compose installed on your machine.
 
-## Running the App
-To start the application, run the following command in the root of the project:
+### Prerequisites
+- Docker
+- Docker Compose
 
-```bash
+### Setup
+Clone the repository and navigate to the project directory.
+
+## Running the Application
+
+### Development
+To start the application in development mode, use:
+```
 docker-compose up --build
 ```
 
-This will start the frontend, backend, and database services.
+### Production
+For production, ensure all environment variables are set and run:
+```
+docker-compose up -d
+```
 
 ## Environment Variables
-The application requires the following environment variables:
-- `JWT_SECRET`: Secret key for JWT
-- `DB_HOST`: Database host
-- `DB_USER`: Database user
-- `DB_PASSWORD`: Database password
-- `DB_NAME`: Database name
-
-Optional:
-- `PORT`: Port for the backend service (default is 4000)
-- `LOG_LEVEL`: Logging level
+Ensure the following environment variables are set:
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `NODE_ENV`
 
 ## Docker Setup
-- Frontend is accessible on port 3000
-- Backend is accessible on port 4000
-- Database is accessible on port 5432
-
-## Scripts
-- `start`: Start the application
-- `build`: Build the application
-- `dev`: Start the application in development mode
-- `test`: Run tests
-- `lint`: Lint the codebase
+The application consists of three services:
+- **Frontend**: Accessible at `http://localhost:3000`
+- **Backend**: Accessible at `http://localhost:4000`
+- **Database**: PostgreSQL running on port `5432`
 
 ## Testing
-To run tests, use the following command:
-
-```bash
+Run tests using:
+```
 npm test
 ```
 
 ## Contributing
-Please fork the repository and submit a pull request for any contributions.
+Please read `CONTRIBUTING.md` for details on our code of conduct, and the process for submitting pull requests.
 
 ## License
 This project is licensed under the MIT License.

@@ -1,22 +1,27 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import healthRoutes from './routes/health';
-import authRoutes from './routes/auth';
-import userRoutes from './routes/user';
-import errorHandler from './middleware/errorHandler';
-
-dotenv.config();
+import healthRouter from './routes/health';
+import authRouter from './routes/auth';
+import userRouter from './routes/user';
+import taskRouter from './routes/task';
 
 const app = express();
-
-app.use(cors({ origin: process.env.FRONTEND_ORIGIN }));
+app.use(cors());
 app.use(express.json());
 
-app.use('/health', healthRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
+// ALL routes under /api prefix
+app.use('/api/health', healthRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
+app.use('/api/tasks', taskRouter);
 
-app.use(errorHandler);
+// 404 handler
+app.use((req, res) => res.status(404).json({ error: 'Not Found' }));
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Internal Server Error', message: err.message });
+});
 
 export default app;
