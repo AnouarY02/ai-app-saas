@@ -1,0 +1,137 @@
+{
+  "appName": "WeatherApp",
+  "description": "A SaaS application that provides weather forecasts and current weather conditions for various locations.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "The application uses server-side rendering for fast loading times and SEO benefits."
+  },
+  "domains": [
+    {
+      "name": "Weather",
+      "description": "Domain for managing weather data and forecasts.",
+      "entities": [
+        {
+          "name": "Location",
+          "description": "Represents a geographical location for which weather data is available.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the location."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Name of the location."
+            },
+            {
+              "name": "latitude",
+              "type": "number",
+              "required": true,
+              "description": "Latitude coordinate of the location."
+            },
+            {
+              "name": "longitude",
+              "type": "number",
+              "required": true,
+              "description": "Longitude coordinate of the location."
+            }
+          ]
+        },
+        {
+          "name": "WeatherData",
+          "description": "Represents weather data for a specific location and time.",
+          "fields": [
+            {
+              "name": "locationId",
+              "type": "string",
+              "required": true,
+              "description": "Identifier for the location."
+            },
+            {
+              "name": "temperature",
+              "type": "number",
+              "required": true,
+              "description": "Current temperature in Celsius."
+            },
+            {
+              "name": "condition",
+              "type": "string",
+              "required": true,
+              "description": "Current weather condition (e.g., sunny, cloudy)."
+            },
+            {
+              "name": "forecastDate",
+              "type": "string",
+              "required": true,
+              "description": "Date and time for the forecast."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Homepage displaying weather information for a default location.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/location/[id]",
+      "type": "page",
+      "description": "Page displaying detailed weather information for a specific location.",
+      "file": "app/location/[id]/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/weather",
+      "methods": [
+        "GET"
+      ],
+      "description": "API endpoint to fetch weather data for a specific location."
+    }
+  ],
+  "components": [
+    {
+      "name": "WeatherCard",
+      "description": "Component to display weather information for a location.",
+      "file": "components/WeatherCard.tsx",
+      "usedOn": [
+        "/",
+        "/location/[id]"
+      ]
+    },
+    {
+      "name": "LocationSelector",
+      "description": "Component to select a location for weather information.",
+      "file": "components/LocationSelector.tsx",
+      "usedOn": [
+        "/"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React Context API",
+    "notes": "Used for managing global state such as selected location."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store",
+    "notes": "Weather data is fetched from the API and stored in memory for quick access."
+  }
+}
