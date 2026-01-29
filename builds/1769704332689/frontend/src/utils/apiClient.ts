@@ -10,19 +10,20 @@ function getAuthHeaders() {
 export interface User {
   id: string;
   email: string;
-  passwordHash: string;
+  name: string;
+  role: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface WeatherData {
+export interface Location {
   id: string;
   userId: string;
-  location: string;
-  temperature: number;
-  condition: string;
-  forecast: any;
+  name: string;
+  latitude: number;
+  longitude: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export async function login(email: string, password: string) {
@@ -34,11 +35,11 @@ export async function login(email: string, password: string) {
   return response.json();
 }
 
-export async function register(email: string, password: string) {
+export async function register(email: string, password: string, name: string) {
   const response = await fetch(`${API_URL}/api/auth/register`, {
     method: 'POST',
     headers: getAuthHeaders(),
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, password, name })
   });
   return response.json();
 }
@@ -52,31 +53,31 @@ export async function logout() {
 }
 
 export async function getCurrentUser() {
-  const response = await fetch(`${API_URL}/api/auth/refresh`, {
-    method: 'POST',
-    headers: getAuthHeaders()
-  });
-  return response.json();
-}
-
-export async function getWeatherData() {
-  const response = await fetch(`${API_URL}/api/weather-data`, {
+  const response = await fetch(`${API_URL}/api/users/me`, {
     method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();
 }
 
-export async function getWeatherDataById(id: string) {
-  const response = await fetch(`${API_URL}/api/weather-data/${id}`, {
+export async function getTasks() {
+  const response = await fetch(`${API_URL}/api/tasks`, {
     method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();
 }
 
-export async function createWeatherData(data: any) {
-  const response = await fetch(`${API_URL}/api/weather-data`, {
+export async function getTask(id: string) {
+  const response = await fetch(`${API_URL}/api/tasks/${id}`, {
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
+  return response.json();
+}
+
+export async function createTask(data: any) {
+  const response = await fetch(`${API_URL}/api/tasks`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(data)
@@ -84,8 +85,8 @@ export async function createWeatherData(data: any) {
   return response.json();
 }
 
-export async function updateWeatherData(id: string, data: any) {
-  const response = await fetch(`${API_URL}/api/weather-data/${id}`, {
+export async function updateTask(id: string, data: any) {
+  const response = await fetch(`${API_URL}/api/tasks/${id}`, {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(data)
@@ -93,10 +94,12 @@ export async function updateWeatherData(id: string, data: any) {
   return response.json();
 }
 
-export async function deleteWeatherData(id: string) {
-  const response = await fetch(`${API_URL}/api/weather-data/${id}`, {
+export async function deleteTask(id: string) {
+  const response = await fetch(`${API_URL}/api/tasks/${id}`, {
     method: 'DELETE',
     headers: getAuthHeaders()
   });
   return response.json();
 }
+
+// Repeat similar functions for Location entity

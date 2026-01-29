@@ -2,16 +2,18 @@ export type User = {
   id: string;
   email: string;
   passwordHash: string;
+  name: string;
+  role: string;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export type WeatherData = {
+export type Location = {
   id: string;
   userId: string;
-  location: string;
-  temperature: number;
-  condition: string;
-  forecast: any; // JSON type
+  name: string;
+  latitude: number;
+  longitude: number;
   createdAt: Date;
+  updatedAt: Date;
 };

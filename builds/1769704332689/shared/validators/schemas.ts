@@ -1,16 +1,17 @@
 import { z } from 'zod';
 
-export const registerRequestSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8)
-});
-
 export const loginRequestSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8)
 });
 
-export const refreshRequestSchema = z.object({
+export const registerRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  name: z.string().min(1)
+});
+
+export const refreshTokenRequestSchema = z.object({
   token: z.string()
 });
 
@@ -18,30 +19,36 @@ export const logoutRequestSchema = z.object({
   token: z.string()
 });
 
-export const listWeatherDataRequestSchema = z.object({
+export const getUserRequestSchema = z.object({
+  id: z.string().uuid()
+});
+
+export const updateUserRequestSchema = z.object({
+  name: z.string().optional(),
+  email: z.string().email().optional()
+});
+
+export const listLocationsRequestSchema = z.object({
   page: z.number().min(1),
   limit: z.number().min(1)
 });
 
-export const getWeatherDataRequestSchema = z.object({
-  id: z.string()
+export const createLocationRequestSchema = z.object({
+  name: z.string().min(1),
+  latitude: z.number(),
+  longitude: z.number()
 });
 
-export const createWeatherDataRequestSchema = z.object({
-  location: z.string(),
-  temperature: z.number(),
-  condition: z.string(),
-  forecast: z.any()
+export const getLocationRequestSchema = z.object({
+  id: z.string().uuid()
 });
 
-export const updateWeatherDataRequestSchema = z.object({
-  id: z.string(),
-  location: z.string().optional(),
-  temperature: z.number().optional(),
-  condition: z.string().optional(),
-  forecast: z.any().optional()
+export const updateLocationRequestSchema = z.object({
+  name: z.string().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional()
 });
 
-export const deleteWeatherDataRequestSchema = z.object({
-  id: z.string()
+export const deleteLocationRequestSchema = z.object({
+  id: z.string().uuid()
 });
