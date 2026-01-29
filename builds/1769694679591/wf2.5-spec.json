@@ -1,0 +1,613 @@
+{
+  "meta": {
+    "buildId": "1769694679591",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-1769694679591",
+    "appName": "AI App",
+    "baseBranch": "main"
+  },
+  "functionalitySpec": {
+    "apiContracts": [
+      {
+        "endpoint": "/api/users",
+        "method": "GET",
+        "description": "Retrieve a list of users",
+        "auth": "admin",
+        "requestType": "GetUsersRequest",
+        "responseType": "GetUsersResponse",
+        "schemasUsed": [
+          "GetUsersSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/users/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "users",
+            "notes": "Retrieve all user records"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 403,
+            "condition": "Unauthorized access",
+            "message": "Admin privileges required"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/users",
+        "method": "POST",
+        "description": "Create a new user",
+        "auth": "none",
+        "requestType": "CreateUserRequest",
+        "responseType": "CreateUserResponse",
+        "schemasUsed": [
+          "CreateUserSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/users/route.ts",
+          "signature": "POST(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "insert",
+            "table": "users",
+            "notes": "Insert new user record"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/courts",
+        "method": "GET",
+        "description": "Retrieve a list of courts",
+        "auth": "user",
+        "requestType": "GetCourtsRequest",
+        "responseType": "GetCourtsResponse",
+        "schemasUsed": [
+          "GetCourtsSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/courts/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "courts",
+            "notes": "Retrieve all court records"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 403,
+            "condition": "Unauthorized access",
+            "message": "User login required"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/courts",
+        "method": "POST",
+        "description": "Create a new court",
+        "auth": "admin",
+        "requestType": "CreateCourtRequest",
+        "responseType": "CreateCourtResponse",
+        "schemasUsed": [
+          "CreateCourtSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/courts/route.ts",
+          "signature": "POST(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "insert",
+            "table": "courts",
+            "notes": "Insert new court record"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/reservations",
+        "method": "GET",
+        "description": "Retrieve a list of reservations",
+        "auth": "user",
+        "requestType": "GetReservationsRequest",
+        "responseType": "GetReservationsResponse",
+        "schemasUsed": [
+          "GetReservationsSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/reservations/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "reservations",
+            "notes": "Retrieve all reservation records"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 403,
+            "condition": "Unauthorized access",
+            "message": "User login required"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/reservations",
+        "method": "POST",
+        "description": "Create a new reservation",
+        "auth": "user",
+        "requestType": "CreateReservationRequest",
+        "responseType": "CreateReservationResponse",
+        "schemasUsed": [
+          "CreateReservationSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/reservations/route.ts",
+          "signature": "POST(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "insert",
+            "table": "reservations",
+            "notes": "Insert new reservation record"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          }
+        ]
+      }
+    ],
+    "sharedTypes": [
+      {
+        "name": "User",
+        "file": "src/shared/types/user.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "password",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "Court",
+        "file": "src/shared/types/court.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "location",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "Reservation",
+        "file": "src/shared/types/reservation.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "userId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "courtId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "startTime",
+            "type": "Date",
+            "optional": false
+          },
+          {
+            "name": "endTime",
+            "type": "Date",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "DeleteBookingRequest",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Booking id"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingResponse",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Cancelled booking id"
+          },
+          {
+            "name": "status",
+            "type": "'cancelled'",
+            "optional": false,
+            "description": "Always cancelled"
+          }
+        ]
+      }
+    ],
+    "schemas": [
+      {
+        "name": "CreateUserSchema",
+        "file": "src/shared/schemas/user.schemas.ts",
+        "forType": "CreateUserRequest",
+        "shape": [
+          {
+            "field": "name",
+            "zod": "z.string().min(1)"
+          },
+          {
+            "field": "email",
+            "zod": "z.string().email()"
+          },
+          {
+            "field": "password",
+            "zod": "z.string().min(8)"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "CreateCourtSchema",
+        "file": "src/shared/schemas/court.schemas.ts",
+        "forType": "CreateCourtRequest",
+        "shape": [
+          {
+            "field": "name",
+            "zod": "z.string().min(1)"
+          },
+          {
+            "field": "location",
+            "zod": "z.string().min(1)"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "CreateReservationSchema",
+        "file": "src/shared/schemas/reservation.schemas.ts",
+        "forType": "CreateReservationRequest",
+        "shape": [
+          {
+            "field": "userId",
+            "zod": "z.string().uuid()"
+          },
+          {
+            "field": "courtId",
+            "zod": "z.string().uuid()"
+          },
+          {
+            "field": "startTime",
+            "zod": "z.date()"
+          },
+          {
+            "field": "endTime",
+            "zod": "z.date()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingSchema",
+        "file": "src/shared/schemas/booking.schemas.ts",
+        "forType": "DeleteBookingRequest",
+        "shape": [
+          {
+            "field": "bookingId",
+            "zod": "z.string().uuid()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      }
+    ],
+    "databaseSchema": {
+      "tables": [
+        {
+          "name": "users",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "name",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "email",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL",
+                "UNIQUE"
+              ]
+            },
+            {
+              "name": "password",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_users_email",
+              "columns": [
+                "email"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "courts",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "name",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "location",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_courts_name",
+              "columns": [
+                "name"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "reservations",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "user_id",
+              "type": "uuid",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "court_id",
+              "type": "uuid",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "start_time",
+              "type": "timestamp",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "end_time",
+              "type": "timestamp",
+              "constraints": [
+                "NOT NULL"
+              ]
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_reservations_user",
+              "columns": [
+                "user_id"
+              ]
+            },
+            {
+              "name": "idx_reservations_court",
+              "columns": [
+                "court_id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
