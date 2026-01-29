@@ -17,8 +17,7 @@ export type PaginationMeta = {
   pages: number;
 };
 
-export type PaginatedResponse<T> = {
-  data: T[];
+export type PaginatedResponse<T> = ApiResponse<T[]> & {
   meta: PaginationMeta;
 };
 

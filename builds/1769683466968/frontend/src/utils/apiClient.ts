@@ -7,24 +7,25 @@ function getAuthHeaders() {
   };
 }
 
-export type User = {
+export interface User {
   id: string;
   email: string;
   role: string;
   createdAt: string;
   updatedAt: string;
-};
+}
 
-export type Task = {
+export interface Task {
   id: string;
   userId: string;
   title: string;
   description: string;
   status: string;
+  priority: string;
   dueDate: string;
   createdAt: string;
   updatedAt: string;
-};
+}
 
 export async function login(email: string, password: string) {
   const response = await fetch(`${API_URL}/api/auth/login`, {
@@ -54,7 +55,6 @@ export async function logout() {
 
 export async function getCurrentUser() {
   const response = await fetch(`${API_URL}/api/auth/me`, {
-    method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();
@@ -62,7 +62,6 @@ export async function getCurrentUser() {
 
 export async function getTasks() {
   const response = await fetch(`${API_URL}/api/tasks`, {
-    method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();
@@ -70,7 +69,6 @@ export async function getTasks() {
 
 export async function getTask(id: string) {
   const response = await fetch(`${API_URL}/api/tasks/${id}`, {
-    method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();

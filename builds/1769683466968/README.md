@@ -17,12 +17,7 @@ TaskFlow Pro is a comprehensive task management application designed to streamli
 ### Setup
 Clone the repository and navigate to the project directory.
 
-```bash
-git clone https://github.com/AnouarY02/ai-app-saas.git
-cd ai-app-saas
-```
-
-## Running the Application
+## Running the App
 
 ### Development
 To run the application in development mode, use the following command:
@@ -57,8 +52,8 @@ Run tests using:
 docker-compose exec backend npm test
 ```
 
-## Contribution Guidelines
-Please fork the repository and submit a pull request for any enhancements or bug fixes.
+## Contributing
+Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## License
 This project is licensed under the MIT License.
