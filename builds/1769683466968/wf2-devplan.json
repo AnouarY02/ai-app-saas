@@ -1,0 +1,200 @@
+{
+  "features": [
+    {
+      "name": "Project Overzicht",
+      "description": "Gebruikers kunnen een overzicht zien van alle projecten en nieuwe projecten aanmaken.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "ProjectList component bouwen",
+          "description": "Implementeer een component die een lijst van projecten ophaalt en weergeeft op de startpagina.",
+          "technicalNotes": "Gebruik Next.js server components waar mogelijk. Haal data op via /api/projects (GET). Gebruik Tailwind CSS voor styling."
+        },
+        {
+          "title": "Project aanmaken functionaliteit",
+          "description": "Voeg een formulier toe waarmee gebruikers een nieuw project kunnen aanmaken.",
+          "technicalNotes": "Gebruik een controlled form met React useState. Verstuur data naar /api/projects (POST). Valideer verplichte velden (name)."
+        },
+        {
+          "title": "Projecten ophalen via API",
+          "description": "Implementeer de GET handler voor /api/projects om projecten uit de in-memory store op te halen.",
+          "technicalNotes": "Gebruik Next.js route handlers in app/api/projects/route.ts. Return JSON van alle projecten."
+        },
+        {
+          "title": "Projecten aanmaken via API",
+          "description": "Implementeer de POST handler voor /api/projects om een nieuw project toe te voegen aan de in-memory store.",
+          "technicalNotes": "Valideer input, genereer unieke id (bijv. uuid), voeg createdAt toe."
+        }
+      ]
+    },
+    {
+      "name": "Project Detail & Taken Overzicht",
+      "description": "Gebruikers kunnen de details van een project bekijken en alle bijbehorende taken zien.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Project detailpagina bouwen",
+          "description": "Implementeer de pagina /projects/[projectId] die projectdetails en taken toont.",
+          "technicalNotes": "Gebruik Next.js dynamic routing. Haal projectdata op via /api/projects/[projectId] (GET)."
+        },
+        {
+          "title": "TaskList component bouwen",
+          "description": "Implementeer een component die alle taken voor het geselecteerde project toont.",
+          "technicalNotes": "Haal taken op via /api/tasks (GET) met projectId als query parameter. Filter taken client-side indien nodig."
+        },
+        {
+          "title": "Taken aanmaken binnen project",
+          "description": "Voeg een formulier toe om een nieuwe taak aan het project toe te voegen.",
+          "technicalNotes": "Gebruik een controlled form. Verstuur data naar /api/tasks (POST) met projectId. Valideer verplichte velden (title, status)."
+        },
+        {
+          "title": "Project detail ophalen via API",
+          "description": "Implementeer de GET handler voor /api/projects/[projectId].",
+          "technicalNotes": "Zoek project op id in de in-memory store. Return 404 als niet gevonden."
+        }
+      ]
+    },
+    {
+      "name": "Taak Detail & Statusbeheer",
+      "description": "Gebruikers kunnen de details van een taak bekijken, status wijzigen en verwijderen.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "TaskDetail component bouwen",
+          "description": "Implementeer een component die alle details van een taak toont op /tasks/[taskId].",
+          "technicalNotes": "Haal taakdata op via /api/tasks/[taskId] (GET)."
+        },
+        {
+          "title": "Status van taak aanpassen",
+          "description": "Voeg functionaliteit toe om de status van een taak te wijzigen (open, in progress, completed).",
+          "technicalNotes": "Gebruik een select input. Verstuur wijziging naar /api/tasks/[taskId] (PUT)."
+        },
+        {
+          "title": "Taak verwijderen",
+          "description": "Voeg een knop toe om een taak te verwijderen.",
+          "technicalNotes": "Verstuur DELETE request naar /api/tasks/[taskId]. Werk lijst van taken bij na verwijderen."
+        },
+        {
+          "title": "Taak detail ophalen via API",
+          "description": "Implementeer de GET handler voor /api/tasks/[taskId].",
+          "technicalNotes": "Zoek taak op id in de in-memory store. Return 404 als niet gevonden."
+        },
+        {
+          "title": "Taak bijwerken via API",
+          "description": "Implementeer de PUT handler voor /api/tasks/[taskId] om taakstatus of andere velden te wijzigen.",
+          "technicalNotes": "Valideer input. Werk taakobject bij in de in-memory store."
+        },
+        {
+          "title": "Taak verwijderen via API",
+          "description": "Implementeer de DELETE handler voor /api/tasks/[taskId].",
+          "technicalNotes": "Verwijder taak uit de in-memory store."
+        }
+      ]
+    },
+    {
+      "name": "Project Bewerken & Verwijderen",
+      "description": "Gebruikers kunnen projecten bewerken en verwijderen.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Project bewerken functionaliteit",
+          "description": "Voeg een formulier toe waarmee gebruikers projectnaam en beschrijving kunnen aanpassen.",
+          "technicalNotes": "Gebruik een modal of aparte pagina. Verstuur wijzigingen naar /api/projects/[projectId] (PUT)."
+        },
+        {
+          "title": "Project verwijderen functionaliteit",
+          "description": "Voeg een knop toe om een project te verwijderen.",
+          "technicalNotes": "Verstuur DELETE request naar /api/projects/[projectId]. Redirect gebruiker na verwijderen."
+        },
+        {
+          "title": "Project bijwerken via API",
+          "description": "Implementeer de PUT handler voor /api/projects/[projectId].",
+          "technicalNotes": "Valideer input. Werk projectobject bij in de in-memory store."
+        },
+        {
+          "title": "Project verwijderen via API",
+          "description": "Implementeer de DELETE handler voor /api/projects/[projectId].",
+          "technicalNotes": "Verwijder project en bijbehorende taken uit de in-memory store."
+        }
+      ]
+    },
+    {
+      "name": "UI & Styling",
+      "description": "Implementeer consistente en toegankelijke styling voor alle componenten.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Tailwind CSS integreren",
+          "description": "Configureer Tailwind CSS in het Next.js project.",
+          "technicalNotes": "Volg de officiële Next.js + Tailwind installatiegids. Importeer globale Tailwind styles."
+        },
+        {
+          "title": "shadcn/ui componenten gebruiken",
+          "description": "Gebruik shadcn/ui voor modals, buttons en forms waar van toepassing.",
+          "technicalNotes": "Installeer shadcn/ui. Importeer en customize componenten volgens huisstijl."
+        },
+        {
+          "title": "Responsieve layout",
+          "description": "Zorg dat de applicatie goed werkt op desktop, tablet en mobiel.",
+          "technicalNotes": "Gebruik Tailwind utility classes voor responsive design."
+        }
+      ]
+    },
+    {
+      "name": "State Management & Data Layer",
+      "description": "Implementeer in-memory state management voor projecten en taken.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "useState en useReducer hooks toepassen",
+          "description": "Gebruik React hooks voor lokaal state management in componenten.",
+          "technicalNotes": "Gebruik useState voor eenvoudige state, useReducer voor complexere updates (zoals takenlijst)."
+        },
+        {
+          "title": "Eenvoudige in-memory store opzetten",
+          "description": "Implementeer een simpele store (bijv. als module) voor het opslaan van projecten en taken tijdens de sessie.",
+          "technicalNotes": "Gebruik een JavaScript object of Map in het geheugen. Geen persistente opslag nodig."
+        }
+      ]
+    },
+    {
+      "name": "Routing & Navigatie",
+      "description": "Implementeer navigatie tussen pagina's en zorg voor consistente layouts.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Next.js App Router structuur opzetten",
+          "description": "Implementeer de mappenstructuur voor pages en layouts volgens de blueprint.",
+          "technicalNotes": "Gebruik app directory, maak layout.tsx en page.tsx files aan voor elke route."
+        },
+        {
+          "title": "Navigatiecomponent toevoegen",
+          "description": "Voeg een navigatiebalk toe voor snelle toegang tot projecten en taken.",
+          "technicalNotes": "Gebruik shadcn/ui of Tailwind voor de navbar. Toon actieve pagina."
+        }
+      ]
+    },
+    {
+      "name": "Validatie & Foutafhandeling",
+      "description": "Implementeer gebruikersvriendelijke validatie en foutmeldingen bij formulieren en API calls.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Client-side validatie",
+          "description": "Voeg validatie toe aan alle formulieren (projecten, taken).",
+          "technicalNotes": "Gebruik React form validation. Toon foutmeldingen bij ontbrekende verplichte velden."
+        },
+        {
+          "title": "API foutafhandeling",
+          "description": "Return correcte HTTP status codes en foutmeldingen vanuit API handlers.",
+          "technicalNotes": "Gebruik try/catch in route handlers. Return 400 voor invalid input, 404 voor niet gevonden."
+        },
+        {
+          "title": "UI feedback bij fouten",
+          "description": "Toon duidelijke foutmeldingen in de UI bij mislukte requests.",
+          "technicalNotes": "Gebruik state om error messages te tonen in componenten."
+        }
+      ]
+    }
+  ]
+}
