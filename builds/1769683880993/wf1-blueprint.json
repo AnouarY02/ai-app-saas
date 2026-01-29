@@ -1,0 +1,159 @@
+{
+  "appName": "TaskFlow Pro",
+  "description": "TaskFlow Pro is een SaaS-applicatie voor het beheren en organiseren van taken en projecten, gericht op kleine tot middelgrote teams.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "De applicatie maakt gebruik van moderne webtechnologieën om een responsieve en gebruiksvriendelijke ervaring te bieden."
+  },
+  "domains": [
+    {
+      "name": "Project Management",
+      "description": "Beheer van projecten en taken binnen teams.",
+      "entities": [
+        {
+          "name": "Project",
+          "description": "Een project dat meerdere taken kan bevatten.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor het project."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van het project."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Beschrijving van het project."
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Aanmaakdatum van het project."
+            }
+          ]
+        },
+        {
+          "name": "Task",
+          "description": "Een taak die deel uitmaakt van een project.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de taak."
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "required": true,
+              "description": "De ID van het project waartoe deze taak behoort."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "description": "Titel van de taak."
+            },
+            {
+              "name": "completed",
+              "type": "boolean",
+              "required": true,
+              "description": "Geeft aan of de taak is voltooid."
+            },
+            {
+              "name": "dueDate",
+              "type": "Date",
+              "required": false,
+              "description": "Vervaldatum van de taak."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Startpagina van de applicatie met een overzicht van projecten.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/projects/[projectId]",
+      "type": "page",
+      "description": "Detailpagina voor een specifiek project met bijbehorende taken.",
+      "file": "app/projects/[projectId]/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/projects",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API-route voor het ophalen en aanmaken van projecten."
+    },
+    {
+      "path": "/api/projects/[projectId]/tasks",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API-route voor het ophalen en aanmaken van taken binnen een project."
+    }
+  ],
+  "components": [
+    {
+      "name": "ProjectList",
+      "description": "Component voor het weergeven van een lijst met projecten.",
+      "file": "components/ProjectList.tsx",
+      "usedOn": [
+        "/"
+      ]
+    },
+    {
+      "name": "TaskList",
+      "description": "Component voor het weergeven van een lijst met taken binnen een project.",
+      "file": "components/TaskList.tsx",
+      "usedOn": [
+        "/projects/[projectId]"
+      ]
+    },
+    {
+      "name": "TaskItem",
+      "description": "Component voor het weergeven van een enkele taak.",
+      "file": "components/TaskItem.tsx",
+      "usedOn": [
+        "/projects/[projectId]"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "In-memory state management using React Context",
+    "notes": "React Context wordt gebruikt voor het beheren van de applicatiestatus binnen componenten."
+  },
+  "dataLayer": {
+    "strategy": "Eenvoudige in-memory data store",
+    "notes": "Voor de MVP wordt een in-memory data store gebruikt. In de toekomst kan dit worden uitgebreid naar een database-oplossing."
+  }
+}
