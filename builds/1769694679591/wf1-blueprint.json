@@ -1,0 +1,240 @@
+{
+  "appName": "PadelPro",
+  "description": "PadelPro is een SaaS-applicatie voor het beheren van padelbanen, reserveringen en gebruikersprofielen.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "De applicatie maakt gebruik van Next.js voor server-side rendering en API routes voor backend functionaliteit."
+  },
+  "domains": [
+    {
+      "name": "User Management",
+      "description": "Beheer van gebruikersprofielen en authenticatie.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Een gebruiker van de applicatie.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de gebruiker."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van de gebruiker."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Emailadres van de gebruiker."
+            },
+            {
+              "name": "password",
+              "type": "string",
+              "required": true,
+              "description": "Wachtwoord voor de gebruiker."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Court Management",
+      "description": "Beheer van padelbanen en beschikbaarheid.",
+      "entities": [
+        {
+          "name": "Court",
+          "description": "Een padelbaan die gereserveerd kan worden.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de baan."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van de baan."
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "required": true,
+              "description": "Locatie van de baan."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reservation Management",
+      "description": "Beheer van reserveringen voor padelbanen.",
+      "entities": [
+        {
+          "name": "Reservation",
+          "description": "Een reservering voor een padelbaan.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de reservering."
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "ID van de gebruiker die de reservering heeft gemaakt."
+            },
+            {
+              "name": "courtId",
+              "type": "string",
+              "required": true,
+              "description": "ID van de gereserveerde baan."
+            },
+            {
+              "name": "startTime",
+              "type": "Date",
+              "required": true,
+              "description": "Starttijd van de reservering."
+            },
+            {
+              "name": "endTime",
+              "type": "Date",
+              "required": true,
+              "description": "Eindtijd van de reservering."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Homepagina van de applicatie.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Loginpagina voor gebruikers.",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "page",
+      "description": "Dashboard voor ingelogde gebruikers.",
+      "file": "app/dashboard/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/courts",
+      "type": "page",
+      "description": "Overzicht van alle padelbanen.",
+      "file": "app/courts/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/reservations",
+      "type": "page",
+      "description": "Overzicht van alle reserveringen.",
+      "file": "app/reservations/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/users",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API voor het ophalen en aanmaken van gebruikers."
+    },
+    {
+      "path": "/api/courts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API voor het ophalen en aanmaken van padelbanen."
+    },
+    {
+      "path": "/api/reservations",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API voor het ophalen en aanmaken van reserveringen."
+    }
+  ],
+  "components": [
+    {
+      "name": "Header",
+      "description": "Navigatiebalk bovenaan de pagina.",
+      "file": "components/Header.tsx",
+      "usedOn": [
+        "/",
+        "/login",
+        "/dashboard",
+        "/courts",
+        "/reservations"
+      ]
+    },
+    {
+      "name": "Footer",
+      "description": "Voettekst onderaan de pagina.",
+      "file": "components/Footer.tsx",
+      "usedOn": [
+        "/",
+        "/login",
+        "/dashboard",
+        "/courts",
+        "/reservations"
+      ]
+    },
+    {
+      "name": "CourtCard",
+      "description": "Component voor het weergeven van een padelbaan.",
+      "file": "components/CourtCard.tsx",
+      "usedOn": [
+        "/courts"
+      ]
+    },
+    {
+      "name": "ReservationCard",
+      "description": "Component voor het weergeven van een reservering.",
+      "file": "components/ReservationCard.tsx",
+      "usedOn": [
+        "/reservations"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "React Context API",
+    "notes": "Gebruik van React Context API voor het beheren van globale staat zoals gebruikersauthenticatie en huidige reserveringen."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store",
+    "notes": "Gebruik van een eenvoudige in-memory store voor het opslaan van tijdelijke gegevens tijdens de ontwikkeling. Voor productie kan een database zoals PostgreSQL worden overwogen."
+  }
+}
