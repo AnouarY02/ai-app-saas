@@ -1,0 +1,197 @@
+{
+  "features": [
+    {
+      "name": "Taken Overzicht",
+      "description": "Gebruikers kunnen een overzicht zien van alle taken, met basisinformatie zoals titel en status.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Implementeer TaskList component",
+          "description": "Maak een herbruikbare component die een lijst van taken weergeeft.",
+          "technicalNotes": "Gebruik TypeScript voor type safety. Gebruik shadcn/ui List en Tailwind CSS voor styling. Props: array van Task objects."
+        },
+        {
+          "title": "Maak homepage met takenoverzicht",
+          "description": "Implementeer de '/' route die TaskList toont met alle taken.",
+          "technicalNotes": "Gebruik app/page.tsx en importeer TaskList. Haal taken op via context of fetch van /api/tasks."
+        },
+        {
+          "title": "Taken ophalen via API",
+          "description": "Implementeer GET /api/tasks endpoint voor het ophalen van alle taken.",
+          "technicalNotes": "Gebruik Next.js route handler in app/api/tasks/route.ts. Haal data uit in-memory store."
+        }
+      ]
+    },
+    {
+      "name": "Taak Detailpagina",
+      "description": "Gebruikers kunnen details van een taak bekijken, inclusief beschrijving en status.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Implementeer TaskDetail component",
+          "description": "Maak een component die alle details van een taak toont.",
+          "technicalNotes": "Props: Task object. Gebruik shadcn/ui Card component voor layout."
+        },
+        {
+          "title": "Implementeer taak detailpagina",
+          "description": "Maak de /tasks/[id] pagina die TaskDetail toont voor de geselecteerde taak.",
+          "technicalNotes": "Gebruik app/tasks/[id]/page.tsx. Haal taak op via GET /api/tasks/[id] of context."
+        },
+        {
+          "title": "API endpoint voor taakdetails",
+          "description": "Implementeer GET /api/tasks/[id] endpoint voor ophalen van een specifieke taak.",
+          "technicalNotes": "Gebruik Next.js route handler in app/api/tasks/[id]/route.ts. Zoek taak op basis van id in in-memory store."
+        }
+      ]
+    },
+    {
+      "name": "Taak Aanmaken",
+      "description": "Gebruikers kunnen nieuwe taken aanmaken via een formulier.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Implementeer TaskForm component",
+          "description": "Maak een formuliercomponent voor het aanmaken van een taak.",
+          "technicalNotes": "Gebruik shadcn/ui Form en Input components. Validatie op title en status. TypeScript types voor formulierdata."
+        },
+        {
+          "title": "Voeg TaskForm toe aan takenpagina",
+          "description": "Toon TaskForm op /tasks pagina voor het aanmaken van nieuwe taken.",
+          "technicalNotes": "Gebruik app/tasks/page.tsx. Bij submit POST naar /api/tasks en update context."
+        },
+        {
+          "title": "API endpoint voor taak aanmaken",
+          "description": "Implementeer POST /api/tasks endpoint voor het toevoegen van een nieuwe taak.",
+          "technicalNotes": "Gebruik Next.js route handler. Valideer input, genereer unieke id, voeg toe aan in-memory store."
+        }
+      ]
+    },
+    {
+      "name": "Taak Bewerken",
+      "description": "Gebruikers kunnen bestaande taken bewerken via een formulier.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Voeg bewerkmodus toe aan TaskForm",
+          "description": "Maak TaskForm geschikt voor zowel aanmaken als bewerken van taken.",
+          "technicalNotes": "Detecteer of een taak wordt bewerkt (id aanwezig). Vul formulier met bestaande data."
+        },
+        {
+          "title": "Voeg bewerkfunctionaliteit toe aan taak detailpagina",
+          "description": "Toon TaskForm op /tasks/[id] pagina voor het bewerken van de geselecteerde taak.",
+          "technicalNotes": "Bij submit PUT naar /api/tasks/[id] en update context."
+        },
+        {
+          "title": "API endpoint voor taak bijwerken",
+          "description": "Implementeer PUT /api/tasks/[id] endpoint voor het bijwerken van een taak.",
+          "technicalNotes": "Gebruik Next.js route handler. Update taak in in-memory store op basis van id."
+        }
+      ]
+    },
+    {
+      "name": "Taak Verwijderen",
+      "description": "Gebruikers kunnen bestaande taken verwijderen.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Voeg verwijderknop toe aan TaskDetail en TaskList",
+          "description": "Maak het mogelijk om een taak te verwijderen vanuit het detail of overzicht.",
+          "technicalNotes": "Gebruik shadcn/ui Button. Bevestigingsdialoog tonen voor verwijderen."
+        },
+        {
+          "title": "API endpoint voor taak verwijderen",
+          "description": "Implementeer DELETE /api/tasks/[id] endpoint.",
+          "technicalNotes": "Gebruik Next.js route handler. Verwijder taak uit in-memory store."
+        },
+        {
+          "title": "Update state na verwijderen",
+          "description": "Zorg dat UI en context worden geüpdatet na het verwijderen van een taak.",
+          "technicalNotes": "Verwijder taak uit context state en navigeer gebruiker terug naar overzicht."
+        }
+      ]
+    },
+    {
+      "name": "State Management met React Context",
+      "description": "Beheer applicatiestatus zoals takenlijst en geselecteerde taak met React Context.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Implementeer TaskContext",
+          "description": "Maak een context voor het beheren van taken en expose relevante methods.",
+          "technicalNotes": "Gebruik createContext en useReducer voor state management. TypeScript types voor state en actions."
+        },
+        {
+          "title": "Wrap app met TaskProvider",
+          "description": "Zorg dat de hele app toegang heeft tot de context.",
+          "technicalNotes": "Voeg TaskProvider toe aan app/layout.tsx."
+        },
+        {
+          "title": "Gebruik context in componenten",
+          "description": "Laat TaskList, TaskDetail en TaskForm state en acties uit context gebruiken.",
+          "technicalNotes": "Gebruik useContext(TaskContext) in relevante componenten."
+        }
+      ]
+    },
+    {
+      "name": "Styling en UI Consistentie",
+      "description": "Consistente en toegankelijke styling met Tailwind CSS en shadcn/ui.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Configureer Tailwind CSS",
+          "description": "Stel Tailwind CSS in voor het project.",
+          "technicalNotes": "tailwind.config.js aanmaken, integreren met Next.js."
+        },
+        {
+          "title": "Integreer shadcn/ui componenten",
+          "description": "Gebruik shadcn/ui voor consistente UI-componenten.",
+          "technicalNotes": "Installeer shadcn/ui, importeer en gebruik in TaskList, TaskDetail, TaskForm."
+        },
+        {
+          "title": "Implementeer responsive design",
+          "description": "Zorg dat de app goed werkt op verschillende schermgroottes.",
+          "technicalNotes": "Gebruik Tailwind responsive utilities in alle componenten."
+        }
+      ]
+    },
+    {
+      "name": "In-memory Data Store",
+      "description": "Implementeer een eenvoudige in-memory data store voor taken.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Maak in-memory data store module",
+          "description": "Implementeer een module voor het opslaan, ophalen, bijwerken en verwijderen van taken.",
+          "technicalNotes": "Gebruik een singleton object of array in een aparte file. TypeScript interfaces voor Task."
+        },
+        {
+          "title": "Koppel API-routes aan data store",
+          "description": "Laat alle API-routes werken met de in-memory data store.",
+          "technicalNotes": "Importeer data store in alle route handlers."
+        }
+      ]
+    },
+    {
+      "name": "Validatie en Foutafhandeling",
+      "description": "Voeg validatie en gebruikersvriendelijke foutmeldingen toe aan formulieren en API.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Voeg frontend validatie toe aan TaskForm",
+          "description": "Valideer verplichte velden en statuskeuze.",
+          "technicalNotes": "Gebruik React Hook Form of eigen validatie. Toon foutmeldingen met shadcn/ui Alert."
+        },
+        {
+          "title": "Voeg backend validatie toe in API",
+          "description": "Valideer input in POST en PUT API-routes.",
+          "technicalNotes": "Controleer presence van title, status en juiste types. Geef duidelijke foutmeldingen terug."
+        },
+        {
+          "title": "Toon API-fouten in UI",
+          "description": "Geef gebruikers feedback bij fouten vanuit de API.",
+          "technicalNotes": "Toon foutmeldingen in TaskForm en andere relevante componenten."
+        }
+      ]
+    }
+  ]
+}
