@@ -1,6 +1,6 @@
-# Padel Club Pro Design System
+# TaskFlow Pro Design System
 
-🎨 **Padel Club Pro embodies the energy and precision of padel sports through a sophisticated color palette inspired by tennis court greens and clay court terracotta. The design balances athletic dynamism with professional SaaS aesthetics, creating a trustworthy yet energetic brand identity.**
+🎨 **TaskFlow Pro embodies productivity and efficiency through a sophisticated color palette that balances professional authority with approachable warmth. The design emphasizes clarity and focus, using deep navy blues for trust and reliability, complemented by energizing amber accents that inspire action and progress.**
 
 ## Stats
 - Components: 18
@@ -9,8 +9,8 @@
 - Quality: 9.5/10
 
 ## Colors
-- Primary: #2d9d5f
-- Secondary: #d2691e
+- Primary: #6366f1
+- Secondary: #fbbf24
 
 ## Components
 1. **Spinner** - Component
@@ -25,9 +25,9 @@
 10. **Textarea** - Component
 11. **Switch** - Component
 12. **Label** - Component
-13. **Alert** - A feedback component to display alert messages with different variants.
+13. **Alert** - A feedback component for displaying alerts with different variants.
 14. **Dialog** - A modal dialog component with a backdrop.
-15. **Tooltip** - A tooltip component to display additional information on hover.
+15. **Tooltip** - A tooltip component for displaying additional information.
 16. **ProgressBar** - A progress bar component to indicate progress.
 17. **Avatar** - An avatar component with fallback initials.
 18. **Toast** - A toast notification component.

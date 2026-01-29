@@ -9,7 +9,7 @@ const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(({ progress }, 
     <div className="w-full bg-gray-200 rounded">
       <div
         ref={ref}
-        className="bg-success-600 text-xs leading-none py-1 text-center text-white rounded"
+        className="bg-success-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded"
         style={{ width: `${progress}%` }}
       >
         {progress}%

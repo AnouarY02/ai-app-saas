@@ -18,8 +18,10 @@ export interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: 'small' | 'medium' | 'large';
 }
 
-export const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(({ size, className, ...props }, ref) => {
+const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(({ size, className, ...props }, ref) => {
   return <div ref={ref} className={`${spinnerVariants({ size })} ${className}`} {...props} />;
 });
 
 Spinner.displayName = 'Spinner';
+
+export default Spinner;

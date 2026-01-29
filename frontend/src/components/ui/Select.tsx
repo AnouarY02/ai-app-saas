@@ -5,18 +5,22 @@ type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
   options: { value: string; label: string }[];
 };
 
-const selectStyles = cva('form-select block w-full mt-1 text-gray-700 border-gray-300 rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50', {
+const selectStyles = cva('form-select block w-full mt-1', {
   variants: {
-    disabled: {
-      true: 'opacity-50 cursor-not-allowed',
-      false: ''
+    size: {
+      sm: 'text-sm py-1',
+      md: 'text-base py-2',
+      lg: 'text-lg py-3'
     }
+  },
+  defaultVariants: {
+    size: 'md'
   }
 });
 
-export const Select: React.FC<SelectProps> = ({ options, disabled, ...props }) => {
+const Select: React.FC<SelectProps> = ({ options, className, ...props }) => {
   return (
-    <select className={selectStyles({ disabled })} disabled={disabled} {...props}>
+    <select className={selectStyles({ className })} {...props}>
       {options.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}
@@ -25,3 +29,5 @@ export const Select: React.FC<SelectProps> = ({ options, disabled, ...props }) =
     </select>
   );
 };
+
+export default Select;

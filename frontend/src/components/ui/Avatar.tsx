@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 
 interface AvatarProps {
-  src: string | null;
+  src: string;
   alt: string;
   initials: string;
 }

@@ -9,7 +9,7 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(({ content, children },
   return (
     <div className="relative group" ref={ref}>
       {children}
-      <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-sm p-2 rounded">
+      <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-max bg-gray-800 text-white text-sm p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
         {content}
       </div>
     </div>

@@ -7,34 +7,27 @@ type SwitchProps = React.InputHTMLAttributes<HTMLInputElement> & {
 
 const switchStyles = cva('relative inline-flex items-center h-6 rounded-full w-11', {
   variants: {
-    checked: {
-      true: 'bg-blue-600',
-      false: 'bg-gray-200'
-    },
-    disabled: {
-      true: 'opacity-50 cursor-not-allowed',
-      false: ''
+    size: {
+      sm: 'h-4 w-8',
+      md: 'h-6 w-11',
+      lg: 'h-8 w-14'
     }
+  },
+  defaultVariants: {
+    size: 'md'
   }
 });
 
-const switchButtonStyles = cva('inline-block w-4 h-4 transform bg-white rounded-full transition-transform', {
-  variants: {
-    checked: {
-      true: 'translate-x-6',
-      false: 'translate-x-1'
-    }
-  }
-});
-
-export const Switch: React.FC<SwitchProps> = ({ label, checked, disabled, ...props }) => {
+const Switch: React.FC<SwitchProps> = ({ label, className, ...props }) => {
   return (
-    <label className="flex items-center">
-      <span className="mr-3 text-gray-700">{label}</span>
-      <div className={switchStyles({ checked, disabled })}>
-        <input type="checkbox" className="opacity-0 w-0 h-0" checked={checked} disabled={disabled} {...props} />
-        <span className={switchButtonStyles({ checked })}></span>
+    <label className="flex items-center cursor-pointer">
+      <input type="checkbox" className="sr-only" {...props} />
+      <div className={switchStyles({ className })}>
+        <span className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform" />
       </div>
+      <span className="ml-3 text-gray-700">{label}</span>
     </label>
   );
 };
+
+export default Switch;
