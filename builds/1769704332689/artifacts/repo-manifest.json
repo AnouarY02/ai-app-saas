@@ -42,7 +42,6 @@
       "backend/package.json",
       "backend/src/app.ts",
       "backend/src/index.ts",
-      "backend/src/lib/db.ts",
       "backend/src/routes/index.ts",
       "backend/src/routes/locations.ts",
       "backend/src/routes/weather.ts",
@@ -51,29 +50,7 @@
       "frontend/Dockerfile",
       "frontend/package.json",
       "frontend/src/app/layout.tsx",
-      "frontend/src/app/location/[id]/page.tsx",
       "frontend/src/app/page.tsx",
-      "frontend/src/components/LocationSelector.tsx",
-      "frontend/src/components/WeatherCard.tsx",
-      "frontend/src/components/ui/Alert.tsx",
-      "frontend/src/components/ui/Avatar.tsx",
-      "frontend/src/components/ui/Badge.tsx",
-      "frontend/src/components/ui/Button.tsx",
-      "frontend/src/components/ui/Card.tsx",
-      "frontend/src/components/ui/Checkbox.tsx",
-      "frontend/src/components/ui/Dialog.tsx",
-      "frontend/src/components/ui/Input.tsx",
-      "frontend/src/components/ui/Label.tsx",
-      "frontend/src/components/ui/ProgressBar.tsx",
-      "frontend/src/components/ui/Radio.tsx",
-      "frontend/src/components/ui/Select.tsx",
-      "frontend/src/components/ui/Skeleton.tsx",
-      "frontend/src/components/ui/Spinner.tsx",
-      "frontend/src/components/ui/Switch.tsx",
-      "frontend/src/components/ui/Textarea.tsx",
-      "frontend/src/components/ui/Toast.tsx",
-      "frontend/src/components/ui/Tooltip.tsx",
-      "frontend/src/lib/utils.ts",
       "frontend/tsconfig.json",
       "shared/package.json",
       "shared/src/api-client/index.ts",
@@ -92,12 +69,12 @@
   },
   "routes": {
     "backend": {
-      "/api/weather": "backend/src/routes/weather.ts",
-      "/api/locations": "backend/src/routes/locations.ts"
+      "GET /api/weather": "backend/src/routes/weather.ts",
+      "POST /api/weather": "backend/src/routes/weather.ts",
+      "GET /api/locations": "backend/src/routes/locations.ts"
     },
     "frontend": {
-      "/": "frontend/src/app/page.tsx",
-      "/location/[id]": "frontend/src/app/location/[id]/page.tsx"
+      "/": "frontend/src/app/page.tsx"
     }
   },
   "shared": {
@@ -120,7 +97,7 @@
   },
   "metadata": {
     "generatedBy": "WF2.8",
-    "workflowId": "2417",
-    "timestamp": "2026-01-29T19:06:33.182Z"
+    "workflowId": "2420",
+    "timestamp": "2026-01-29T19:21:36.747Z"
   }
 }
