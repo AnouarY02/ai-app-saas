@@ -1,0 +1,479 @@
+{
+  "meta": {
+    "buildId": "1769704332689",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-1769704332689",
+    "appName": "AI App",
+    "baseBranch": "main"
+  },
+  "functionalitySpec": {
+    "apiContracts": [
+      {
+        "endpoint": "/api/weather",
+        "method": "GET",
+        "description": "Fetch weather data for a specific location",
+        "auth": "none",
+        "requestType": "GetWeatherRequest",
+        "responseType": "GetWeatherResponse",
+        "schemasUsed": [
+          "GetWeatherSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/weather/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "weather_data",
+            "notes": "Fetch weather data for the given location"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 404,
+            "condition": "Location not found",
+            "message": "The specified location does not exist"
+          },
+          {
+            "status": 500,
+            "condition": "Database error",
+            "message": "Failed to fetch weather data"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/locations",
+        "method": "GET",
+        "description": "Retrieve all available locations",
+        "auth": "none",
+        "requestType": "GetLocationsRequest",
+        "responseType": "GetLocationsResponse",
+        "schemasUsed": [
+          "GetLocationsSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/locations/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "locations",
+            "notes": "Retrieve all locations"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 500,
+            "condition": "Database error",
+            "message": "Failed to retrieve locations"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/weather",
+        "method": "POST",
+        "description": "Add new weather data for a location",
+        "auth": "admin",
+        "requestType": "AddWeatherDataRequest",
+        "responseType": "AddWeatherDataResponse",
+        "schemasUsed": [
+          "AddWeatherDataSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/weather/route.ts",
+          "signature": "POST(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "insert",
+            "table": "weather_data",
+            "notes": "Insert new weather data record"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          },
+          {
+            "status": 500,
+            "condition": "Database error",
+            "message": "Failed to insert weather data"
+          }
+        ]
+      }
+    ],
+    "sharedTypes": [
+      {
+        "name": "Location",
+        "file": "src/shared/types/location.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "latitude",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "longitude",
+            "type": "number",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "WeatherData",
+        "file": "src/shared/types/weatherData.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "locationId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "temperature",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "condition",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "forecastDate",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "GetWeatherRequest",
+        "file": "src/shared/types/weatherRequest.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "locationId",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "GetWeatherResponse",
+        "file": "src/shared/types/weatherResponse.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "temperature",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "condition",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "forecastDate",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "AddWeatherDataRequest",
+        "file": "src/shared/types/addWeatherDataRequest.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "locationId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "temperature",
+            "type": "number",
+            "optional": false
+          },
+          {
+            "name": "condition",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "forecastDate",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "DeleteBookingRequest",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Booking id"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingResponse",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Cancelled booking id"
+          },
+          {
+            "name": "status",
+            "type": "'cancelled'",
+            "optional": false,
+            "description": "Always cancelled"
+          }
+        ]
+      }
+    ],
+    "schemas": [
+      {
+        "name": "GetWeatherSchema",
+        "file": "src/shared/schemas/weather.schemas.ts",
+        "forType": "GetWeatherRequest",
+        "shape": [
+          {
+            "field": "locationId",
+            "zod": "z.string().uuid()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "AddWeatherDataSchema",
+        "file": "src/shared/schemas/weather.schemas.ts",
+        "forType": "AddWeatherDataRequest",
+        "shape": [
+          {
+            "field": "locationId",
+            "zod": "z.string().uuid()"
+          },
+          {
+            "field": "temperature",
+            "zod": "z.number()"
+          },
+          {
+            "field": "condition",
+            "zod": "z.string()"
+          },
+          {
+            "field": "forecastDate",
+            "zod": "z.string().datetime()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "GetLocationsSchema",
+        "file": "src/shared/schemas/location.schemas.ts",
+        "forType": "GetLocationsRequest",
+        "shape": [
+          {
+            "field": "id",
+            "zod": "z.string()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingSchema",
+        "file": "src/shared/schemas/booking.schemas.ts",
+        "forType": "DeleteBookingRequest",
+        "shape": [
+          {
+            "field": "bookingId",
+            "zod": "z.string().uuid()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      }
+    ],
+    "databaseSchema": {
+      "tables": [
+        {
+          "name": "locations",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "name",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "latitude",
+              "type": "decimal(9,6)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "longitude",
+              "type": "decimal(9,6)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_locations_name",
+              "columns": [
+                "name"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "weather_data",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "location_id",
+              "type": "uuid",
+              "constraints": [
+                "NOT NULL",
+                "FOREIGN KEY REFERENCES locations(id)"
+              ]
+            },
+            {
+              "name": "temperature",
+              "type": "decimal(5,2)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "condition",
+              "type": "varchar(100)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "forecast_date",
+              "type": "timestamp",
+              "constraints": [
+                "NOT NULL"
+              ]
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_weather_data_location",
+              "columns": [
+                "location_id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
