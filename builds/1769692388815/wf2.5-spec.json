@@ -1,0 +1,487 @@
+{
+  "meta": {
+    "buildId": "1769692388815",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-1769692388815",
+    "appName": "AI App",
+    "baseBranch": "main"
+  },
+  "functionalitySpec": {
+    "apiContracts": [
+      {
+        "endpoint": "/api/tasks",
+        "method": "GET",
+        "description": "Retrieve all tasks",
+        "auth": "user",
+        "requestType": "GetTasksRequest",
+        "responseType": "GetTasksResponse",
+        "schemasUsed": [],
+        "dependencies": [
+          {
+            "package": "next",
+            "version": "14.0.0",
+            "importStatement": "import { NextRequest, NextResponse } from 'next/server';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/tasks/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "tasks",
+            "notes": "Retrieve all tasks"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 500,
+            "condition": "Database error",
+            "message": "Failed to retrieve tasks"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/tasks",
+        "method": "POST",
+        "description": "Create a new task",
+        "auth": "user",
+        "requestType": "CreateTaskRequest",
+        "responseType": "CreateTaskResponse",
+        "schemasUsed": [
+          "CreateTaskSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/tasks/route.ts",
+          "signature": "POST(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "insert",
+            "table": "tasks",
+            "notes": "Insert new task record"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          },
+          {
+            "status": 500,
+            "condition": "Database error",
+            "message": "Failed to create task"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/tasks/[id]",
+        "method": "GET",
+        "description": "Retrieve a specific task",
+        "auth": "user",
+        "requestType": "GetTaskRequest",
+        "responseType": "GetTaskResponse",
+        "schemasUsed": [],
+        "dependencies": [
+          {
+            "package": "next",
+            "version": "14.0.0",
+            "importStatement": "import { NextRequest, NextResponse } from 'next/server';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/tasks/[id]/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "tasks",
+            "notes": "Retrieve task by ID"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 404,
+            "condition": "Task not found",
+            "message": "No task found with the given ID"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/tasks/[id]",
+        "method": "PUT",
+        "description": "Update a specific task",
+        "auth": "user",
+        "requestType": "UpdateTaskRequest",
+        "responseType": "UpdateTaskResponse",
+        "schemasUsed": [
+          "UpdateTaskSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/tasks/[id]/route.ts",
+          "signature": "PUT(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "update",
+            "table": "tasks",
+            "notes": "Update task record by ID"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          },
+          {
+            "status": 404,
+            "condition": "Task not found",
+            "message": "No task found with the given ID"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/tasks/[id]",
+        "method": "DELETE",
+        "description": "Delete a specific task",
+        "auth": "user",
+        "requestType": "DeleteTaskRequest",
+        "responseType": "DeleteTaskResponse",
+        "schemasUsed": [],
+        "dependencies": [
+          {
+            "package": "next",
+            "version": "14.0.0",
+            "importStatement": "import { NextRequest, NextResponse } from 'next/server';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/tasks/[id]/route.ts",
+          "signature": "DELETE(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "delete",
+            "table": "tasks",
+            "notes": "Delete task by ID"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 404,
+            "condition": "Task not found",
+            "message": "No task found with the given ID"
+          }
+        ]
+      }
+    ],
+    "sharedTypes": [
+      {
+        "name": "Task",
+        "file": "src/shared/types/task.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "createdAt",
+            "type": "Date",
+            "optional": false
+          },
+          {
+            "name": "updatedAt",
+            "type": "Date",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreateTaskRequest",
+        "file": "src/shared/types/task.requests.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "title",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreateTaskResponse",
+        "file": "src/shared/types/task.responses.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "createdAt",
+            "type": "Date",
+            "optional": false
+          },
+          {
+            "name": "updatedAt",
+            "type": "Date",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "DeleteBookingRequest",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Booking id"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingResponse",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Cancelled booking id"
+          },
+          {
+            "name": "status",
+            "type": "'cancelled'",
+            "optional": false,
+            "description": "Always cancelled"
+          }
+        ]
+      }
+    ],
+    "schemas": [
+      {
+        "name": "CreateTaskSchema",
+        "file": "src/shared/schemas/task.schemas.ts",
+        "forType": "CreateTaskRequest",
+        "shape": [
+          {
+            "field": "title",
+            "zod": "z.string().min(1)"
+          },
+          {
+            "field": "description",
+            "zod": "z.string().optional()"
+          },
+          {
+            "field": "status",
+            "zod": "z.string().min(1)"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "UpdateTaskSchema",
+        "file": "src/shared/schemas/task.schemas.ts",
+        "forType": "UpdateTaskRequest",
+        "shape": [
+          {
+            "field": "title",
+            "zod": "z.string().min(1).optional()"
+          },
+          {
+            "field": "description",
+            "zod": "z.string().optional()"
+          },
+          {
+            "field": "status",
+            "zod": "z.string().min(1).optional()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingSchema",
+        "file": "src/shared/schemas/booking.schemas.ts",
+        "forType": "DeleteBookingRequest",
+        "shape": [
+          {
+            "field": "bookingId",
+            "zod": "z.string().uuid()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      }
+    ],
+    "databaseSchema": {
+      "tables": [
+        {
+          "name": "tasks",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "title",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "description",
+              "type": "text",
+              "constraints": []
+            },
+            {
+              "name": "status",
+              "type": "varchar(50)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "created_at",
+              "type": "timestamp",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "updated_at",
+              "type": "timestamp",
+              "constraints": [
+                "NOT NULL"
+              ]
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_tasks_status",
+              "columns": [
+                "status"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
