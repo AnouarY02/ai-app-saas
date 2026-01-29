@@ -2,12 +2,12 @@ export type ApiError = {
   error: string;
   code: string;
   message: string;
-  details?: {};
+  details?: Record<string, unknown>;
 };
 
 export type ApiResponse<T> = {
   data: T;
-  meta?: {};
+  meta?: Record<string, unknown>;
 };
 
 export type PaginationMeta = {
@@ -15,14 +15,4 @@ export type PaginationMeta = {
   limit: number;
   total: number;
   pages: number;
-};
-
-export type AuthResponse = {
-  token: string;
-  user: User;
-};
-
-export type SuccessResponse = {
-  success: boolean;
-  message: string;
 };

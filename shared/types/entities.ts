@@ -1,10 +1,11 @@
 export type User = {
   id: string;
+  username: string;
   email: string;
   passwordHash: string;
   role: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Task = {
@@ -13,8 +14,8 @@ export type Task = {
   description: string;
   status: string;
   priority: string;
-  dueDate: Date;
+  dueDate: string;
   userId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };

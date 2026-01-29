@@ -1,45 +1,55 @@
 import { z } from 'zod';
 
-export const registerUserSchema = z.object({
+export const loginRequestSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8)
 });
 
-export const loginUserSchema = z.object({
+export const registerRequestSchema = z.object({
+  username: z.string().min(3),
   email: z.string().email(),
   password: z.string().min(8)
 });
 
-export const refreshTokenSchema = z.object({
+export const refreshRequestSchema = z.object({
   token: z.string()
 });
 
-export const logoutUserSchema = z.object({
+export const logoutRequestSchema = z.object({
   token: z.string()
 });
 
-export const listTasksSchema = z.object({
-  page: z.number().min(1).optional(),
-  limit: z.number().min(1).max(100).optional()
+export const listRequestSchema = z.object({
+  page: z.number().min(1),
+  limit: z.number().min(1)
 });
 
-export const getTaskSchema = z.object({
-  id: z.string()
+export const getRequestSchema = z.object({
+  id: z.string().uuid()
 });
 
-export const createTaskSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+export const updateUserRequestSchema = z.object({
+  username: z.string().optional(),
+  email: z.string().email().optional(),
+  password: z.string().min(8).optional()
+});
+
+export const deleteRequestSchema = z.object({
+  id: z.string().uuid()
+});
+
+export const createTaskRequestSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().optional(),
   status: z.string(),
   priority: z.string(),
-  dueDate: z.date(),
-  userId: z.string()
+  dueDate: z.string()
 });
 
-export const updateTaskSchema = createTaskSchema.partial();
-
-export const partialUpdateTaskSchema = createTaskSchema.partial();
-
-export const deleteTaskSchema = z.object({
-  id: z.string()
+export const updateTaskRequestSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  status: z.string().optional(),
+  priority: z.string().optional(),
+  dueDate: z.string().optional()
 });

@@ -9,6 +9,7 @@ function getAuthHeaders() {
 
 export interface User {
   id: string;
+  username: string;
   email: string;
   role: string;
   createdAt: string;
@@ -30,17 +31,17 @@ export interface Task {
 export async function login(email: string, password: string) {
   const response = await fetch(`${API_URL}/api/auth/login`, {
     method: 'POST',
-    headers: getAuthHeaders(),
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
   });
   return response.json();
 }
 
-export async function register(email: string, password: string, name: string) {
+export async function register(email: string, password: string, username: string) {
   const response = await fetch(`${API_URL}/api/auth/register`, {
     method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ email, password, name })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, username })
   });
   return response.json();
 }
@@ -54,8 +55,7 @@ export async function logout() {
 }
 
 export async function getCurrentUser() {
-  const response = await fetch(`${API_URL}/api/auth/me`, {
-    method: 'GET',
+  const response = await fetch(`${API_URL}/api/users/me`, {
     headers: getAuthHeaders()
   });
   return response.json();
@@ -63,7 +63,6 @@ export async function getCurrentUser() {
 
 export async function getTasks() {
   const response = await fetch(`${API_URL}/api/tasks`, {
-    method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();
@@ -71,7 +70,6 @@ export async function getTasks() {
 
 export async function getTask(id: string) {
   const response = await fetch(`${API_URL}/api/tasks/${id}`, {
-    method: 'GET',
     headers: getAuthHeaders()
   });
   return response.json();

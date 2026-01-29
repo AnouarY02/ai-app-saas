@@ -1,0 +1,71 @@
+version: "3.9"
+
+networks:
+  taskflow-pro-network:
+    driver: bridge
+    name: taskflow-pro-network
+
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: taskflow-prodb
+      POSTGRES_USER: taskflow-prouser
+      POSTGRES_PASSWORD: taskflow-propass
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - taskflow-pro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskflow-prouser -d taskflow-prodb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://taskflow-prouser:taskflow-propass@db:5432/taskflow-prodb
+      - JWT_SECRET=change-this-secret-in-production-${RANDOM_SECRET}
+      - ADMIN_EMAIL=admin@example.com
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    networks:
+      - taskflow-pro-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:4000
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+    networks:
+      - taskflow-pro-network
+
+volumes:
+  db_data:

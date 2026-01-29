@@ -1,7 +1,7 @@
 # TaskFlow Pro
 
 ## Introduction
-TaskFlow Pro is a SaaS application designed to streamline task management and enhance productivity.
+TaskFlow Pro is a comprehensive task management application designed to streamline your workflow.
 
 ## Features
 - Task creation and management
@@ -11,44 +11,43 @@ TaskFlow Pro is a SaaS application designed to streamline task management and en
 ## Architecture Overview
 The application consists of a frontend, backend, and a PostgreSQL database.
 
-## Installation
-Clone the repository and navigate to the project directory.
+## Getting Started
 
-## Running Locally
-Ensure you have Docker installed. Run the following command to start the application:
+### Installation
+Ensure you have Docker and Docker Compose installed on your machine.
 
-```bash
+### Configuration
+Set up environment variables in a `.env` file at the root of the project:
+```
+JWT_SECRET=your_jwt_secret
+DB_HOST=db
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=appdb
+```
+
+### Running the App
+To start the application, run:
+```
 docker-compose up --build
 ```
 
-## Environment Variables
-The application requires the following environment variables:
-- `DATABASE_URL`: Connection string for the PostgreSQL database
-- `JWT_SECRET`: Secret key for JWT authentication
-- `NODE_ENV`: Set to `production` or `development`
-
-Optional:
-- `PORT`: Port for the backend service
-- `LOG_LEVEL`: Logging level
-
-## Docker Setup
-The application uses Docker to manage services:
-- **Frontend**: Accessible at `localhost:3000`
-- **Backend**: Accessible at `localhost:4000`
-- **Database**: Accessible at `localhost:5432`
+### Port Mappings
+- Frontend: http://localhost:3000
+- Backend: http://localhost:4000
+- Database: localhost:5432
 
 ## Testing
 Run tests using:
-
-```bash
+```
 npm test
 ```
 
 ## Deployment
-Deploy the application using your preferred cloud service.
+Deploy using Docker Compose in a production environment.
 
 ## Contributing
-Contributions are welcome! Please fork the repository and submit a pull request.
+Please read `CONTRIBUTING.md` for details on our code of conduct, and the process for submitting pull requests.
 
 ## License
 This project is licensed under the MIT License.

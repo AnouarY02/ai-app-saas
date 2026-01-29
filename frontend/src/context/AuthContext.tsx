@@ -79,7 +79,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   };
 
   const refresh = async () => {
-    // Implement token refresh logic
+    // Implement token refresh logic here
   };
 
   return (
