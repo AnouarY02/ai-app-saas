@@ -1,0 +1,219 @@
+{
+  "features": [
+    {
+      "name": "Project Overzicht",
+      "description": "Gebruikers kunnen een overzicht van alle projecten bekijken op de startpagina.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "ProjectList component bouwen",
+          "description": "Implementeer de ProjectList component om een lijst van projecten weer te geven.",
+          "technicalNotes": "Gebruik TypeScript, Tailwind CSS en shadcn/ui. Haal data op via de /api/projects endpoint met een GET request."
+        },
+        {
+          "title": "Startpagina opzetten",
+          "description": "Implementeer de '/' route met ProjectList component.",
+          "technicalNotes": "Bestand: app/page.tsx. Gebruik app/layout.tsx voor algemene layout."
+        },
+        {
+          "title": "API endpoint voor projecten ophalen",
+          "description": "Implementeer GET /api/projects om alle projecten op te halen.",
+          "technicalNotes": "Gebruik Next.js route handlers in app/api/projects/route.ts. Data uit in-memory store halen."
+        }
+      ]
+    },
+    {
+      "name": "Project Aanmaken",
+      "description": "Gebruikers kunnen nieuwe projecten aanmaken.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Formulier voor project aanmaken",
+          "description": "Voeg een formulier toe aan de ProjectList component om nieuwe projecten toe te voegen.",
+          "technicalNotes": "Gebruik controlled components met React, TypeScript en shadcn/ui form elementen."
+        },
+        {
+          "title": "API endpoint voor project aanmaken",
+          "description": "Implementeer POST /api/projects om een nieuw project toe te voegen.",
+          "technicalNotes": "Valideer input en voeg het project toe aan de in-memory data store."
+        },
+        {
+          "title": "State management voor nieuwe projecten",
+          "description": "Update de globale state na het aanmaken van een project.",
+          "technicalNotes": "Gebruik React Context API om de lijst met projecten te updaten zonder refresh."
+        }
+      ]
+    },
+    {
+      "name": "Project Detail & Takenoverzicht",
+      "description": "Gebruikers kunnen details van een project bekijken en alle bijbehorende taken zien.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Project detailpagina bouwen",
+          "description": "Implementeer de /projects/[projectId] pagina met projectdetails en een lijst van taken.",
+          "technicalNotes": "Bestand: app/projects/[projectId]/page.tsx. Haal projectdata op via GET /api/projects/[projectId]."
+        },
+        {
+          "title": "TaskList component bouwen",
+          "description": "Implementeer de TaskList component voor het tonen van taken binnen een project.",
+          "technicalNotes": "Gebruik TypeScript, Tailwind CSS en shadcn/ui. Haal taken op via GET /api/tasks?projectId=... endpoint."
+        },
+        {
+          "title": "API endpoint voor projectdetails",
+          "description": "Implementeer GET /api/projects/[projectId] om details van een specifiek project op te halen.",
+          "technicalNotes": "Gebruik Next.js route handlers in app/api/projects/[projectId]/route.ts."
+        }
+      ]
+    },
+    {
+      "name": "Taak Aanmaken",
+      "description": "Gebruikers kunnen nieuwe taken aanmaken binnen een project.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Formulier voor taak aanmaken",
+          "description": "Voeg een formulier toe aan de TaskList component om nieuwe taken toe te voegen aan een project.",
+          "technicalNotes": "Gebruik controlled components met React, TypeScript en shadcn/ui form elementen."
+        },
+        {
+          "title": "API endpoint voor taak aanmaken",
+          "description": "Implementeer POST /api/tasks om een nieuwe taak toe te voegen.",
+          "technicalNotes": "Valideer input en voeg de taak toe aan de in-memory data store. Koppel aan het juiste project via projectId."
+        },
+        {
+          "title": "State management voor nieuwe taken",
+          "description": "Update de globale state na het aanmaken van een taak.",
+          "technicalNotes": "Gebruik React Context API om de lijst met taken te updaten zonder refresh."
+        }
+      ]
+    },
+    {
+      "name": "Taak Detailweergave",
+      "description": "Gebruikers kunnen details van een taak bekijken.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "TaskDetail component bouwen",
+          "description": "Implementeer de TaskDetail component voor het tonen van alle taakdetails.",
+          "technicalNotes": "Gebruik TypeScript, Tailwind CSS en shadcn/ui. Haal taakdata op via GET /api/tasks/[taskId]."
+        },
+        {
+          "title": "Task detailpagina opzetten",
+          "description": "Implementeer de /tasks/[taskId] pagina met TaskDetail component.",
+          "technicalNotes": "Bestand: app/tasks/[taskId]/page.tsx. Gebruik app/layout.tsx voor layout."
+        },
+        {
+          "title": "API endpoint voor taakdetails",
+          "description": "Implementeer GET /api/tasks/[taskId] om details van een specifieke taak op te halen.",
+          "technicalNotes": "Gebruik Next.js route handlers in app/api/tasks/[taskId]/route.ts."
+        }
+      ]
+    },
+    {
+      "name": "Project Bewerken & Verwijderen",
+      "description": "Gebruikers kunnen een project bewerken of verwijderen.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Formulier voor project bewerken",
+          "description": "Voeg een edit functionaliteit toe aan de project detailpagina.",
+          "technicalNotes": "Gebruik modale vensters of inline editing met shadcn/ui."
+        },
+        {
+          "title": "API endpoint voor project bijwerken",
+          "description": "Implementeer PUT /api/projects/[projectId] om een project te bewerken.",
+          "technicalNotes": "Valideer input en update het project in de in-memory data store."
+        },
+        {
+          "title": "API endpoint voor project verwijderen",
+          "description": "Implementeer DELETE /api/projects/[projectId] om een project te verwijderen.",
+          "technicalNotes": "Verwijder het project uit de in-memory data store en cascade verwijdering van bijbehorende taken."
+        }
+      ]
+    },
+    {
+      "name": "Taak Bewerken & Verwijderen",
+      "description": "Gebruikers kunnen een taak bewerken of verwijderen.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Formulier voor taak bewerken",
+          "description": "Voeg een edit functionaliteit toe aan de taak detailpagina.",
+          "technicalNotes": "Gebruik modale vensters of inline editing met shadcn/ui."
+        },
+        {
+          "title": "API endpoint voor taak bijwerken",
+          "description": "Implementeer PUT /api/tasks/[taskId] om een taak te bewerken.",
+          "technicalNotes": "Valideer input en update de taak in de in-memory data store."
+        },
+        {
+          "title": "API endpoint voor taak verwijderen",
+          "description": "Implementeer DELETE /api/tasks/[taskId] om een taak te verwijderen.",
+          "technicalNotes": "Verwijder de taak uit de in-memory data store."
+        }
+      ]
+    },
+    {
+      "name": "State Management met React Context",
+      "description": "Globale state voor projecten en taken beheren met React Context API.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Context voor projecten opzetten",
+          "description": "Implementeer een ProjectContext provider voor het beheren van projectdata.",
+          "technicalNotes": "Gebruik createContext en useReducer voor state management."
+        },
+        {
+          "title": "Context voor taken opzetten",
+          "description": "Implementeer een TaskContext provider voor het beheren van taakdata.",
+          "technicalNotes": "Gebruik createContext en useReducer voor state management."
+        },
+        {
+          "title": "Context providers integreren in layout",
+          "description": "Wrap de app/layout.tsx met de context providers.",
+          "technicalNotes": "Zorg dat alle pagina's toegang hebben tot de context."
+        }
+      ]
+    },
+    {
+      "name": "Styling & UI Consistentie",
+      "description": "Zorg voor een consistente en moderne UI met Tailwind CSS en shadcn/ui.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Tailwind CSS configureren",
+          "description": "Stel Tailwind CSS in voor het project.",
+          "technicalNotes": "Configureer tailwind.config.js en integreer met Next.js."
+        },
+        {
+          "title": "shadcn/ui componenten integreren",
+          "description": "Gebruik shadcn/ui voor formulieren, modals en lijsten.",
+          "technicalNotes": "Importeer en style componenten volgens de designrichtlijnen."
+        },
+        {
+          "title": "Responsieve layout implementeren",
+          "description": "Zorg dat de applicatie goed werkt op mobiel en desktop.",
+          "technicalNotes": "Gebruik Tailwind utilities voor responsiveness."
+        }
+      ]
+    },
+    {
+      "name": "In-memory Data Store",
+      "description": "Implementeer een eenvoudige in-memory data store voor projecten en taken.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Data store module opzetten",
+          "description": "Maak een module aan voor het opslaan van projecten en taken in-memory.",
+          "technicalNotes": "Gebruik JavaScript objecten/arrays als tijdelijke opslag. Exporteer functies voor CRUD-operaties."
+        },
+        {
+          "title": "Integratie met API routes",
+          "description": "Laat alle API routes gebruik maken van de in-memory data store.",
+          "technicalNotes": "Importeer de data store module in alle relevante route handlers."
+        }
+      ]
+    }
+  ]
+}
