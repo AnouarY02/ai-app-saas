@@ -1,0 +1,184 @@
+{
+  "appName": "TaskFlow Pro",
+  "description": "TaskFlow Pro is een SaaS-applicatie voor taakbeheer die gebruikers in staat stelt om taken te creëren, beheren en volgen binnen projecten.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "De applicatie maakt gebruik van de nieuwste Next.js functionaliteiten en moderne styling libraries voor een responsieve en dynamische gebruikerservaring."
+  },
+  "domains": [
+    {
+      "name": "Project Management",
+      "description": "Beheer van projecten en bijbehorende taken.",
+      "entities": [
+        {
+          "name": "Project",
+          "description": "Een project waarin taken worden georganiseerd.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor het project."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Naam van het project."
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "required": false,
+              "description": "Beschrijving van het project."
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Aanmaakdatum van het project."
+            }
+          ]
+        },
+        {
+          "name": "Task",
+          "description": "Een taak binnen een project.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unieke identifier voor de taak."
+            },
+            {
+              "name": "projectId",
+              "type": "string",
+              "required": true,
+              "description": "De identifier van het project waartoe de taak behoort."
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "required": true,
+              "description": "Titel van de taak."
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "required": true,
+              "description": "Status van de taak (bijv. 'open', 'in progress', 'completed')."
+            },
+            {
+              "name": "dueDate",
+              "type": "Date",
+              "required": false,
+              "description": "Vervaldatum van de taak."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Startpagina van de applicatie met een overzicht van projecten.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/projects/[projectId]",
+      "type": "page",
+      "description": "Detailpagina van een specifiek project met bijbehorende taken.",
+      "file": "app/projects/[projectId]/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/tasks/[taskId]",
+      "type": "page",
+      "description": "Detailpagina van een specifieke taak.",
+      "file": "app/tasks/[taskId]/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/projects",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API-route voor het ophalen en aanmaken van projecten."
+    },
+    {
+      "path": "/api/projects/[projectId]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "API-route voor het ophalen, bijwerken en verwijderen van een specifiek project."
+    },
+    {
+      "path": "/api/tasks",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API-route voor het ophalen en aanmaken van taken."
+    },
+    {
+      "path": "/api/tasks/[taskId]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "API-route voor het ophalen, bijwerken en verwijderen van een specifieke taak."
+    }
+  ],
+  "components": [
+    {
+      "name": "ProjectList",
+      "description": "Component voor het weergeven van een lijst van projecten.",
+      "file": "components/ProjectList.tsx",
+      "usedOn": [
+        "/"
+      ]
+    },
+    {
+      "name": "TaskList",
+      "description": "Component voor het weergeven van een lijst van taken binnen een project.",
+      "file": "components/TaskList.tsx",
+      "usedOn": [
+        "/projects/[projectId]"
+      ]
+    },
+    {
+      "name": "TaskDetail",
+      "description": "Component voor het weergeven van details van een specifieke taak.",
+      "file": "components/TaskDetail.tsx",
+      "usedOn": [
+        "/tasks/[taskId]"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "In-memory state management",
+    "notes": "Gebruik van React's useState en useReducer hooks voor lokaal state management binnen componenten."
+  },
+  "dataLayer": {
+    "strategy": "Eenvoudige store",
+    "notes": "Gebruik van een eenvoudige in-memory store voor het opslaan van project- en taakgegevens tijdens runtime."
+  }
+}
