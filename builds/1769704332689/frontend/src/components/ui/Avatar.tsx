@@ -6,14 +6,10 @@ interface AvatarProps {
   initials: string;
 }
 
-const Avatar = forwardRef<HTMLImageElement, AvatarProps>(({ src, alt, initials }, ref) => {
+const Avatar = forwardRef<HTMLDivElement, AvatarProps>(({ src, alt, initials }, ref) => {
   return (
-    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-      {src ? (
-        <img ref={ref} src={src} alt={alt} className="w-full h-full rounded-full" />
-      ) : (
-        <span className="text-white font-bold">{initials}</span>
-      )}
+    <div ref={ref} className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+      {src ? <img src={src} alt={alt} className="w-full h-full rounded-full" /> : <span>{initials}</span>}
     </div>
   );
 });

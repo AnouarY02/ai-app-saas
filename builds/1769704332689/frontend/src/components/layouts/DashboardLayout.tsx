@@ -5,27 +5,31 @@ export const DashboardLayout: React.FC = ({ children }) => {
 
   return (
     <div className="flex h-screen">
-      <div className={`fixed inset-y-0 left-0 bg-gray-800 text-white w-64 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform lg:translate-x-0 lg:static lg:inset-0`}>
-        <button className="lg:hidden p-4" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+      <div className={`fixed inset-y-0 left-0 bg-gray-800 text-white transition-transform transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:w-64`}>
+        <button className="md:hidden p-4" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
           </svg>
         </button>
-        <nav className="mt-10">
-          <a href="#" className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Dashboard</a>
-          <a href="#" className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Settings</a>
+        <nav className="p-4">
+          <ul>
+            <li className="py-2">Dashboard</li>
+            <li className="py-2">Settings</li>
+          </ul>
         </nav>
       </div>
       <div className="flex-1 flex flex-col">
-        <header className="bg-white shadow p-4 flex justify-between items-center">
-          <button className="lg:hidden" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-            </svg>
-          </button>
-          <h1 className="text-xl font-bold">Dashboard</h1>
+        <header className="bg-gray-100 p-4 shadow-md">
+          <div className="flex justify-between items-center">
+            <button className="md:hidden" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+              </svg>
+            </button>
+            <h1 className="text-xl">Dashboard</h1>
+          </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4">
           {children}
         </main>
       </div>

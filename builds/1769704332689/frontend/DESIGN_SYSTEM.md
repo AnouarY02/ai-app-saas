@@ -1,6 +1,6 @@
 # WeatherApp Design System
 
-🎨 **WeatherApp embraces the natural beauty of atmospheric phenomena through a sophisticated color palette inspired by storm clouds and golden sunlight. The design balances professional meteorological precision with approachable, nature-inspired warmth that makes weather data both trustworthy and visually engaging.**
+🎨 **WeatherApp embraces the natural beauty of atmospheric conditions through a sophisticated color palette inspired by stormy skies and golden sunlight. The design balances professional meteorological precision with approachable, nature-inspired warmth that reflects the ever-changing beauty of weather patterns.**
 
 ## Stats
 - Components: 18
@@ -10,7 +10,7 @@
 
 ## Colors
 - Primary: #475569
-- Secondary: #f59e0b
+- Secondary: #f4803c
 
 ## Components
 1. **Spinner** - Component
@@ -25,11 +25,11 @@
 10. **Textarea** - Component
 11. **Switch** - Component
 12. **Label** - Component
-13. **Alert** - A feedback component to display alert messages with different variants.
-14. **Dialog** - A modal dialog component with a backdrop.
-15. **Tooltip** - A component to display a tooltip on hover.
+13. **Alert** - A component to display alert messages with different variants.
+14. **Dialog** - A modal dialog with a backdrop.
+15. **Tooltip** - A component to display a tooltip.
 16. **ProgressBar** - A component to display a progress bar.
-17. **Avatar** - A component to display a user's avatar with fallback initials.
+17. **Avatar** - A component to display an avatar with fallback initials.
 18. **Toast** - A component to display a toast notification.
 
 ## Layouts

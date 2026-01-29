@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --primary: #475569;
-    --secondary: #f59e0b;
+    --secondary: #f4803c;
     --radius: 0.5rem;
   }
   * { @apply border-border; }
