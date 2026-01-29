@@ -1,0 +1,131 @@
+{
+  "appName": "ShiftPlannerPro",
+  "description": "A SaaS application for managing and scheduling employee shifts efficiently.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "The application uses a modern stack with a focus on performance and developer experience."
+  },
+  "domains": [
+    {
+      "name": "Scheduling",
+      "description": "Handles the scheduling of employee shifts.",
+      "entities": [
+        {
+          "name": "Shift",
+          "description": "Represents a work shift for an employee.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the shift."
+            },
+            {
+              "name": "employeeId",
+              "type": "string",
+              "required": true,
+              "description": "Identifier for the employee assigned to the shift."
+            },
+            {
+              "name": "startTime",
+              "type": "Date",
+              "required": true,
+              "description": "Start time of the shift."
+            },
+            {
+              "name": "endTime",
+              "type": "Date",
+              "required": true,
+              "description": "End time of the shift."
+            },
+            {
+              "name": "location",
+              "type": "string",
+              "required": false,
+              "description": "Location where the shift takes place."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Home page showing an overview of shifts.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/shifts",
+      "type": "page",
+      "description": "Page for viewing and managing shifts.",
+      "file": "app/shifts/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/shifts/create",
+      "type": "page",
+      "description": "Page for creating a new shift.",
+      "file": "app/shifts/create/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/shifts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API endpoint for retrieving and creating shifts."
+    },
+    {
+      "path": "/api/shifts/[id]",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "description": "API endpoint for retrieving, updating, and deleting a specific shift."
+    }
+  ],
+  "components": [
+    {
+      "name": "ShiftList",
+      "description": "Displays a list of shifts.",
+      "file": "components/ShiftList.tsx",
+      "usedOn": [
+        "/",
+        "/shifts"
+      ]
+    },
+    {
+      "name": "ShiftForm",
+      "description": "Form for creating or editing a shift.",
+      "file": "components/ShiftForm.tsx",
+      "usedOn": [
+        "/shifts/create",
+        "/shifts/[id]"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "useState and useReducer",
+    "notes": "Local state management using React hooks for simplicity and performance."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store",
+    "notes": "Data is temporarily stored in memory for fast access during the session."
+  }
+}
