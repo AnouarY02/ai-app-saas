@@ -1,0 +1,156 @@
+{
+  "appName": "ShiftPlannerPro",
+  "description": "A SaaS application for managing employee shift schedules efficiently.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "The application uses a modern stack with a focus on performance and developer experience."
+  },
+  "domains": [
+    {
+      "name": "Scheduling",
+      "description": "Domain for managing employee shifts and schedules.",
+      "entities": [
+        {
+          "name": "Employee",
+          "description": "Represents an employee in the system.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the employee."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": true,
+              "description": "Full name of the employee."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Email address of the employee."
+            }
+          ]
+        },
+        {
+          "name": "Shift",
+          "description": "Represents a work shift for an employee.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the shift."
+            },
+            {
+              "name": "employeeId",
+              "type": "string",
+              "required": true,
+              "description": "Identifier of the employee assigned to the shift."
+            },
+            {
+              "name": "startTime",
+              "type": "Date",
+              "required": true,
+              "description": "Start time of the shift."
+            },
+            {
+              "name": "endTime",
+              "type": "Date",
+              "required": true,
+              "description": "End time of the shift."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Home page displaying an overview of the application.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/employees",
+      "type": "page",
+      "description": "Page for managing employees.",
+      "file": "app/employees/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/shifts",
+      "type": "page",
+      "description": "Page for managing shifts.",
+      "file": "app/shifts/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/employees",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API endpoint for retrieving and creating employees."
+    },
+    {
+      "path": "/api/shifts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "description": "API endpoint for retrieving and creating shifts."
+    }
+  ],
+  "components": [
+    {
+      "name": "EmployeeList",
+      "description": "Component for displaying a list of employees.",
+      "file": "components/EmployeeList.tsx",
+      "usedOn": [
+        "/employees"
+      ]
+    },
+    {
+      "name": "ShiftList",
+      "description": "Component for displaying a list of shifts.",
+      "file": "components/ShiftList.tsx",
+      "usedOn": [
+        "/shifts"
+      ]
+    },
+    {
+      "name": "Header",
+      "description": "Component for the application header.",
+      "file": "components/Header.tsx",
+      "usedOn": [
+        "/",
+        "/employees",
+        "/shifts"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "useState and useReducer",
+    "notes": "Local component state is managed using React's useState and useReducer hooks for simplicity."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store",
+    "notes": "Data is temporarily stored in-memory for the MVP. Consider integrating a database for persistence in future iterations."
+  }
+}
