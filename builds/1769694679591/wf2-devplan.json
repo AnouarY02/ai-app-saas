@@ -1,0 +1,204 @@
+{
+  "features": [
+    {
+      "name": "User Authentication & Management",
+      "description": "Implementeer gebruikersregistratie, login, logout en profielbeheer.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Gebruikersregistratie (Sign Up)",
+          "description": "Implementeer een formulier voor nieuwe gebruikers om zich te registreren met naam, e-mail en wachtwoord.",
+          "technicalNotes": "Gebruik Next.js route handler op /api/users (POST). Valideer invoer, hash wachtwoord (bijv. bcrypt), sla op in in-memory store."
+        },
+        {
+          "title": "Login functionaliteit",
+          "description": "Implementeer een loginpagina waar gebruikers kunnen inloggen met e-mail en wachtwoord.",
+          "technicalNotes": "Gebruik Next.js route handler op /api/users (GET voor authenticatie). Implementeer sessiebeheer met cookies of JWT. Gebruik React Context voor auth state."
+        },
+        {
+          "title": "Logout functionaliteit",
+          "description": "Sta gebruikers toe om uit te loggen.",
+          "technicalNotes": "Verwijder sessie/JWT-token bij logout. Update Context state."
+        },
+        {
+          "title": "Gebruikersprofielpagina",
+          "description": "Toon en bewerk gebruikersgegevens (naam, e-mail).",
+          "technicalNotes": "Gebruik Context om huidige gebruiker te tonen. Implementeer update-functionaliteit via /api/users (PUT, optioneel voor MVP)."
+        }
+      ]
+    },
+    {
+      "name": "Court Management",
+      "description": "Beheer van padelbanen: toevoegen, bekijken en beheren van banen.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Baanoverzichtspagina",
+          "description": "Toon een lijst van alle beschikbare padelbanen.",
+          "technicalNotes": "Gebruik /api/courts (GET) om banen op te halen. Render met CourtCard component op /courts."
+        },
+        {
+          "title": "Baan toevoegen",
+          "description": "Sta admins toe om nieuwe banen toe te voegen.",
+          "technicalNotes": "Formulier op /courts met POST naar /api/courts. Valideer invoer. Update in-memory store."
+        },
+        {
+          "title": "Baan detailweergave (optioneel)",
+          "description": "Toon details van een geselecteerde baan.",
+          "technicalNotes": "Implementeer optioneel een route /courts/[id] met fetch op specifieke baan."
+        }
+      ]
+    },
+    {
+      "name": "Reservation Management",
+      "description": "Reserveringen aanmaken, bekijken en beheren.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Reserveringsoverzichtspagina",
+          "description": "Toon een lijst van alle reserveringen voor de ingelogde gebruiker.",
+          "technicalNotes": "Gebruik /api/reservations (GET). Filter op userId. Render met ReservationCard component op /reservations."
+        },
+        {
+          "title": "Reservering aanmaken",
+          "description": "Sta gebruikers toe een reservering te maken voor een baan.",
+          "technicalNotes": "Formulier op /courts of /reservations. POST naar /api/reservations. Valideer dat tijdslot beschikbaar is (geen overlap)."
+        },
+        {
+          "title": "Reservering annuleren (optioneel)",
+          "description": "Sta gebruikers toe hun reserveringen te annuleren.",
+          "technicalNotes": "DELETE endpoint op /api/reservations. Update in-memory store."
+        }
+      ]
+    },
+    {
+      "name": "Frontend Pagina's & Navigatie",
+      "description": "Implementeer alle benodigde pagina's en navigatie.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "Homepagina",
+          "description": "Implementeer de landing page met uitleg en call-to-action.",
+          "technicalNotes": "Gebruik app/page.tsx. Voeg Header en Footer toe."
+        },
+        {
+          "title": "Loginpagina",
+          "description": "Implementeer loginpagina voor gebruikers.",
+          "technicalNotes": "Gebruik app/login/page.tsx. Gebruik Tailwind CSS en shadcn/ui voor styling."
+        },
+        {
+          "title": "Dashboardpagina",
+          "description": "Toon een overzicht van relevante informatie voor de gebruiker.",
+          "technicalNotes": "Gebruik app/dashboard/page.tsx. Toon bijvoorbeeld aankomende reserveringen."
+        },
+        {
+          "title": "Navigatiecomponenten",
+          "description": "Implementeer Header en Footer componenten.",
+          "technicalNotes": "Plaats in components/Header.tsx en components/Footer.tsx. Gebruik op alle relevante pagina's."
+        }
+      ]
+    },
+    {
+      "name": "API & Backend Functionaliteit",
+      "description": "Implementeer API-routes voor gebruikers, banen en reserveringen.",
+      "priority": "high",
+      "tasks": [
+        {
+          "title": "API voor gebruikers",
+          "description": "Implementeer /api/users met GET en POST methodes.",
+          "technicalNotes": "Gebruik Next.js route handlers. Valideer en hash wachtwoorden. Sla gebruikers op in in-memory store."
+        },
+        {
+          "title": "API voor banen",
+          "description": "Implementeer /api/courts met GET en POST methodes.",
+          "technicalNotes": "Gebruik Next.js route handlers. Sla banen op in in-memory store."
+        },
+        {
+          "title": "API voor reserveringen",
+          "description": "Implementeer /api/reservations met GET en POST methodes.",
+          "technicalNotes": "Valideer dat tijdsloten niet overlappen. Sla reserveringen op in in-memory store."
+        }
+      ]
+    },
+    {
+      "name": "State Management",
+      "description": "Beheer globale applicatiestaat zoals authenticatie en reserveringen.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Implementatie van React Context voor authenticatie",
+          "description": "Beheer loginstatus en gebruikersinformatie in Context.",
+          "technicalNotes": "Maak AuthContext aan. Gebruik useContext in pagina's/components."
+        },
+        {
+          "title": "Globale staat voor reserveringen",
+          "description": "Beheer lijst van reserveringen in Context.",
+          "technicalNotes": "Maak ReservationContext aan. Synchroniseer met API-calls."
+        }
+      ]
+    },
+    {
+      "name": "Styling & UI",
+      "description": "Implementeer consistente styling en UI-componenten.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Integratie van Tailwind CSS en shadcn/ui",
+          "description": "Configureer Tailwind CSS en gebruik shadcn/ui voor consistente UI.",
+          "technicalNotes": "Configureer tailwind.config.js. Importeer shadcn/ui componenten waar nodig."
+        },
+        {
+          "title": "Styling van pagina's en componenten",
+          "description": "Style alle pagina's en herbruikbare componenten volgens design.",
+          "technicalNotes": "Gebruik utility classes van Tailwind. Houd rekening met responsiveness."
+        }
+      ]
+    },
+    {
+      "name": "Data Layer & Persistence",
+      "description": "Implementeer een in-memory datalaag voor development.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "In-memory store opzetten",
+          "description": "Implementeer een eenvoudige in-memory opslag voor users, courts en reservations.",
+          "technicalNotes": "Gebruik JavaScript objecten/arrays binnen API handlers. Voor productie overstappen op database."
+        }
+      ]
+    },
+    {
+      "name": "Testing & Validatie",
+      "description": "Test alle functionaliteit en valideer invoer.",
+      "priority": "medium",
+      "tasks": [
+        {
+          "title": "Unit tests voor API routes",
+          "description": "Schrijf tests voor gebruikers, banen en reserveringen API.",
+          "technicalNotes": "Gebruik Jest of vergelijkbaar. Test validatie en edge cases."
+        },
+        {
+          "title": "Validatie van gebruikersinvoer",
+          "description": "Valideer alle invoer op frontend en backend.",
+          "technicalNotes": "Gebruik Zod of vergelijkbaar voor schema validatie."
+        }
+      ]
+    },
+    {
+      "name": "Deployment & Documentatie",
+      "description": "Voorzie in deployment scripts en basisdocumentatie.",
+      "priority": "low",
+      "tasks": [
+        {
+          "title": "Deployment naar Vercel",
+          "description": "Configureer deployment pipeline naar Vercel.",
+          "technicalNotes": "Gebruik Vercel CLI of GitHub integratie. Controleer environment variables."
+        },
+        {
+          "title": "Documentatie schrijven",
+          "description": "Schrijf een README met installatie- en gebruiksinstructies.",
+          "technicalNotes": "Beschrijf setup, development flow en API endpoints."
+        }
+      ]
+    }
+  ]
+}
