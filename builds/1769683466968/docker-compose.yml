@@ -1,71 +1,52 @@
-version: "3.9"
-
-networks:
-  taskflow-pro-network:
-    driver: bridge
-    name: taskflow-pro-network
+version: '3.8'
 
 services:
-  db:
-    image: postgres:15
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: taskflow-prodb
-      POSTGRES_USER: taskflow-prouser
-      POSTGRES_PASSWORD: taskflow-propass
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - taskflow-pro-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U taskflow-prouser -d taskflow-prodb"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:4000
+    depends_on:
+      backend:
+        condition: service_healthy
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    restart: unless-stopped
+    ports:
+      - "4000:4000"
     environment:
-      - PORT=4000
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://taskflow-prouser:taskflow-propass@db:5432/taskflow-prodb
-      - JWT_SECRET=change-this-secret-in-production-${RANDOM_SECRET}
-      - ADMIN_EMAIL=admin@example.com
+      - PORT=4000
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/appdb
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "4000:4000"
-    networks:
-      - taskflow-pro-network
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/health"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        - NEXT_PUBLIC_API_URL=http://localhost:4000
-    restart: unless-stopped
+  db:
+    image: postgres:15-alpine
     environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://localhost:4000
-    depends_on:
-      backend:
-        condition: service_healthy
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=appdb
     ports:
-      - "3000:80"
-    networks:
-      - taskflow-pro-network
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  db_data:
+  postgres_data:

@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production --ignore-scripts
 COPY . .
-RUN npm run build || echo "No build step"
+RUN npm run build || echo 'No build step'
 
 FROM node:20-alpine AS runner
 WORKDIR /app
