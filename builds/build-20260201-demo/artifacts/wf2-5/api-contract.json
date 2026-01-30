@@ -20,7 +20,7 @@
         "dependencies": [
           {
             "package": "next",
-            "version": "^14.0.0",
+            "version": "14.0.0",
             "importStatement": "import { NextRequest, NextResponse } from 'next/server';"
           }
         ],
@@ -38,7 +38,7 @@
           {
             "op": "select",
             "table": "employees",
-            "notes": "Fetch all employee records"
+            "notes": "Retrieve all employee records"
           }
         ],
         "errorCases": [
@@ -107,7 +107,7 @@
         "dependencies": [
           {
             "package": "next",
-            "version": "^14.0.0",
+            "version": "14.0.0",
             "importStatement": "import { NextRequest, NextResponse } from 'next/server';"
           }
         ],
@@ -125,7 +125,7 @@
           {
             "op": "select",
             "table": "shifts",
-            "notes": "Fetch all shift records"
+            "notes": "Retrieve all shift records"
           }
         ],
         "errorCases": [
