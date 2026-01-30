@@ -56,7 +56,6 @@
       "shared/src/api-client/index.ts",
       "shared/src/schemas/booking.schemas.ts",
       "shared/src/schemas/employee.schemas.ts",
-      "shared/src/schemas/index.ts",
       "shared/src/schemas/shift.schemas.ts",
       "shared/src/types/booking.types.ts",
       "shared/src/types/employee.types.ts",
@@ -95,7 +94,7 @@
   },
   "metadata": {
     "generatedBy": "WF2.8",
-    "workflowId": "2452",
-    "timestamp": "2026-01-30T15:41:20.008Z"
+    "workflowId": "2453",
+    "timestamp": "2026-01-30T15:45:07.282Z"
   }
 }
