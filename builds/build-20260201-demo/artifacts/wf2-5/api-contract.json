@@ -1,0 +1,458 @@
+{
+  "meta": {
+    "buildId": "build-20260201-demo",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-20260201-demo",
+    "appName": "ShiftSwap Pro",
+    "baseBranch": "main"
+  },
+  "functionalitySpec": {
+    "apiContracts": [
+      {
+        "endpoint": "/api/employees",
+        "method": "GET",
+        "description": "Retrieve a list of employees",
+        "auth": "user",
+        "requestType": "GetEmployeesRequest",
+        "responseType": "GetEmployeesResponse",
+        "schemasUsed": [],
+        "dependencies": [
+          {
+            "package": "next",
+            "version": "^14.0.0",
+            "importStatement": "import { NextRequest, NextResponse } from 'next/server';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/employees/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "employees",
+            "notes": "Fetch all employee records"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 500,
+            "condition": "Database error",
+            "message": "Failed to retrieve employees"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/employees",
+        "method": "POST",
+        "description": "Create a new employee",
+        "auth": "admin",
+        "requestType": "CreateEmployeeRequest",
+        "responseType": "CreateEmployeeResponse",
+        "schemasUsed": [
+          "CreateEmployeeSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/employees/route.ts",
+          "signature": "POST(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "insert",
+            "table": "employees",
+            "notes": "Insert new employee record"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          },
+          {
+            "status": 500,
+            "condition": "Database error",
+            "message": "Failed to create employee"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/shifts",
+        "method": "GET",
+        "description": "Retrieve a list of shifts",
+        "auth": "user",
+        "requestType": "GetShiftsRequest",
+        "responseType": "GetShiftsResponse",
+        "schemasUsed": [],
+        "dependencies": [
+          {
+            "package": "next",
+            "version": "^14.0.0",
+            "importStatement": "import { NextRequest, NextResponse } from 'next/server';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/shifts/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "shifts",
+            "notes": "Fetch all shift records"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 500,
+            "condition": "Database error",
+            "message": "Failed to retrieve shifts"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/shifts",
+        "method": "POST",
+        "description": "Create a new shift",
+        "auth": "admin",
+        "requestType": "CreateShiftRequest",
+        "responseType": "CreateShiftResponse",
+        "schemasUsed": [
+          "CreateShiftSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/shifts/route.ts",
+          "signature": "POST(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "insert",
+            "table": "shifts",
+            "notes": "Insert new shift record"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Invalid input",
+            "message": "Validation failed"
+          },
+          {
+            "status": 500,
+            "condition": "Database error",
+            "message": "Failed to create shift"
+          }
+        ]
+      }
+    ],
+    "sharedTypes": [
+      {
+        "name": "Employee",
+        "file": "src/shared/types/employee.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "Shift",
+        "file": "src/shared/types/shift.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "employeeId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "startTime",
+            "type": "Date",
+            "optional": false
+          },
+          {
+            "name": "endTime",
+            "type": "Date",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreateEmployeeRequest",
+        "file": "src/shared/types/employee.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "CreateShiftRequest",
+        "file": "src/shared/types/shift.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "employeeId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "startTime",
+            "type": "Date",
+            "optional": false
+          },
+          {
+            "name": "endTime",
+            "type": "Date",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "DeleteBookingRequest",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Booking id"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingResponse",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Cancelled booking id"
+          },
+          {
+            "name": "status",
+            "type": "'cancelled'",
+            "optional": false,
+            "description": "Always cancelled"
+          }
+        ]
+      }
+    ],
+    "schemas": [
+      {
+        "name": "CreateEmployeeSchema",
+        "file": "src/shared/schemas/employee.schemas.ts",
+        "forType": "CreateEmployeeRequest",
+        "shape": [
+          {
+            "field": "name",
+            "zod": "z.string().min(1)"
+          },
+          {
+            "field": "email",
+            "zod": "z.string().email()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "CreateShiftSchema",
+        "file": "src/shared/schemas/shift.schemas.ts",
+        "forType": "CreateShiftRequest",
+        "shape": [
+          {
+            "field": "employeeId",
+            "zod": "z.string().uuid()"
+          },
+          {
+            "field": "startTime",
+            "zod": "z.date()"
+          },
+          {
+            "field": "endTime",
+            "zod": "z.date()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingSchema",
+        "file": "src/shared/schemas/booking.schemas.ts",
+        "forType": "DeleteBookingRequest",
+        "shape": [
+          {
+            "field": "bookingId",
+            "zod": "z.string().uuid()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      }
+    ],
+    "databaseSchema": {
+      "tables": [
+        {
+          "name": "employees",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "name",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "email",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL",
+                "UNIQUE"
+              ]
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_employees_email",
+              "columns": [
+                "email"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shifts",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "employee_id",
+              "type": "uuid",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "start_time",
+              "type": "timestamp",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "end_time",
+              "type": "timestamp",
+              "constraints": [
+                "NOT NULL"
+              ]
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_shifts_employee",
+              "columns": [
+                "employee_id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
