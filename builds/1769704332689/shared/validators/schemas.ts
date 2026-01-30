@@ -1,54 +1,60 @@
 import { z } from 'zod';
 
-export const loginRequestSchema = z.object({
+export const registerUserSchema = z.object({
+  username: z.string().min(3),
   email: z.string().email(),
   password: z.string().min(8)
 });
 
-export const registerRequestSchema = z.object({
+export const loginUserSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
-  name: z.string().min(1)
+  password: z.string().min(8)
 });
 
-export const refreshTokenRequestSchema = z.object({
+export const refreshTokenSchema = z.object({
   token: z.string()
 });
 
-export const logoutRequestSchema = z.object({
+export const logoutSchema = z.object({
   token: z.string()
 });
 
-export const getUserRequestSchema = z.object({
-  id: z.string().uuid()
-});
-
-export const updateUserRequestSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().email().optional()
-});
-
-export const listLocationsRequestSchema = z.object({
+export const listUsersSchema = z.object({
   page: z.number().min(1),
   limit: z.number().min(1)
 });
 
-export const createLocationRequestSchema = z.object({
-  name: z.string().min(1),
-  latitude: z.number(),
-  longitude: z.number()
-});
-
-export const getLocationRequestSchema = z.object({
+export const getUserSchema = z.object({
   id: z.string().uuid()
 });
 
-export const updateLocationRequestSchema = z.object({
-  name: z.string().optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional()
+export const updateUserSchema = z.object({
+  username: z.string().optional(),
+  email: z.string().email().optional(),
+  role: z.string().optional()
 });
 
-export const deleteLocationRequestSchema = z.object({
+export const partialUpdateUserSchema = updateUserSchema.partial();
+
+export const deleteUserSchema = z.object({
+  id: z.string().uuid()
+});
+
+export const listWeatherDataSchema = z.object({
+  page: z.number().min(1),
+  limit: z.number().min(1)
+});
+
+export const createWeatherDataSchema = z.object({
+  location: z.string(),
+  temperature: z.number(),
+  condition: z.string()
+});
+
+export const getWeatherDataSchema = z.object({
+  id: z.string().uuid()
+});
+
+export const deleteWeatherDataSchema = z.object({
   id: z.string().uuid()
 });

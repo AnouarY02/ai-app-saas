@@ -1,65 +1,48 @@
 # WeatherApp
 
-## Overview
-WeatherApp is a SaaS application that provides weather forecasts and related information.
+## Introduction
+WeatherApp is a SaaS application that provides weather information.
 
-## Features
-- Real-time weather updates
-- Forecast for multiple locations
-- User-friendly interface
-
-## Installation
-
-### Prerequisites
+## Prerequisites
 - Docker
 - Docker Compose
 
-### Setup
+## Installation
 Clone the repository and navigate to the project directory.
 
-```bash
-git clone https://github.com/AnouarY02/ai-app-saas.git
-cd ai-app-saas
-```
-
 ## Running the App
-
-### Development
-To start the application in development mode, use the following command:
-
-```bash
-docker-compose up --build
+To start the application, run:
 ```
-
-### Production
-For production, ensure all environment variables are set correctly and run:
-
-```bash
-docker-compose up -d
+docker-compose up --build
 ```
 
 ## Environment Variables
 Ensure the following environment variables are set:
-- `NODE_ENV`: Set to `production` or `development`
-- `PORT`: Port for the backend service
-- `JWT_SECRET`: Secret key for JWT authentication
-- `DATABASE_URL`: Database connection string
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `WEATHER_API_KEY`
 
 ## Docker Setup
-The application uses Docker Compose to manage services:
-- **Frontend**: Accessible on port 3000
-- **Backend**: Accessible on port 4000
-- **Database**: PostgreSQL database accessible on port 5432
+The application consists of three services:
+- **Frontend**: Accessible at `http://localhost:3000`
+- **Backend**: Accessible at `http://localhost:4000`
+- **Database**: PostgreSQL running on port `5432`
+
+## Scripts
+- `start`: Start the application
+- `build`: Compile TypeScript
+- `dev`: Start the application in development mode
+- `test`: Run tests
+- `lint`: Lint the codebase
 
 ## Testing
 Run tests using:
-
-```bash
-docker-compose exec backend npm test
+```
+npm test
 ```
 
 ## Contributing
-Contributions are welcome! Please fork the repository and submit a pull request.
+Please read the contributing guidelines.
 
 ## License
 This project is licensed under the MIT License.
