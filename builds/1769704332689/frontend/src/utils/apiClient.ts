@@ -9,9 +9,7 @@ function getAuthHeaders() {
 
 export interface User {
   id: string;
-  username: string;
   email: string;
-  role: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,8 +19,9 @@ export interface WeatherData {
   userId: string;
   location: string;
   temperature: number;
-  condition: string;
-  retrievedAt: string;
+  humidity: number;
+  forecast: any;
+  createdAt: string;
 }
 
 export async function login(email: string, password: string) {
@@ -34,11 +33,11 @@ export async function login(email: string, password: string) {
   return response.json();
 }
 
-export async function register(email: string, password: string, username: string) {
+export async function register(email: string, password: string) {
   const response = await fetch(`${API_URL}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, username })
+    body: JSON.stringify({ email, password })
   });
   return response.json();
 }
@@ -52,27 +51,27 @@ export async function logout() {
 }
 
 export async function getCurrentUser() {
-  const response = await fetch(`${API_URL}/api/users/me`, {
+  const response = await fetch(`${API_URL}/api/auth/me`, {
     headers: getAuthHeaders()
   });
   return response.json();
 }
 
-export async function getTasks() {
+export async function getWeatherData() {
   const response = await fetch(`${API_URL}/api/weather-data`, {
     headers: getAuthHeaders()
   });
   return response.json();
 }
 
-export async function getTask(id: string) {
+export async function getWeatherDataById(id: string) {
   const response = await fetch(`${API_URL}/api/weather-data/${id}`, {
     headers: getAuthHeaders()
   });
   return response.json();
 }
 
-export async function createTask(data: any) {
+export async function createWeatherData(data: Partial<WeatherData>) {
   const response = await fetch(`${API_URL}/api/weather-data`, {
     method: 'POST',
     headers: getAuthHeaders(),
@@ -81,7 +80,7 @@ export async function createTask(data: any) {
   return response.json();
 }
 
-export async function updateTask(id: string, data: any) {
+export async function updateWeatherData(id: string, data: Partial<WeatherData>) {
   const response = await fetch(`${API_URL}/api/weather-data/${id}`, {
     method: 'PUT',
     headers: getAuthHeaders(),
@@ -90,7 +89,7 @@ export async function updateTask(id: string, data: any) {
   return response.json();
 }
 
-export async function deleteTask(id: string) {
+export async function deleteWeatherData(id: string) {
   const response = await fetch(`${API_URL}/api/weather-data/${id}`, {
     method: 'DELETE',
     headers: getAuthHeaders()

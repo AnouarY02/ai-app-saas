@@ -1,11 +1,9 @@
 export type User = {
   id: string;
-  username: string;
   email: string;
   passwordHash: string;
-  role: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type WeatherData = {
@@ -13,6 +11,7 @@ export type WeatherData = {
   userId: string;
   location: string;
   temperature: number;
-  condition: string;
-  retrievedAt: Date;
+  humidity: number;
+  forecast: any;
+  createdAt: string;
 };

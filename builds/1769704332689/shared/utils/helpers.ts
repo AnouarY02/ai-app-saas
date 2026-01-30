@@ -1,7 +1,9 @@
-export const formatDate = (date: Date): string => {
-  return date.toISOString().split('T')[0];
+export const formatDate = (date: string): string => {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(date).toLocaleDateString(undefined, options);
 };
 
-export const calculatePages = (total: number, limit: number): number => {
-  return Math.ceil(total / limit);
+export const calculateAverageTemperature = (temperatures: number[]): number => {
+  const total = temperatures.reduce((acc, temp) => acc + temp, 0);
+  return total / temperatures.length;
 };
