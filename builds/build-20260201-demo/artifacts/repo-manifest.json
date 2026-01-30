@@ -1,0 +1,100 @@
+{
+  "version": "1.0",
+  "buildId": "build-20260201-demo",
+  "appName": "AI App",
+  "packageManager": "npm",
+  "lockfilePolicy": "optional",
+  "stack": {
+    "backend": "express-typescript",
+    "frontend": "nextjs-app-router",
+    "database": "postgresql",
+    "shared": "workspace"
+  },
+  "registries": {
+    "backend": "backend/src/routes/index.ts",
+    "frontend": "frontend/src/app/layout.tsx",
+    "sharedTypes": "shared/src/types/index.ts",
+    "sharedClient": "shared/src/api-client/index.ts"
+  },
+  "files": {
+    "required": [
+      "README.md",
+      "backend/Dockerfile",
+      "backend/package.json",
+      "backend/src/app.ts",
+      "backend/src/index.ts",
+      "backend/src/routes/index.ts",
+      "backend/tsconfig.json",
+      "docker-compose.yml",
+      "frontend/Dockerfile",
+      "frontend/package.json",
+      "frontend/src/app/layout.tsx",
+      "frontend/src/app/page.tsx",
+      "frontend/tsconfig.json",
+      "shared/package.json",
+      "shared/src/api-client/index.ts",
+      "shared/src/types/index.ts",
+      "shared/tsconfig.json"
+    ],
+    "allowed": [
+      "README.md",
+      "backend/Dockerfile",
+      "backend/package.json",
+      "backend/src/app.ts",
+      "backend/src/index.ts",
+      "backend/src/routes/employees.ts",
+      "backend/src/routes/index.ts",
+      "backend/src/routes/shifts.ts",
+      "backend/tsconfig.json",
+      "docker-compose.yml",
+      "frontend/Dockerfile",
+      "frontend/package.json",
+      "frontend/src/app/layout.tsx",
+      "frontend/src/app/page.tsx",
+      "frontend/tsconfig.json",
+      "shared/package.json",
+      "shared/src/api-client/index.ts",
+      "shared/src/schemas/booking.schemas.ts",
+      "shared/src/schemas/employee.schemas.ts",
+      "shared/src/schemas/shift.schemas.ts",
+      "shared/src/types/booking.types.ts",
+      "shared/src/types/employee.types.ts",
+      "shared/src/types/index.ts",
+      "shared/src/types/shift.types.ts",
+      "shared/tsconfig.json"
+    ]
+  },
+  "routes": {
+    "backend": {
+      "GET /api/employees": "backend/src/routes/employees.ts",
+      "POST /api/employees": "backend/src/routes/employees.ts",
+      "GET /api/shifts": "backend/src/routes/shifts.ts",
+      "POST /api/shifts": "backend/src/routes/shifts.ts"
+    },
+    "frontend": {
+      "/": "frontend/src/app/page.tsx"
+    }
+  },
+  "shared": {
+    "tsconfigPaths": {
+      "@shared/*": [
+        "../shared/src/*"
+      ]
+    },
+    "entities": [
+      "Employee",
+      "Shift"
+    ],
+    "dtos": [
+      "CreateEmployeeRequest",
+      "CreateShiftRequest",
+      "DeleteBookingRequest",
+      "CancelBookingResponse"
+    ]
+  },
+  "metadata": {
+    "generatedBy": "WF2.8",
+    "workflowId": "2456",
+    "timestamp": "2026-01-30T16:02:39.221Z"
+  }
+}
