@@ -1,0 +1,438 @@
+{
+  "meta": {
+    "buildId": "fietsverhuur-20260204-183639",
+    "repoOwner": "AnouarY02",
+    "repoName": "ai-app-saas",
+    "branch": "build-fietsverhuur-20260204-183639",
+    "appName": "AI App",
+    "baseBranch": "main"
+  },
+  "functionalitySpec": {
+    "apiContracts": [
+      {
+        "endpoint": "/api/auth/login",
+        "method": "POST",
+        "description": "API route for user login.",
+        "auth": "none",
+        "requestType": "LoginRequest",
+        "responseType": "LoginResponse",
+        "schemasUsed": [
+          "LoginSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/auth/login/route.ts",
+          "signature": "POST(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "users",
+            "notes": "Verify user credentials"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 401,
+            "condition": "Invalid credentials",
+            "message": "Email or password is incorrect"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/auth/register",
+        "method": "POST",
+        "description": "API route for user registration.",
+        "auth": "none",
+        "requestType": "RegisterRequest",
+        "responseType": "RegisterResponse",
+        "schemasUsed": [
+          "RegisterSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/auth/register/route.ts",
+          "signature": "POST(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "insert",
+            "table": "users",
+            "notes": "Create new user record"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 400,
+            "condition": "Email already exists",
+            "message": "User with this email already registered"
+          }
+        ]
+      },
+      {
+        "endpoint": "/api/insights",
+        "method": "GET",
+        "description": "API route to fetch insights for a user.",
+        "auth": "user",
+        "requestType": "GetInsightsRequest",
+        "responseType": "GetInsightsResponse",
+        "schemasUsed": [
+          "GetInsightsSchema"
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ],
+        "internalImports": [
+          {
+            "from": "@/lib/db",
+            "importStatement": "import { db } from '@/lib/db';"
+          }
+        ],
+        "handler": {
+          "file": "src/app/api/insights/route.ts",
+          "signature": "GET(req: NextRequest): Promise<NextResponse>"
+        },
+        "dbOps": [
+          {
+            "op": "select",
+            "table": "insights",
+            "notes": "Fetch insights for the user"
+          }
+        ],
+        "errorCases": [
+          {
+            "status": 404,
+            "condition": "No insights found",
+            "message": "No insights available for this user"
+          }
+        ]
+      }
+    ],
+    "sharedTypes": [
+      {
+        "name": "User",
+        "file": "src/shared/types/user.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "passwordHash",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "Insight",
+        "file": "src/shared/types/insight.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "userId",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "content",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "createdAt",
+            "type": "Date",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "LoginRequest",
+        "file": "src/shared/types/auth.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "email",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "password",
+            "type": "string",
+            "optional": false
+          }
+        ]
+      },
+      {
+        "name": "RegisterRequest",
+        "file": "src/shared/types/auth.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "email",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "password",
+            "type": "string",
+            "optional": false
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "DeleteBookingRequest",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Booking id"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingResponse",
+        "file": "src/shared/types/booking.types.ts",
+        "kind": "interface",
+        "fields": [
+          {
+            "name": "bookingId",
+            "type": "string",
+            "optional": false,
+            "description": "Cancelled booking id"
+          },
+          {
+            "name": "status",
+            "type": "'cancelled'",
+            "optional": false,
+            "description": "Always cancelled"
+          }
+        ]
+      }
+    ],
+    "schemas": [
+      {
+        "name": "LoginSchema",
+        "file": "src/shared/schemas/auth.schemas.ts",
+        "forType": "LoginRequest",
+        "shape": [
+          {
+            "field": "email",
+            "zod": "z.string().email()"
+          },
+          {
+            "field": "password",
+            "zod": "z.string().min(8)"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "RegisterSchema",
+        "file": "src/shared/schemas/auth.schemas.ts",
+        "forType": "RegisterRequest",
+        "shape": [
+          {
+            "field": "email",
+            "zod": "z.string().email()"
+          },
+          {
+            "field": "password",
+            "zod": "z.string().min(8)"
+          },
+          {
+            "field": "name",
+            "zod": "z.string().optional()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "GetInsightsSchema",
+        "file": "src/shared/schemas/insight.schemas.ts",
+        "forType": "GetInsightsRequest",
+        "shape": [
+          {
+            "field": "userId",
+            "zod": "z.string().uuid()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      },
+      {
+        "name": "CancelBookingSchema",
+        "file": "src/shared/schemas/booking.schemas.ts",
+        "forType": "DeleteBookingRequest",
+        "shape": [
+          {
+            "field": "bookingId",
+            "zod": "z.string().uuid()"
+          }
+        ],
+        "dependencies": [
+          {
+            "package": "zod",
+            "version": "^3.22.0",
+            "importStatement": "import { z } from 'zod';"
+          }
+        ]
+      }
+    ],
+    "databaseSchema": {
+      "tables": [
+        {
+          "name": "users",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "email",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL",
+                "UNIQUE"
+              ]
+            },
+            {
+              "name": "password_hash",
+              "type": "varchar(255)",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "name",
+              "type": "varchar(255)",
+              "constraints": []
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_users_email",
+              "columns": [
+                "email"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "insights",
+          "columns": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "constraints": [
+                "PRIMARY KEY"
+              ]
+            },
+            {
+              "name": "user_id",
+              "type": "uuid",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "content",
+              "type": "text",
+              "constraints": [
+                "NOT NULL"
+              ]
+            },
+            {
+              "name": "created_at",
+              "type": "timestamp",
+              "constraints": [
+                "NOT NULL"
+              ]
+            }
+          ],
+          "indexes": [
+            {
+              "name": "idx_insights_user",
+              "columns": [
+                "user_id"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
