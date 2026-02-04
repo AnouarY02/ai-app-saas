@@ -1,0 +1,165 @@
+{
+  "appName": "AI App",
+  "description": "A SaaS application that leverages AI to provide insights and analytics to users.",
+  "tier": "medium",
+  "stack": {
+    "framework": "Next.js 14 App Router",
+    "language": "TypeScript",
+    "styling": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "api": [
+      "Next.js Route Handlers (app/api)"
+    ],
+    "notes": "This stack is chosen for its modern features and ease of use in building scalable web applications."
+  },
+  "domains": [
+    {
+      "name": "User Management",
+      "description": "Handles user authentication and profile management.",
+      "entities": [
+        {
+          "name": "User",
+          "description": "Represents a user in the system.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "required": true,
+              "description": "Email address of the user."
+            },
+            {
+              "name": "passwordHash",
+              "type": "string",
+              "required": true,
+              "description": "Hashed password for authentication."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Full name of the user."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "description": "Handles AI-driven analytics and insights.",
+      "entities": [
+        {
+          "name": "Insight",
+          "description": "Represents an AI-generated insight.",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "required": true,
+              "description": "Unique identifier for the insight."
+            },
+            {
+              "name": "userId",
+              "type": "string",
+              "required": true,
+              "description": "Identifier of the user who owns the insight."
+            },
+            {
+              "name": "content",
+              "type": "string",
+              "required": true,
+              "description": "Content of the insight."
+            },
+            {
+              "name": "createdAt",
+              "type": "Date",
+              "required": true,
+              "description": "Timestamp when the insight was created."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "type": "page",
+      "description": "Home page of the application.",
+      "file": "app/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/login",
+      "type": "page",
+      "description": "Login page for user authentication.",
+      "file": "app/login/page.tsx",
+      "layout": "app/layout.tsx"
+    },
+    {
+      "path": "/dashboard",
+      "type": "page",
+      "description": "User dashboard displaying insights.",
+      "file": "app/dashboard/page.tsx",
+      "layout": "app/layout.tsx"
+    }
+  ],
+  "apiRoutes": [
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "description": "API route for user login."
+    },
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ],
+      "description": "API route for user registration."
+    },
+    {
+      "path": "/api/insights",
+      "methods": [
+        "GET"
+      ],
+      "description": "API route to fetch insights for a user."
+    }
+  ],
+  "components": [
+    {
+      "name": "Header",
+      "description": "Header component used across the application.",
+      "file": "components/Header.tsx",
+      "usedOn": [
+        "/",
+        "/login",
+        "/dashboard"
+      ]
+    },
+    {
+      "name": "InsightCard",
+      "description": "Component to display individual insights.",
+      "file": "components/InsightCard.tsx",
+      "usedOn": [
+        "/dashboard"
+      ]
+    }
+  ],
+  "stateManagement": {
+    "strategy": "Context API",
+    "notes": "Using React Context API for managing global state such as user authentication status."
+  },
+  "dataLayer": {
+    "strategy": "In-memory store",
+    "notes": "Using in-memory store for simplicity in this MVP version. Consider a more robust solution for scaling."
+  }
+}
