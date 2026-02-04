@@ -1,0 +1,4 @@
+# Public Assets
+
+Place static assets here (images, fonts, etc.)
+This directory is served at the root URL.
