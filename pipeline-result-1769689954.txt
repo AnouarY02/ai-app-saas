@@ -1,0 +1,2 @@
+[0;32m✅ Loaded GITHUB_TOKEN from /c/AI-Factory/.env[0m
+🔐 Verifying GitHub token... [0;31m❌ Invalid token![0m
