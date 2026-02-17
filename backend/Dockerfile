@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production --ignore-scripts
 COPY . .
-RUN npm run build || echo 'No build step'
+RUN npm run build || echo "No build step"
 
 FROM node:20-alpine AS runner
 WORKDIR /app
@@ -18,4 +18,5 @@ COPY --from=builder --chown=appuser:nodejs /app/*.json ./
 RUN apk add --no-cache wget
 USER appuser
 EXPOSE 4000
+HEALTHCHECK --interval=10s --timeout=5s --retries=3 CMD wget --spider -q http://localhost:4000/api/health || exit 1
 CMD if [ -f "dist/index.js" ]; then node dist/index.js; elif [ -f "src/index.js" ]; then node src/index.js; else node index.js; fi
