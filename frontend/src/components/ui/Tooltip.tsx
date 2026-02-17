@@ -1,19 +1,19 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 
 interface TooltipProps {
-  content: string;
+  text: string;
   children: React.ReactNode;
 }
 
-const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(({ content, children }, ref) => {
+const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
   return (
-    <div className="relative group" ref={ref}>
+    <div className="relative group">
       {children}
-      <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-max bg-gray-800 text-white text-sm p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-        {content}
+      <div className="absolute bottom-full mb-2 hidden group-hover:block bg-black text-white text-xs rounded py-1 px-2">
+        {text}
       </div>
     </div>
   );
-});
+};
 
 export default Tooltip;

@@ -1,4 +1,7 @@
-// Shared exports for Padel Club Pro
-// Currently empty – add shared types, constants, or utilities here as the app grows.
-
-export {};
+export * from './types/entities';
+export * from './types/api';
+export * from './types/common';
+export * from './validators/schemas';
+export * from './constants';
+export * from './utils/helpers';
+export * from './utils/validators';

@@ -1,33 +1,13 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
+import React from 'react';
 
-const badgeVariants = cva("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium", {
-  variants: {
-    variant: {
-      primary: "bg-primary-600 text-white",
-      secondary: "bg-secondary-600 text-white",
-      success: "bg-success-600 text-white",
-      warning: "bg-yellow-600 text-white",
-      error: "bg-error-600 text-white"
-    }
-  },
-  defaultVariants: {
-    variant: "primary"
-  }
-});
+interface BadgeProps {
+  children: React.ReactNode;
+  color?: 'primary' | 'secondary';
+}
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {}
+const Badge: React.FC<BadgeProps> = ({ children, color = 'primary' }) => {
+  const colorClasses = color === 'primary' ? 'bg-brand-primary-500' : 'bg-brand-secondary-500';
+  return <span className={`text-white px-2 py-1 rounded-full ${colorClasses}`}>{children}</span>;
+};
 
-export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant, ...props }, ref) => {
-    return (
-      <span
-        ref={ref}
-        className={cn(badgeVariants({ variant }), className)}
-        {...props}
-      />
-    );
-  }
-);
-Badge.displayName = "Badge";
+export default Badge;

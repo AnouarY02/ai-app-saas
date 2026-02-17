@@ -1,25 +1,18 @@
 import bcrypt from 'bcrypt';
+import { userStore } from './models/UserModel';
 
-export const TEST_USER = {
-  email: 'test@example.com',
-  password: 'password123',
-  name: 'Test User'
-};
-
-export const users = new Map();
-
-async function initSeed() {
-  const hashedPassword = await bcrypt.hash(TEST_USER.password, 10);
-  users.set(TEST_USER.email, {
-    id: '1',
-    email: TEST_USER.email,
-    name: TEST_USER.name,
-    passwordHash: hashedPassword,
+async function seed() {
+  const passwordHash = await bcrypt.hash('password123', 10);
+  userStore.set('test-user-id', {
+    id: 'test-user-id',
+    name: 'Test User',
+    email: 'test@example.com',
+    passwordHash,
     role: 'user',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   });
-  console.log('✓ Test user seeded:', TEST_USER.email);
+  console.log('Seed data added');
 }
 
-initSeed();
+seed();

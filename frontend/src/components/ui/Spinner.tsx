@@ -1,20 +1,7 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
 
-export interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {}
+const Spinner: React.FC = () => {
+  return <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>;
+};
 
-export const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "animate-spin rounded-full border-t-2 border-r-2 border-primary-600 h-5 w-5",
-          className
-        )}
-        {...props}
-      />
-    );
-  }
-);
-Spinner.displayName = "Spinner";
+export default Spinner;

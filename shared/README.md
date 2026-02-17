@@ -1,11 +1,6 @@
-# Padel Club Pro – Shared Layer
+# Shared Types & Validators
+Single source of truth for contracts between frontend and backend.
 
-This directory contains shared code and type definitions for the Padel Club Pro app. 
-
-## Overview
-Currently, the app consists only of a public landing page. No shared contracts, types, or business logic are required at this stage.
-
-## Structure
-- `shared/index.ts`: Main entry point for shared exports (empty for now).
-
-This layer can be expanded in the future as the app grows.
+## Usage
+Frontend: import { User, LoginRequest } from '@/shared';
+Backend: import { User, createUserSchema } from '@/shared';

@@ -1,20 +1,11 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface CardProps {
+  children: React.ReactNode;
+}
 
-export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow",
-          className
-        )}
-        {...props}
-      />
-    );
-  }
-);
-Card.displayName = "Card";
+const Card: React.FC<CardProps> = ({ children }) => {
+  return <div className="bg-white shadow-md rounded-lg p-4">{children}</div>;
+};
+
+export default Card;

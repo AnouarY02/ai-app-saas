@@ -1,26 +1,14 @@
 import { z } from 'zod';
 
-export const listUsersSchema = z.object({
-  page: z.number().min(1).optional(),
-  limit: z.number().min(1).max(100).optional()
-});
-
-export const getUserSchema = z.object({
-  id: z.string().uuid()
+export const createUserSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  password: z.string().min(8),
+  role: z.enum(['user', 'admin']).default('user')
 });
 
 export const updateUserSchema = z.object({
-  id: z.string().uuid(),
-  username: z.string().min(3),
-  email: z.string().email()
-});
-
-export const partialUpdateUserSchema = z.object({
-  id: z.string().uuid(),
-  username: z.string().min(3).optional(),
-  email: z.string().email().optional()
-});
-
-export const deleteUserSchema = z.object({
-  id: z.string().uuid()
-});
+  name: z.string().min(1).optional(),
+  email: z.string().email().optional(),
+  role: z.enum(['user', 'admin']).optional()
+}).partial();
