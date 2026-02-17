@@ -1,0 +1,843 @@
+{
+  "name": "WF4 – Auto-Fix & Run",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "wf4-fix",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wf4-webhook",
+      "name": "WF4 Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [200, 300],
+      "webhookId": "wf4-fix"
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 1: Normalize Input & Setup\n// =============================================\nconst body = $input.first().json.body;\n\nconst buildId    = body.buildId;\nconst repoOwner  = body.repoOwner  || 'AnouarY02';\nconst repoName   = body.repoName   || 'ai-app-saas';\nconst branch     = body.branch     || `build/${buildId}`;\nconst maxRetries = body.maxRetries  || 3;\n\nif (!buildId) throw new Error('buildId is required');\n\nconst timestamp = new Date().toISOString();\n\nreturn [{\n  json: {\n    buildId,\n    repoOwner,\n    repoName,\n    branch,\n    maxRetries,\n    retryCount: 0,\n    timestamp,\n    buildDir: `builds/${buildId}`,\n    phase: 'INIT'\n  }\n}];"
+      },
+      "id": "wf4-normalize",
+      "name": "WF4 - Normalize Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [420, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "wf4-gh-repo-info",
+      "name": "GH - Get Repo Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [640, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "github-token", "name": "GitHub Token" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// Extract default branch\nconst prev = $('WF4 - Normalize Input').first().json;\nconst repo = $input.first().json;\n\nreturn [{\n  json: {\n    ...prev,\n    defaultBranch: repo.default_branch || 'main'\n  }\n}];"
+      },
+      "id": "wf4-extract-branch",
+      "name": "WF4 - Extract Default Branch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [860, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}/git/trees/{{ $json.branch }}?recursive=1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "wf4-gh-tree",
+      "name": "GH - Get Repo Tree",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1080, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "github-token", "name": "GitHub Token" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 2: Filter source files from tree\n// Only include files in backend/src, frontend/src,\n// shared/, and config files (not node_modules, dist, etc)\n// =============================================\nconst prev = $('WF4 - Extract Default Branch').first().json;\nconst tree = $input.first().json.tree || [];\n\nconst SOURCE_PATTERNS = [\n  /^backend\\/src\\//,\n  /^backend\\/package\\.json$/,\n  /^backend\\/tsconfig\\.json$/,\n  /^backend\\/Dockerfile$/,\n  /^frontend\\/src\\//,\n  /^frontend\\/package\\.json$/,\n  /^frontend\\/tsconfig\\.json$/,\n  /^frontend\\/vite\\.config\\.ts$/,\n  /^frontend\\/tailwind\\.config\\.ts$/,\n  /^frontend\\/postcss\\.config\\.(js|cjs|mjs)$/,\n  /^frontend\\/index\\.html$/,\n  /^frontend\\/Dockerfile$/,\n  /^frontend\\/vite-env\\.d\\.ts$/,\n  /^shared\\//,\n  /^docker-compose\\.ya?ml$/,\n  /^\\.env(\\.example)?$/,\n  /^README\\.md$/\n];\n\nconst EXCLUDE_PATTERNS = [\n  /node_modules/,\n  /dist\\//,\n  /\\.lock$/,\n  /package-lock/,\n  /\\.git\\//\n];\n\nconst sourceFiles = tree.filter(f => {\n  if (f.type !== 'blob') return false;\n  if (EXCLUDE_PATTERNS.some(p => p.test(f.path))) return false;\n  return SOURCE_PATTERNS.some(p => p.test(f.path));\n});\n\nreturn sourceFiles.map(f => ({\n  json: {\n    ...prev,\n    filePath: f.path,\n    sha: f.sha,\n    size: f.size\n  }\n}));"
+      },
+      "id": "wf4-filter-files",
+      "name": "WF4 - Filter Source Files",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1300, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}/contents/{{ $json.filePath }}?ref={{ $json.branch }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "options": {
+          "batching": { "batch": { "batchSize": 10, "batchInterval": 500 } }
+        }
+      },
+      "id": "wf4-gh-read-files",
+      "name": "GH - Read Source Files",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1520, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "github-token", "name": "GitHub Token" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 3: Decode file contents from base64\n// Build a single object with all source code\n// =============================================\nconst files = {};\nconst meta = {};\n\nfor (const item of $input.all()) {\n  const d = item.json;\n  const path = d.path || d.filePath;\n  if (!path) continue;\n  \n  let content = '';\n  if (d.content) {\n    content = Buffer.from(d.content, 'base64').toString('utf-8');\n  } else if (d.download_url) {\n    content = '[Binary or too large]';\n  }\n  \n  files[path] = content;\n}\n\n// Get context from earlier nodes\nconst prev = $('WF4 - Extract Default Branch').first().json;\n\nreturn [{\n  json: {\n    ...prev,\n    files,\n    fileCount: Object.keys(files).length,\n    phase: 'FILES_LOADED'\n  }\n}];"
+      },
+      "id": "wf4-decode-files",
+      "name": "WF4 - Decode All Files",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1740, 300]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 3b: Read WF1-WF2.8 artifacts\n// These provide the spec that the code should match\n// =============================================\nconst prev = $input.first().json;\nconst buildDir = prev.buildDir;\n\n// We'll read artifacts from the file tree we already have\n// Build the artifacts context string\nconst artifactFiles = Object.entries(prev.files)\n  .filter(([path]) => path.includes('/artifacts/'))\n  .map(([path, content]) => `### ${path}\\n${content}`)\n  .join('\\n\\n');\n\nreturn [{\n  json: {\n    ...prev,\n    artifacts: artifactFiles || 'No artifacts found in repository',\n    phase: 'ARTIFACTS_LOADED'\n  }\n}];"
+      },
+      "id": "wf4-read-artifacts",
+      "name": "WF4 - Extract Artifacts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1960, 300]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 4: Build the comprehensive analysis prompt\n// This sends ALL source code to AI for error detection\n// =============================================\nconst prev = $input.first().json;\n\n// Build the source code listing\nconst sourceCode = Object.entries(prev.files)\n  .filter(([path]) => !path.includes('/artifacts/'))\n  .map(([path, content]) => `=== FILE: ${path} ===\\n${content}\\n=== END: ${path} ===`)\n  .join('\\n\\n');\n\nconst prompt = `You are a senior full-stack developer performing a comprehensive code audit.\nAnalyze ALL the source files below and identify EVERY issue that would prevent this app from building and running correctly.\n\nThe app uses:\n- Backend: Express + TypeScript (compiled with tsx or ts-node)\n- Frontend: React + Vite + Tailwind CSS\n- Shared: TypeScript types/utils shared between frontend and backend\n- Docker: docker-compose with frontend (nginx), backend (node), and db (postgres)\n\n## KNOWN ISSUE PATTERNS TO CHECK:\n\n### Backend Issues:\n1. Path aliases (@/ imports) not resolving at runtime - tsx/ts-node doesn't support tsconfig paths without tsconfig-paths\n2. Missing dependencies in package.json (bcrypt, cors, dotenv, jsonwebtoken, uuid, zod, tsx)\n3. ts-node in scripts instead of tsx (tsx is faster and handles ESM better)\n4. Missing service methods (findByEmail, findAll, findById, create, update, delete)\n5. Password not being hashed with bcrypt in auth controller\n6. Password hash being returned in API responses (security issue)\n7. Missing route registrations in app.ts\n8. Missing health endpoint (/api/health or /health)\n9. Error handler middleware not properly typed or missing\n10. tsconfig.json too strict (strict: true causes many errors in generated code)\n11. Missing esModuleInterop or skipLibCheck in tsconfig\n12. Seed file referencing wrong model methods\n\n### Frontend Issues:\n1. ReactDOM.render() instead of createRoot() (React 18)\n2. Missing BrowserRouter wrapper in App.tsx\n3. Missing AuthProvider wrapper in App.tsx\n4. process.env used instead of import.meta.env for Vite\n5. API client not using axios or proper fetch wrapper\n6. Missing postcss.config.js (required for Tailwind)\n7. index.css missing @tailwind directives\n8. Tailwind config missing content paths\n9. UI components that are just placeholder divs (not functional)\n10. Missing key dependencies: axios, clsx, tailwind-merge, autoprefixer, postcss\n11. Layouts not accepting children props\n12. vite.config.ts missing path alias resolve\n13. TypeScript types too strict\n14. vite-env.d.ts not declaring import.meta.env types\n15. index.html missing proper structure or root div\n\n### Shared Issues:\n1. Missing zod dependency in package.json\n2. tsconfig.json misconfigured\n3. Exports not properly set up in index.ts\n4. Types that don't match what backend/frontend expect\n\n### Docker/Infrastructure Issues:\n1. Frontend Dockerfile not passing VITE_API_URL as build arg\n2. Frontend Dockerfile referencing nginx.default.conf that may not exist\n3. Backend Dockerfile missing healthcheck\n4. docker-compose.yml missing health checks\n5. docker-compose.yml missing proper environment variables\n6. Missing .env.example with all required variables\n\n## SOURCE CODE:\n\n${sourceCode}\n\n## INSTRUCTIONS:\nReturn a JSON object with this EXACT structure:\n{\n  \"totalIssues\": <number>,\n  \"critical\": [<issues that prevent building>],\n  \"high\": [<issues that prevent running>],\n  \"medium\": [<issues that cause runtime errors>],\n  \"low\": [<style/best practice issues>],\n  \"missingFiles\": [<files that should exist but don't>],\n  \"missingDependencies\": {\n    \"backend\": [<missing npm packages>],\n    \"frontend\": [<missing npm packages>],\n    \"shared\": [<missing npm packages>]\n  },\n  \"fileFixes\": {\n    \"<filePath>\": \"<brief description of what needs fixing>\"\n  }\n}\n\nBe thorough. Check EVERY file. Miss NOTHING.`;\n\nreturn [{\n  json: {\n    ...prev,\n    analysisPrompt: prompt,\n    phase: 'ANALYSIS_READY'\n  }\n}];"
+      },
+      "id": "wf4-build-analysis-prompt",
+      "name": "WF4 - Build Analysis Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2180, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'system', content: 'You are a code auditor. Return ONLY valid JSON. No markdown, no code fences.' }, { role: 'user', content: $json.analysisPrompt }], temperature: 0.1, max_tokens: 8000 }) }}",
+        "options": { "timeout": 120000 }
+      },
+      "id": "wf4-ai-analysis",
+      "name": "OpenAI - Error Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2400, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "openai-key", "name": "OpenAI API Key" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 5: Parse analysis & prepare fix prompt\n// =============================================\nconst prev = $('WF4 - Build Analysis Prompt').first().json;\nconst response = $input.first().json;\n\nlet analysisRaw = response.choices?.[0]?.message?.content || '{}';\n// Clean markdown fences if present\nanalysisRaw = analysisRaw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\nlet analysis;\ntry {\n  analysis = JSON.parse(analysisRaw);\n} catch(e) {\n  analysis = { totalIssues: 0, critical: [], high: [], medium: [], low: [], missingFiles: [], missingDependencies: { backend: [], frontend: [], shared: [] }, fileFixes: {}, parseError: e.message, raw: analysisRaw.substring(0, 2000) };\n}\n\nreturn [{\n  json: {\n    ...prev,\n    analysis,\n    phase: 'ANALYSIS_COMPLETE'\n  }\n}];"
+      },
+      "id": "wf4-parse-analysis",
+      "name": "WF4 - Parse Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2620, 300]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 6: Build the MEGA fix prompt for backend\n// This generates ALL fixed backend files in one shot\n// =============================================\nconst prev = $input.first().json;\nconst files = prev.files;\nconst analysis = prev.analysis;\n\n// Collect all backend files\nconst backendFiles = Object.entries(files)\n  .filter(([path]) => path.startsWith('backend/'))\n  .map(([path, content]) => `=== FILE: ${path} ===\\n${content}\\n=== END: ${path} ===`)\n  .join('\\n\\n');\n\n// Collect shared files for reference\nconst sharedFiles = Object.entries(files)\n  .filter(([path]) => path.startsWith('shared/'))\n  .map(([path, content]) => `=== FILE: ${path} ===\\n${content}\\n=== END: ${path} ===`)\n  .join('\\n\\n');\n\nconst prompt = `You are a senior Node.js/TypeScript developer. Fix ALL issues in the backend code so it builds and runs perfectly.\n\n## ERROR ANALYSIS:\n${JSON.stringify(analysis, null, 2)}\n\n## CURRENT BACKEND FILES:\n${backendFiles}\n\n## SHARED FILES (for reference):\n${sharedFiles}\n\n## MANDATORY FIX RULES:\n\n### package.json MUST:\n- Use \"tsx\" (not ts-node) for dev script: \"dev\": \"tsx src/index.ts\"\n- Include ALL dependencies: express, cors, dotenv, bcrypt, jsonwebtoken, uuid, zod, tsx, tsconfig-paths\n- Include ALL @types devDependencies\n- Use typescript ^5.x\n\n### tsconfig.json MUST have:\n- \"strict\": false\n- \"esModuleInterop\": true\n- \"skipLibCheck\": true\n- \"resolveJsonModule\": true\n- \"outDir\": \"./dist\"\n- \"rootDir\": \"./src\"\n\n### All imports MUST:\n- Use RELATIVE paths (./routes/authRoutes) NOT path aliases (@/routes/auth)\n- Use proper file references that match actual filenames\n\n### app.ts MUST:\n- Import and use cors, express.json()\n- Register ALL route files: authRoutes, userRoutes, insightRoutes, healthRoutes\n- Use error handler middleware\n- Export the app\n\n### index.ts MUST:\n- Import app and start server on PORT from env\n- Import dotenv/config at the very top\n\n### Controllers MUST:\n- Use try/catch with proper error responses\n- authController: hash passwords with bcrypt, generate JWT tokens, validate with zod\n- Strip passwordHash from all user responses (delete user.passwordHash)\n- Return proper HTTP status codes (201 for create, 200 for read/update, 204 for delete)\n\n### Services MUST have these methods:\n- findAll(): return all records\n- findById(id): return single record\n- findByEmail(email): return user by email (UserService only)\n- create(data): create new record\n- update(id, data): update record\n- delete(id): delete record\n\n### Models MUST:\n- Use in-memory arrays (no actual DB needed for MVP)\n- Use uuid for ID generation\n- Have proper TypeScript interfaces\n\n### Middleware:\n- auth.ts: verify JWT from Authorization header, attach user to req\n- errorHandler.ts: Express error handler (err, req, res, next)\n\n### Routes:\n- healthRoutes.ts: GET /api/health → { status: 'ok', timestamp }\n- authRoutes.ts: POST /api/auth/register, POST /api/auth/login\n- userRoutes.ts: full CRUD on /api/users\n- insightRoutes.ts: full CRUD on /api/insights\n\n### seed.ts MUST:\n- Use bcrypt to hash seed passwords\n- Use proper model/service methods\n- Create sample users and insights\n\n## OUTPUT FORMAT:\nReturn a JSON object where keys are file paths and values are the COMPLETE file contents.\nExample:\n{\n  \"backend/package.json\": \"{ ... full content ... }\",\n  \"backend/tsconfig.json\": \"{ ... }\",\n  \"backend/src/index.ts\": \"import ... full content ...\",\n  \"backend/src/app.ts\": \"...\"\n}\n\nReturn ONLY the JSON object. No markdown fences. Include EVERY backend file needed.\nGenerate COMPLETE file contents - no placeholders, no \"// ... rest of code\", no truncation.`;\n\nreturn [{\n  json: {\n    ...prev,\n    backendPrompt: prompt,\n    phase: 'BACKEND_FIX_READY'\n  }\n}];"
+      },
+      "id": "wf4-build-backend-prompt",
+      "name": "WF4 - Build Backend Fix Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2840, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'system', content: 'You are an expert Node.js/TypeScript developer. Return ONLY valid JSON mapping file paths to complete file contents. No markdown, no code fences, no explanations.' }, { role: 'user', content: $json.backendPrompt }], temperature: 0.1, max_tokens: 16000 }) }}",
+        "options": { "timeout": 180000 }
+      },
+      "id": "wf4-ai-backend",
+      "name": "OpenAI - Fix Backend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [3060, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "openai-key", "name": "OpenAI API Key" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// Parse the backend fix response\nconst prev = $('WF4 - Build Backend Fix Prompt').first().json;\nconst response = $input.first().json;\n\nlet raw = response.choices?.[0]?.message?.content || '{}';\nraw = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\nlet backendFixes;\ntry {\n  backendFixes = JSON.parse(raw);\n} catch(e) {\n  // Try to extract JSON from the response\n  const match = raw.match(/\\{[\\s\\S]*\\}/);\n  if (match) {\n    try { backendFixes = JSON.parse(match[0]); } catch(e2) {\n      backendFixes = { error: 'Failed to parse backend fixes', raw: raw.substring(0, 3000) };\n    }\n  } else {\n    backendFixes = { error: 'No JSON found in response', raw: raw.substring(0, 3000) };\n  }\n}\n\nreturn [{\n  json: {\n    ...prev,\n    backendFixes,\n    backendFixCount: Object.keys(backendFixes).filter(k => k !== 'error' && k !== 'raw').length,\n    phase: 'BACKEND_FIXED'\n  }\n}];"
+      },
+      "id": "wf4-parse-backend",
+      "name": "WF4 - Parse Backend Fixes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3280, 300]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 7: Build the MEGA fix prompt for frontend\n// =============================================\nconst prev = $input.first().json;\nconst files = prev.files;\nconst analysis = prev.analysis;\n\n// Collect all frontend files\nconst frontendFiles = Object.entries(files)\n  .filter(([path]) => path.startsWith('frontend/'))\n  .map(([path, content]) => `=== FILE: ${path} ===\\n${content}\\n=== END: ${path} ===`)\n  .join('\\n\\n');\n\nconst prompt = `You are a senior React/TypeScript developer. Fix ALL issues in the frontend code so it builds and runs perfectly with Vite + Tailwind CSS.\n\n## ERROR ANALYSIS:\n${JSON.stringify(analysis, null, 2)}\n\n## CURRENT FRONTEND FILES:\n${frontendFiles}\n\n## MANDATORY FIX RULES:\n\n### package.json MUST include:\n- react, react-dom, react-router-dom\n- axios (for API calls)\n- clsx, tailwind-merge (for className utilities)\n- tailwindcss ^3.x\n- devDependencies: @types/react, @types/react-dom, @vitejs/plugin-react, typescript, vite, autoprefixer, postcss\n\n### vite.config.ts MUST:\n- Import react plugin from @vitejs/plugin-react\n- Add resolve.alias: { '@': path.resolve(__dirname, 'src') }\n- Export default defineConfig with plugins: [react()]\n\n### tsconfig.json MUST have:\n- \"compilerOptions\": { \"target\": \"ES2020\", \"module\": \"ESNext\", \"lib\": [\"ES2020\", \"DOM\", \"DOM.Iterable\"], \"moduleResolution\": \"bundler\", \"jsx\": \"react-jsx\", \"strict\": false, \"skipLibCheck\": true, \"esModuleInterop\": true, \"baseUrl\": \".\", \"paths\": { \"@/*\": [\"src/*\"] } }\n- \"include\": [\"src\"]\n\n### index.html MUST:\n- Have proper HTML5 structure\n- Include <div id=\"root\"></div>\n- Include <script type=\"module\" src=\"/src/main.tsx\"></script>\n- Have proper meta tags and title\n\n### main.tsx MUST:\n- Use React 18 createRoot API: import { createRoot } from 'react-dom/client'\n- Import './index.css'\n- Render <App /> into document.getElementById('root')\n\n### index.css MUST have:\n- @tailwind base;\n- @tailwind components;\n- @tailwind utilities;\n- Basic body styles\n\n### postcss.config.js MUST exist with:\n- module.exports = { plugins: { tailwindcss: {}, autoprefixer: {} } }\n\n### tailwind.config.ts MUST have:\n- content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}']\n- Proper theme with colors, spacing, etc.\n- No invalid imports or references\n\n### App.tsx MUST:\n- Wrap everything in <BrowserRouter> from react-router-dom\n- Wrap in <AuthProvider>\n- Define all Routes with proper layouts\n- Import all page components\n\n### AuthContext.tsx MUST:\n- Store token in localStorage\n- Provide login, register, logout functions\n- Use axios/apiClient for API calls\n- Handle token in request headers\n- Parse JWT for user info\n\n### apiClient.ts (utils/) MUST:\n- Use axios.create() with baseURL from import.meta.env.VITE_API_URL\n- Add request interceptor for auth token\n- Add response interceptor for error handling\n- Export typed API functions for all endpoints\n\n### UI Components (components/ui/) MUST:\n- Be REAL functional components with proper JSX\n- Accept standard HTML props via React.ComponentPropsWithoutRef\n- Use Tailwind classes for styling\n- Use clsx/tailwind-merge for className merging\n- Include: Alert, Badge, Button, Card, Checkbox, Dialog, Input, Label, Radio, Select, Spinner, Switch, Textarea, Tooltip\n\n### Layouts MUST:\n- Accept { children } as props (React.PropsWithChildren)\n- NOT use <Outlet /> from react-router\n- Have proper navigation, sidebar, or header\n\n### Pages MUST:\n- Have REAL content with useState, useEffect\n- Make API calls to the backend\n- Handle loading and error states\n- Use the UI components\n- Include: HomePage, DashboardPage, LoginPage, RegisterPage, AboutPage, PricingPage\n- Include CRUD pages: UserListPage, UserCreatePage, UserDetailPage, UserEditPage\n- Include CRUD pages: InsightListPage, InsightCreatePage, InsightDetailPage, InsightEditPage\n\n### vite-env.d.ts MUST declare:\n- /// <reference types=\"vite/client\" />\n- interface ImportMetaEnv { VITE_API_URL: string }\n\n## OUTPUT FORMAT:\nReturn a JSON object where keys are file paths and values are COMPLETE file contents.\nReturn ONLY JSON. No markdown. No code fences. No explanations.\nGenerate COMPLETE file contents for EVERY file - no placeholders, no truncation.`;\n\nreturn [{\n  json: {\n    ...prev,\n    frontendPrompt: prompt,\n    phase: 'FRONTEND_FIX_READY'\n  }\n}];"
+      },
+      "id": "wf4-build-frontend-prompt",
+      "name": "WF4 - Build Frontend Fix Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3500, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'system', content: 'You are an expert React/TypeScript developer. Return ONLY valid JSON mapping file paths to complete file contents. No markdown, no code fences.' }, { role: 'user', content: $json.frontendPrompt }], temperature: 0.1, max_tokens: 16000 }) }}",
+        "options": { "timeout": 180000 }
+      },
+      "id": "wf4-ai-frontend",
+      "name": "OpenAI - Fix Frontend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [3720, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "openai-key", "name": "OpenAI API Key" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// Parse the frontend fix response\nconst prev = $('WF4 - Build Frontend Fix Prompt').first().json;\nconst response = $input.first().json;\n\nlet raw = response.choices?.[0]?.message?.content || '{}';\nraw = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\nlet frontendFixes;\ntry {\n  frontendFixes = JSON.parse(raw);\n} catch(e) {\n  const match = raw.match(/\\{[\\s\\S]*\\}/);\n  if (match) {\n    try { frontendFixes = JSON.parse(match[0]); } catch(e2) {\n      frontendFixes = { error: 'Failed to parse frontend fixes', raw: raw.substring(0, 3000) };\n    }\n  } else {\n    frontendFixes = { error: 'No JSON found in response', raw: raw.substring(0, 3000) };\n  }\n}\n\nreturn [{\n  json: {\n    ...prev,\n    frontendFixes,\n    frontendFixCount: Object.keys(frontendFixes).filter(k => k !== 'error' && k !== 'raw').length,\n    phase: 'FRONTEND_FIXED'\n  }\n}];"
+      },
+      "id": "wf4-parse-frontend",
+      "name": "WF4 - Parse Frontend Fixes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3940, 300]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 8: Build fix prompt for shared + infra\n// =============================================\nconst prev = $input.first().json;\nconst files = prev.files;\nconst analysis = prev.analysis;\n\nconst sharedFiles = Object.entries(files)\n  .filter(([path]) => path.startsWith('shared/'))\n  .map(([path, content]) => `=== FILE: ${path} ===\\n${content}\\n=== END: ${path} ===`)\n  .join('\\n\\n');\n\nconst infraFiles = Object.entries(files)\n  .filter(([path]) => path.match(/^(docker-compose|Dockerfile|\\.env)/i) || path.endsWith('/Dockerfile'))\n  .map(([path, content]) => `=== FILE: ${path} ===\\n${content}\\n=== END: ${path} ===`)\n  .join('\\n\\n');\n\nconst prompt = `You are a DevOps and TypeScript expert. Fix the shared library and Docker infrastructure files.\n\n## ERROR ANALYSIS:\n${JSON.stringify(analysis, null, 2)}\n\n## CURRENT SHARED FILES:\n${sharedFiles}\n\n## CURRENT INFRA FILES:\n${infraFiles}\n\n## MANDATORY FIXES FOR SHARED:\n\n### shared/package.json MUST:\n- Include zod as dependency\n- Include typescript as devDependency\n- Set main: \"index.ts\" and types: \"index.ts\"\n\n### shared/tsconfig.json MUST have:\n- \"strict\": false, \"skipLibCheck\": true, \"esModuleInterop\": true\n- \"declaration\": true\n\n### shared/index.ts MUST:\n- Export all types, constants, validators, utils\n- Use proper barrel exports\n\n### shared/types/ MUST:\n- entities.ts: User and Insight interfaces\n- api.ts: API request/response types\n- common.ts: Shared utility types (Pagination, ApiResponse, etc.)\n\n### shared/validators/ MUST:\n- schemas.ts: Zod schemas for validation\n\n### shared/constants/ MUST:\n- index.ts: App-wide constants (API paths, roles, status codes)\n\n### shared/utils/ MUST:\n- helpers.ts: Utility functions (formatDate, generateId, etc.)\n- validators.ts: Validation helper functions\n\n## MANDATORY FIXES FOR DOCKER:\n\n### docker-compose.yml MUST:\n- Use version '3.8'\n- Have 3 services: frontend, backend, db\n- frontend: build from ./frontend, port 3000:80, depends_on backend (service_healthy)\n- backend: build from ./backend, port 4000:4000, env vars for NODE_ENV, PORT, DATABASE_URL, JWT_SECRET\n- backend: healthcheck with wget to http://localhost:4000/api/health\n- db: postgres:15-alpine, with healthcheck pg_isready\n- volumes for postgres_data\n- frontend build args: VITE_API_URL=http://localhost:4000\n\n### backend/Dockerfile MUST:\n- Multi-stage: builder (node:20-alpine) + runner (node:20-alpine)\n- Install deps, copy source, build TypeScript\n- In runner: copy dist, node_modules, package.json\n- Create non-root user\n- Add HEALTHCHECK\n- CMD: try dist/index.js, fallback to src/index.ts with tsx\n\n### frontend/Dockerfile MUST:\n- Multi-stage: builder (node:20-alpine) + runner (nginx:alpine)\n- Accept ARG VITE_API_URL and set as ENV\n- Install deps, copy all source, run vite build\n- Copy dist to /usr/share/nginx/html\n- Inline nginx config with try_files for SPA routing\n- Expose 80\n\n### .env.example MUST have:\n- NODE_ENV=production\n- PORT=4000\n- DATABASE_URL=postgresql://postgres:postgres@db:5432/appdb\n- JWT_SECRET=your-secret-key-change-in-production\n- VITE_API_URL=http://localhost:4000\n\n## OUTPUT FORMAT:\nReturn a JSON object where keys are file paths and values are COMPLETE file contents.\nReturn ONLY JSON. No markdown. No code fences.\nInclude ALL shared files and ALL infrastructure files.`;\n\nreturn [{\n  json: {\n    ...prev,\n    infraPrompt: prompt,\n    phase: 'INFRA_FIX_READY'\n  }\n}];"
+      },
+      "id": "wf4-build-infra-prompt",
+      "name": "WF4 - Build Infra Fix Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [4160, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'system', content: 'You are a DevOps expert. Return ONLY valid JSON mapping file paths to complete file contents. No markdown, no code fences.' }, { role: 'user', content: $json.infraPrompt }], temperature: 0.1, max_tokens: 12000 }) }}",
+        "options": { "timeout": 120000 }
+      },
+      "id": "wf4-ai-infra",
+      "name": "OpenAI - Fix Shared & Infra",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [4380, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "openai-key", "name": "OpenAI API Key" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// Parse the infra fix response\nconst prev = $('WF4 - Build Infra Fix Prompt').first().json;\nconst response = $input.first().json;\n\nlet raw = response.choices?.[0]?.message?.content || '{}';\nraw = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\nlet infraFixes;\ntry {\n  infraFixes = JSON.parse(raw);\n} catch(e) {\n  const match = raw.match(/\\{[\\s\\S]*\\}/);\n  if (match) {\n    try { infraFixes = JSON.parse(match[0]); } catch(e2) {\n      infraFixes = { error: 'Failed to parse infra fixes', raw: raw.substring(0, 3000) };\n    }\n  } else {\n    infraFixes = { error: 'No JSON found', raw: raw.substring(0, 3000) };\n  }\n}\n\nreturn [{\n  json: {\n    ...prev,\n    infraFixes,\n    infraFixCount: Object.keys(infraFixes).filter(k => k !== 'error' && k !== 'raw').length,\n    phase: 'INFRA_FIXED'\n  }\n}];"
+      },
+      "id": "wf4-parse-infra",
+      "name": "WF4 - Parse Infra Fixes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [4600, 300]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 9: Merge all fixes into a single file map\n// Also validate completeness\n// =============================================\nconst prev = $input.first().json;\n\n// Merge all fixes (later fixes override earlier ones)\nconst allFiles = {\n  ...prev.backendFixes,\n  ...prev.frontendFixes,\n  ...prev.infraFixes\n};\n\n// Remove error/debug keys\ndelete allFiles.error;\ndelete allFiles.raw;\n\n// Required files checklist\nconst REQUIRED_FILES = [\n  'backend/package.json',\n  'backend/tsconfig.json',\n  'backend/src/index.ts',\n  'backend/src/app.ts',\n  'backend/src/routes/authRoutes.ts',\n  'backend/src/routes/healthRoutes.ts',\n  'backend/src/routes/userRoutes.ts',\n  'backend/src/routes/insightRoutes.ts',\n  'backend/src/controllers/authController.ts',\n  'backend/src/controllers/UserController.ts',\n  'backend/src/controllers/InsightController.ts',\n  'backend/src/services/UserService.ts',\n  'backend/src/services/InsightService.ts',\n  'backend/src/models/UserModel.ts',\n  'backend/src/models/InsightModel.ts',\n  'backend/src/middleware/auth.ts',\n  'backend/src/middleware/errorHandler.ts',\n  'backend/src/validators/userValidators.ts',\n  'backend/src/validators/insightValidators.ts',\n  'backend/src/seed.ts',\n  'backend/Dockerfile',\n  'frontend/package.json',\n  'frontend/tsconfig.json',\n  'frontend/vite.config.ts',\n  'frontend/tailwind.config.ts',\n  'frontend/postcss.config.js',\n  'frontend/index.html',\n  'frontend/src/main.tsx',\n  'frontend/src/App.tsx',\n  'frontend/src/index.css',\n  'frontend/src/vite-env.d.ts',\n  'frontend/src/context/AuthContext.tsx',\n  'frontend/src/utils/apiClient.ts',\n  'frontend/src/lib/utils.ts',\n  'frontend/src/pages/HomePage.tsx',\n  'frontend/src/pages/DashboardPage.tsx',\n  'frontend/src/pages/LoginPage.tsx',\n  'frontend/src/pages/RegisterPage.tsx',\n  'frontend/src/layouts/DashboardLayout.tsx',\n  'frontend/src/layouts/AuthLayout.tsx',\n  'frontend/Dockerfile',\n  'shared/package.json',\n  'shared/tsconfig.json',\n  'shared/index.ts',\n  'docker-compose.yml',\n  '.env.example'\n];\n\nconst missing = REQUIRED_FILES.filter(f => !allFiles[f]);\nconst present = REQUIRED_FILES.filter(f => !!allFiles[f]);\n\nreturn [{\n  json: {\n    buildId: prev.buildId,\n    repoOwner: prev.repoOwner,\n    repoName: prev.repoName,\n    branch: prev.branch,\n    defaultBranch: prev.defaultBranch,\n    allFiles,\n    totalFiles: Object.keys(allFiles).length,\n    requiredPresent: present.length,\n    requiredMissing: missing,\n    isComplete: missing.length === 0,\n    analysis: prev.analysis,\n    phase: 'MERGE_COMPLETE'\n  }\n}];"
+      },
+      "id": "wf4-merge-fixes",
+      "name": "WF4 - Merge All Fixes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [4820, 300]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 10: Create Git blobs for all files\n// Prepare the array of files for upload\n// =============================================\nconst prev = $input.first().json;\n\nconst entries = Object.entries(prev.allFiles).map(([path, content]) => ({\n  json: {\n    buildId: prev.buildId,\n    repoOwner: prev.repoOwner,\n    repoName: prev.repoName,\n    branch: prev.branch,\n    defaultBranch: prev.defaultBranch,\n    filePath: path,\n    fileContent: content,\n    totalFiles: prev.totalFiles\n  }\n}));\n\nreturn entries;"
+      },
+      "id": "wf4-prepare-blobs",
+      "name": "WF4 - Prepare File Blobs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [5040, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}/git/blobs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ content: Buffer.from($json.fileContent || '').toString('base64'), encoding: 'base64' }) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "options": {
+          "batching": { "batch": { "batchSize": 5, "batchInterval": 300 } }
+        }
+      },
+      "id": "wf4-gh-create-blobs",
+      "name": "GH - Create Blobs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [5260, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "github-token", "name": "GitHub Token" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 11: Collect blob SHAs and build tree\n// =============================================\nconst blobs = $input.all();\nconst preparedFiles = $('WF4 - Prepare File Blobs').all();\n\nconst treeEntries = [];\nfor (let i = 0; i < blobs.length; i++) {\n  const blobSha = blobs[i].json.sha;\n  const filePath = preparedFiles[i]?.json?.filePath;\n  \n  if (blobSha && filePath) {\n    treeEntries.push({\n      path: filePath,\n      mode: '100644',\n      type: 'blob',\n      sha: blobSha\n    });\n  }\n}\n\n// Get context from first prepared file\nconst ctx = preparedFiles[0]?.json || {};\n\nreturn [{\n  json: {\n    repoOwner: ctx.repoOwner,\n    repoName: ctx.repoName,\n    branch: ctx.branch,\n    defaultBranch: ctx.defaultBranch,\n    buildId: ctx.buildId,\n    treeEntries,\n    treeCount: treeEntries.length\n  }\n}];"
+      },
+      "id": "wf4-collect-blobs",
+      "name": "WF4 - Collect Blob SHAs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [5480, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}/git/refs/heads/{{ $json.branch }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "wf4-gh-get-branch-sha",
+      "name": "GH - Get Branch SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [5700, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "github-token", "name": "GitHub Token" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// Extract the base commit SHA\nconst prev = $('WF4 - Collect Blob SHAs').first().json;\nconst ref = $input.first().json;\n\nconst baseSha = ref.object?.sha;\nif (!baseSha) throw new Error('Could not get branch SHA');\n\nreturn [{\n  json: {\n    ...prev,\n    baseSha\n  }\n}];"
+      },
+      "id": "wf4-extract-sha",
+      "name": "WF4 - Extract Base SHA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [5920, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}/git/trees",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ base_tree: $json.baseSha, tree: $json.treeEntries }) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "wf4-gh-create-tree",
+      "name": "GH - Create Tree",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [6140, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "github-token", "name": "GitHub Token" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// Extract tree SHA and prepare commit\nconst prev = $('WF4 - Extract Base SHA').first().json;\nconst tree = $input.first().json;\n\nreturn [{\n  json: {\n    ...prev,\n    treeSha: tree.sha\n  }\n}];"
+      },
+      "id": "wf4-extract-tree-sha",
+      "name": "WF4 - Extract Tree SHA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [6360, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}/git/commits",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ message: `WF4: Auto-fix ${$json.buildId} — ${$json.treeCount} files fixed`, tree: $json.treeSha, parents: [$json.baseSha] }) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "wf4-gh-create-commit",
+      "name": "GH - Create Commit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [6580, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "github-token", "name": "GitHub Token" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// Extract commit SHA\nconst prev = $('WF4 - Extract Tree SHA').first().json;\nconst commit = $input.first().json;\n\nreturn [{\n  json: {\n    ...prev,\n    commitSha: commit.sha\n  }\n}];"
+      },
+      "id": "wf4-extract-commit-sha",
+      "name": "WF4 - Extract Commit SHA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [6800, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.repoOwner }}/{{ $json.repoName }}/git/refs/heads/{{ $json.branch }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "PATCH",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ sha: $json.commitSha, force: true }) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Accept", "value": "application/vnd.github.v3+json" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "wf4-gh-update-ref",
+      "name": "GH - Update Branch Ref",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [7020, 300],
+      "credentials": {
+        "httpHeaderAuth": { "id": "github-token", "name": "GitHub Token" }
+      }
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 12: Trigger wf4-runner build\n// =============================================\nconst prev = $('WF4 - Extract Commit SHA').first().json;\n\nreturn [{\n  json: {\n    ...prev,\n    phase: 'PUSHED_TO_GITHUB'\n  }\n}];"
+      },
+      "id": "wf4-post-push",
+      "name": "WF4 - Post Push",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [7240, 300]
+    },
+
+    {
+      "parameters": {
+        "url": "={{ $env.WF4_RUNNER_URL || 'http://wf4-runner:8787' }}/v1/build",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ buildId: $json.buildId, repoOwner: $json.repoOwner, repoName: $json.repoName, branch: $json.branch, mode: 'docker-compose' }) }}",
+        "options": { "timeout": 30000 }
+      },
+      "id": "wf4-trigger-build",
+      "name": "WF4 Runner - Start Build",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [7460, 300]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// WF4 STEP 13: Wait and poll build status\n// =============================================\nconst prev = $('WF4 - Post Push').first().json;\nconst runnerUrl = process.env.WF4_RUNNER_URL || 'http://wf4-runner:8787';\n\n// Poll for build completion (max 5 minutes)\nconst maxWait = 300000; // 5 minutes\nconst pollInterval = 15000; // 15 seconds\nlet elapsed = 0;\nlet buildResult = null;\n\nwhile (elapsed < maxWait) {\n  await new Promise(r => setTimeout(r, pollInterval));\n  elapsed += pollInterval;\n  \n  try {\n    const resp = await fetch(`${runnerUrl}/v1/status?buildId=${prev.buildId}`);\n    const data = await resp.json();\n    \n    if (data.status === 'PASS' || data.status === 'FAIL') {\n      buildResult = data;\n      break;\n    }\n  } catch(e) {\n    // Runner not available, continue polling\n  }\n}\n\nif (!buildResult) {\n  buildResult = { status: 'TIMEOUT', errorReason: 'Build timed out after 5 minutes' };\n}\n\nreturn [{\n  json: {\n    ...prev,\n    buildStatus: buildResult.status,\n    frontendUrl: buildResult.frontendUrl,\n    backendUrl: buildResult.backendUrl,\n    errorReason: buildResult.errorReason,\n    buildLogs: buildResult.logTail || '',\n    phase: 'BUILD_COMPLETE'\n  }\n}];"
+      },
+      "id": "wf4-poll-build",
+      "name": "WF4 - Poll Build Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [7680, 300]
+    },
+
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "build-pass",
+              "leftValue": "={{ $json.buildStatus }}",
+              "rightValue": "PASS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "wf4-check-build",
+      "name": "WF4 - Build Passed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [7900, 300]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// BUILD PASSED - Generate success summary\n// =============================================\nconst prev = $input.first().json;\n\nconst summary = {\n  status: 'SUCCESS',\n  buildId: prev.buildId,\n  message: `WF4 Auto-Fix completed successfully for ${prev.buildId}`,\n  totalFilesFixed: prev.treeCount || 0,\n  commitSha: prev.commitSha,\n  branch: prev.branch,\n  frontendUrl: prev.frontendUrl,\n  backendUrl: prev.backendUrl,\n  timestamp: new Date().toISOString(),\n  phases: [\n    'Error Analysis (AI)',\n    'Backend Fix (AI)',\n    'Frontend Fix (AI)',\n    'Shared + Infra Fix (AI)',\n    'Merge & Validate',\n    'Push to GitHub',\n    'Docker Build & Deploy',\n    'Health Check PASSED'\n  ]\n};\n\nreturn [{ json: summary }];"
+      },
+      "id": "wf4-success",
+      "name": "WF4 - Success Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [8120, 200]
+    },
+
+    {
+      "parameters": {
+        "jsCode": "// =============================================\n// BUILD FAILED - Generate failure report\n// Could optionally trigger a retry loop here\n// =============================================\nconst prev = $input.first().json;\n\nconst report = {\n  status: 'FAILED',\n  buildId: prev.buildId,\n  message: `WF4 Auto-Fix build failed for ${prev.buildId}`,\n  errorReason: prev.errorReason,\n  buildLogs: prev.buildLogs,\n  commitSha: prev.commitSha,\n  branch: prev.branch,\n  totalFilesFixed: prev.treeCount || 0,\n  timestamp: new Date().toISOString(),\n  suggestion: 'Check build logs and re-run WF4 with error context'\n};\n\nreturn [{ json: report }];"
+      },
+      "id": "wf4-failure",
+      "name": "WF4 - Failure Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [8120, 400]
+    },
+
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "wf4-respond-success",
+      "name": "WF4 - Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [8340, 200]
+    },
+
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "wf4-respond-failure",
+      "name": "WF4 - Respond Failure",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [8340, 400]
+    }
+  ],
+
+  "connections": {
+    "WF4 Webhook": {
+      "main": [
+        [{ "node": "WF4 - Normalize Input", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Normalize Input": {
+      "main": [
+        [{ "node": "GH - Get Repo Info", "type": "main", "index": 0 }]
+      ]
+    },
+    "GH - Get Repo Info": {
+      "main": [
+        [{ "node": "WF4 - Extract Default Branch", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Extract Default Branch": {
+      "main": [
+        [{ "node": "GH - Get Repo Tree", "type": "main", "index": 0 }]
+      ]
+    },
+    "GH - Get Repo Tree": {
+      "main": [
+        [{ "node": "WF4 - Filter Source Files", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Filter Source Files": {
+      "main": [
+        [{ "node": "GH - Read Source Files", "type": "main", "index": 0 }]
+      ]
+    },
+    "GH - Read Source Files": {
+      "main": [
+        [{ "node": "WF4 - Decode All Files", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Decode All Files": {
+      "main": [
+        [{ "node": "WF4 - Extract Artifacts", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Extract Artifacts": {
+      "main": [
+        [{ "node": "WF4 - Build Analysis Prompt", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Build Analysis Prompt": {
+      "main": [
+        [{ "node": "OpenAI - Error Analysis", "type": "main", "index": 0 }]
+      ]
+    },
+    "OpenAI - Error Analysis": {
+      "main": [
+        [{ "node": "WF4 - Parse Analysis", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Parse Analysis": {
+      "main": [
+        [{ "node": "WF4 - Build Backend Fix Prompt", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Build Backend Fix Prompt": {
+      "main": [
+        [{ "node": "OpenAI - Fix Backend", "type": "main", "index": 0 }]
+      ]
+    },
+    "OpenAI - Fix Backend": {
+      "main": [
+        [{ "node": "WF4 - Parse Backend Fixes", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Parse Backend Fixes": {
+      "main": [
+        [{ "node": "WF4 - Build Frontend Fix Prompt", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Build Frontend Fix Prompt": {
+      "main": [
+        [{ "node": "OpenAI - Fix Frontend", "type": "main", "index": 0 }]
+      ]
+    },
+    "OpenAI - Fix Frontend": {
+      "main": [
+        [{ "node": "WF4 - Parse Frontend Fixes", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Parse Frontend Fixes": {
+      "main": [
+        [{ "node": "WF4 - Build Infra Fix Prompt", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Build Infra Fix Prompt": {
+      "main": [
+        [{ "node": "OpenAI - Fix Shared & Infra", "type": "main", "index": 0 }]
+      ]
+    },
+    "OpenAI - Fix Shared & Infra": {
+      "main": [
+        [{ "node": "WF4 - Parse Infra Fixes", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Parse Infra Fixes": {
+      "main": [
+        [{ "node": "WF4 - Merge All Fixes", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Merge All Fixes": {
+      "main": [
+        [{ "node": "WF4 - Prepare File Blobs", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Prepare File Blobs": {
+      "main": [
+        [{ "node": "GH - Create Blobs", "type": "main", "index": 0 }]
+      ]
+    },
+    "GH - Create Blobs": {
+      "main": [
+        [{ "node": "WF4 - Collect Blob SHAs", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Collect Blob SHAs": {
+      "main": [
+        [{ "node": "GH - Get Branch SHA", "type": "main", "index": 0 }]
+      ]
+    },
+    "GH - Get Branch SHA": {
+      "main": [
+        [{ "node": "WF4 - Extract Base SHA", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Extract Base SHA": {
+      "main": [
+        [{ "node": "GH - Create Tree", "type": "main", "index": 0 }]
+      ]
+    },
+    "GH - Create Tree": {
+      "main": [
+        [{ "node": "WF4 - Extract Tree SHA", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Extract Tree SHA": {
+      "main": [
+        [{ "node": "GH - Create Commit", "type": "main", "index": 0 }]
+      ]
+    },
+    "GH - Create Commit": {
+      "main": [
+        [{ "node": "WF4 - Extract Commit SHA", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Extract Commit SHA": {
+      "main": [
+        [{ "node": "GH - Update Branch Ref", "type": "main", "index": 0 }]
+      ]
+    },
+    "GH - Update Branch Ref": {
+      "main": [
+        [{ "node": "WF4 - Post Push", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Post Push": {
+      "main": [
+        [{ "node": "WF4 Runner - Start Build", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 Runner - Start Build": {
+      "main": [
+        [{ "node": "WF4 - Poll Build Status", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Poll Build Status": {
+      "main": [
+        [{ "node": "WF4 - Build Passed?", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Build Passed?": {
+      "main": [
+        [{ "node": "WF4 - Success Summary", "type": "main", "index": 0 }],
+        [{ "node": "WF4 - Failure Report", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Success Summary": {
+      "main": [
+        [{ "node": "WF4 - Respond Success", "type": "main", "index": 0 }]
+      ]
+    },
+    "WF4 - Failure Report": {
+      "main": [
+        [{ "node": "WF4 - Respond Failure", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+
+  "settings": {
+    "executionOrder": "v1"
+  },
+
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+
+  "tags": [
+    { "name": "AI-Fabriek" },
+    { "name": "WF4" },
+    { "name": "auto-fix" }
+  ]
+}
