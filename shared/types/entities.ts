@@ -1,21 +1,16 @@
-export type User = {
+export interface User {
   id: string;
-  username: string;
   email: string;
-  passwordHash: string;
-  role: string;
+  name: string;
+  role: 'user' | 'admin';
   createdAt: string;
   updatedAt: string;
-};
+}
 
-export type Task = {
+export interface Insight {
   id: string;
   title: string;
-  description: string;
-  status: string;
-  priority: string;
-  dueDate: string;
-  userId: string;
+  content: string;
   createdAt: string;
   updatedAt: string;
-};
+}

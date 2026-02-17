@@ -1,31 +1,25 @@
 import express from 'express';
 import cors from 'cors';
-import healthRouter from './routes/health';
-import authRouter from './routes/auth';
-import userRouter from './routes/user';
-import taskRouter from './routes/task';
+import userRoutes from './routes/userRoutes';
+import insightRoutes from './routes/insightRoutes';
+import authRoutes from './routes/authRoutes';
+import healthRoutes from './routes/healthRoutes';
+import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// ALL routes under /api prefix
-app.use('/api/health', healthRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/users', userRouter);
-app.use('/api/tasks', taskRouter);
-// Add all other entity routes with /api prefix
+app.use('/api/users', userRoutes);
+app.use('/api/insights', insightRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/health', healthRoutes);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not Found', path: req.path });
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Not Found' });
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: 'Internal Server Error', message: err.message });
-});
+app.use(errorHandler);
 
 export default app;

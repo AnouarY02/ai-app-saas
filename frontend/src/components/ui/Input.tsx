@@ -1,36 +1,9 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
+import React from 'react';
 
-const inputVariants = cva("block w-full rounded-md border focus:outline-none focus:ring-2 focus:ring-offset-2", {
-  variants: {
-    size: {
-      sm: "px-2 py-1 text-sm",
-      md: "px-3 py-2",
-      lg: "px-4 py-3 text-lg"
-    },
-    error: {
-      true: "border-error-600 focus:ring-error-600",
-      false: "border-gray-300 focus:ring-primary-600"
-    }
-  },
-  defaultVariants: {
-    size: "md",
-    error: false
-  }
-});
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement>, VariantProps<typeof inputVariants> {}
+const Input: React.FC<InputProps> = (props) => {
+  return <input className="border rounded-md p-2 w-full" {...props} />;
+};
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, size, error, ...props }, ref) => {
-    return (
-      <input
-        ref={ref}
-        className={cn(inputVariants({ size, error }), className)}
-        {...props}
-      />
-    );
-  }
-);
-Input.displayName = "Input";
+export default Input;

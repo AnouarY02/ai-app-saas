@@ -1,102 +1,80 @@
-const API_URL = import.meta.env?.VITE_API_URL || 'http://localhost:4000';
+import axios from 'axios';
 
-function getAuthHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    ...(localStorage.getItem('token') ? { Authorization: `Bearer ${localStorage.getItem('token')}` } : {})
-  };
-}
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000',
+});
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-}
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  priority: string;
-  dueDate: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export const getUsers = async () => {
+  const response = await apiClient.get('/api/users');
+  return response.data;
+};
 
-export async function login(email: string, password: string) {
-  const response = await fetch(`${API_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
-  return response.json();
-}
+export const getUser = async (id: string) => {
+  const response = await apiClient.get(`/api/users/${id}`);
+  return response.data;
+};
 
-export async function register(email: string, password: string, username: string) {
-  const response = await fetch(`${API_URL}/api/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, username })
-  });
-  return response.json();
-}
+export const createUser = async (data: any) => {
+  const response = await apiClient.post('/api/users', data);
+  return response.data;
+};
 
-export async function logout() {
-  const response = await fetch(`${API_URL}/api/auth/logout`, {
-    method: 'POST',
-    headers: getAuthHeaders()
-  });
-  return response.json();
-}
+export const updateUser = async (id: string, data: any) => {
+  const response = await apiClient.put(`/api/users/${id}`, data);
+  return response.data;
+};
 
-export async function getCurrentUser() {
-  const response = await fetch(`${API_URL}/api/users/me`, {
-    headers: getAuthHeaders()
-  });
-  return response.json();
-}
+export const deleteUser = async (id: string) => {
+  const response = await apiClient.delete(`/api/users/${id}`);
+  return response.data;
+};
 
-export async function getTasks() {
-  const response = await fetch(`${API_URL}/api/tasks`, {
-    headers: getAuthHeaders()
-  });
-  return response.json();
-}
+export const getInsights = async () => {
+  const response = await apiClient.get('/api/insights');
+  return response.data;
+};
 
-export async function getTask(id: string) {
-  const response = await fetch(`${API_URL}/api/tasks/${id}`, {
-    headers: getAuthHeaders()
-  });
-  return response.json();
-}
+export const getInsight = async (id: string) => {
+  const response = await apiClient.get(`/api/insights/${id}`);
+  return response.data;
+};
 
-export async function createTask(data: Partial<Task>) {
-  const response = await fetch(`${API_URL}/api/tasks`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(data)
-  });
-  return response.json();
-}
+export const createInsight = async (data: any) => {
+  const response = await apiClient.post('/api/insights', data);
+  return response.data;
+};
 
-export async function updateTask(id: string, data: Partial<Task>) {
-  const response = await fetch(`${API_URL}/api/tasks/${id}`, {
-    method: 'PUT',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(data)
-  });
-  return response.json();
-}
+export const updateInsight = async (id: string, data: any) => {
+  const response = await apiClient.put(`/api/insights/${id}`, data);
+  return response.data;
+};
 
-export async function deleteTask(id: string) {
-  const response = await fetch(`${API_URL}/api/tasks/${id}`, {
-    method: 'DELETE',
-    headers: getAuthHeaders()
-  });
-  return response.json();
-}
+export const deleteInsight = async (id: string) => {
+  const response = await apiClient.delete(`/api/insights/${id}`);
+  return response.data;
+};
+
+export const login = async (data: any) => {
+  const response = await apiClient.post('/api/auth/login', data);
+  return response.data;
+};
+
+export const register = async (data: any) => {
+  const response = await apiClient.post('/api/auth/register', data);
+  return response.data;
+};
+
+export const getCurrentUser = async () => {
+  const response = await apiClient.get('/api/auth/me');
+  return response.data;
+};
+
+export default apiClient;

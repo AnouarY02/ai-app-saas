@@ -1,55 +1,32 @@
 import { z } from 'zod';
 
-export const loginRequestSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8)
+export const createUserSchema = z.object({
+  email: z.string().email('Invalid email'),
+  password: z.string().min(8, 'Min 8 characters'),
+  name: z.string().min(1, 'Name required'),
+  role: z.enum(['user', 'admin']).default('user'),
 });
 
-export const registerRequestSchema = z.object({
-  username: z.string().min(3),
-  email: z.string().email(),
-  password: z.string().min(8)
-});
-
-export const refreshRequestSchema = z.object({
-  token: z.string()
-});
-
-export const logoutRequestSchema = z.object({
-  token: z.string()
-});
-
-export const listRequestSchema = z.object({
-  page: z.number().min(1),
-  limit: z.number().min(1)
-});
-
-export const getRequestSchema = z.object({
-  id: z.string().uuid()
-});
-
-export const updateUserRequestSchema = z.object({
-  username: z.string().optional(),
+export const updateUserSchema = z.object({
   email: z.string().email().optional(),
-  password: z.string().min(8).optional()
+  name: z.string().min(1).optional(),
+  role: z.enum(['user', 'admin']).optional(),
 });
 
-export const deleteRequestSchema = z.object({
-  id: z.string().uuid()
+export const createInsightSchema = z.object({
+  title: z.string().min(1, 'Title required'),
+  content: z.string().min(1, 'Content required'),
 });
 
-export const createTaskRequestSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().optional(),
-  status: z.string(),
-  priority: z.string(),
-  dueDate: z.string()
+export const updateInsightSchema = createInsightSchema.partial();
+
+export const loginSchema = z.object({
+  email: z.string().email('Invalid email'),
+  password: z.string().min(1, 'Password required'),
 });
 
-export const updateTaskRequestSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  status: z.string().optional(),
-  priority: z.string().optional(),
-  dueDate: z.string().optional()
+export const registerSchema = z.object({
+  email: z.string().email('Invalid email'),
+  password: z.string().min(8, 'Min 8 characters'),
+  name: z.string().min(1, 'Name required'),
 });

@@ -1,23 +1,19 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 
 interface AlertProps {
-  variant: 'success' | 'error' | 'warning' | 'info';
   message: string;
+  type: 'success' | 'error' | 'info' | 'warning';
 }
 
-const Alert = forwardRef<HTMLDivElement, AlertProps>(({ variant, message }, ref) => {
-  const variantClasses = {
-    success: 'bg-success-600',
-    error: 'bg-error-600',
-    warning: 'bg-yellow-600',
-    info: 'bg-blue-600',
+const Alert: React.FC<AlertProps> = ({ message, type }) => {
+  const typeClasses = {
+    success: 'bg-green-100 text-green-700',
+    error: 'bg-red-100 text-red-700',
+    info: 'bg-blue-100 text-blue-700',
+    warning: 'bg-yellow-100 text-yellow-700',
   };
 
-  return (
-    <div ref={ref} className={`p-4 text-white ${variantClasses[variant]}`}>
-      {message}
-    </div>
-  );
-});
+  return <div className={`p-4 rounded-md ${typeClasses[type]}`}>{message}</div>;
+};
 
 export default Alert;

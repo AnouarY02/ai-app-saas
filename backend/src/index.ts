@@ -1,9 +1,8 @@
 import app from './app';
-import './seed'; // Initialize seed data
+import './seed';
 
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/api/health`);
+  console.log(`Server is running on port ${PORT}`);
 });

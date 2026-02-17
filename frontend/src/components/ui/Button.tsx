@@ -1,47 +1,21 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
-import { Spinner } from "./Spinner";
+import React from 'react';
+import clsx from 'clsx';
 
-const buttonVariants = cva("inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2", {
-  variants: {
-    variant: {
-      primary: "bg-primary-600 text-white hover:bg-primary-700",
-      secondary: "bg-secondary-600 text-white hover:bg-secondary-700",
-      outline: "border border-gray-300 text-gray-700 hover:bg-gray-100",
-      ghost: "text-gray-700 hover:bg-gray-100"
-    },
-    size: {
-      sm: "px-2 py-1 text-sm",
-      md: "px-4 py-2",
-      lg: "px-6 py-3 text-lg"
-    }
-  },
-  defaultVariants: {
-    variant: "primary",
-    size: "md"
-  }
-});
-
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
-  isLoading?: boolean;
-  icon?: React.ReactNode;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary';
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, isLoading, icon, children, ...props }, ref) => {
-    return (
-      <button
-        ref={ref}
-        className={cn(buttonVariants({ variant, size }), className)}
-        disabled={isLoading}
-        {...props}
-      >
-        {isLoading && <Spinner className="mr-2" />}
-        {icon && !isLoading && <span className="mr-2">{icon}</span>}
-        {children}
-      </button>
-    );
-  }
-);
-Button.displayName = "Button";
+const Button: React.FC<ButtonProps> = ({ variant = 'primary', className, ...props }) => {
+  return (
+    <button
+      className={clsx(
+        'px-4 py-2 font-medium rounded-md',
+        variant === 'primary' ? 'bg-brand-primary-500 text-white' : 'bg-brand-secondary-500 text-white',
+        className
+      )}
+      {...props}
+    />
+  );
+};
+
+export default Button;

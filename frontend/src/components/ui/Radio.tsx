@@ -1,30 +1,9 @@
 import React from 'react';
-import { cva } from 'class-variance-authority';
 
-type RadioProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  label: string;
-};
+interface RadioProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-const radioStyles = cva('form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out', {
-  variants: {
-    size: {
-      sm: 'h-3 w-3',
-      md: 'h-4 w-4',
-      lg: 'h-5 w-5'
-    }
-  },
-  defaultVariants: {
-    size: 'md'
-  }
-});
-
-const Radio: React.FC<RadioProps> = ({ label, className, ...props }) => {
-  return (
-    <label className="inline-flex items-center">
-      <input type="radio" className={radioStyles({ className })} {...props} />
-      <span className="ml-2">{label}</span>
-    </label>
-  );
+const Radio: React.FC<RadioProps> = (props) => {
+  return <input type="radio" className="form-radio" {...props} />;
 };
 
 export default Radio;
