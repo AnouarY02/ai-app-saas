@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   adminGetFlags,
   adminUpdateFlag,
@@ -12,6 +12,11 @@ const DEFAULT_FLAGS = [
   { id: "flag-risicosignalering", key: "ai_risicosignalering", label: "Risicosignalering", description: "AI-analyse van risicosignalen bij clienten", enabled: true, roles: ["admin", "medewerker"], updatedAt: "" },
   { id: "flag-signaleringplan", key: "ai_signaleringplan", label: "Signaleringsplan", description: "AI-ondersteuning bij het maken van signalerings- en crisisplannen", enabled: true, roles: ["admin", "medewerker"], updatedAt: "" },
 ];
+
+/** Koppelt flag.key (ai_rapportage) aan format.moduleKey (rapportage) */
+function getModuleKey(flag: { key: string }): string {
+  return flag.key.replace(/^ai_/, "");
+}
 
 const AdminOutputPage: React.FC = () => {
   const [flags, setFlags] = useState<any[]>([]);
@@ -51,6 +56,15 @@ const AdminOutputPage: React.FC = () => {
       })
       .finally(() => setFormatsLoading(false));
   }, []);
+
+  /** Per module: flag + bijbehorend format (op moduleKey). Zoals op de oplossing-pagina: format én AI-module in één scherm. */
+  const modules = useMemo(() => {
+    return flags.map((flag) => {
+      const moduleKey = getModuleKey(flag);
+      const format = formats.find((f) => (f.moduleKey || f.key) === moduleKey);
+      return { flag, format, moduleKey };
+    });
+  }, [flags, formats]);
 
   const toggleFlag = async (flag: any) => {
     if (flagsFallback) return;
@@ -93,110 +107,47 @@ const AdminOutputPage: React.FC = () => {
     setEditTemplate("");
   };
 
+  const loading = flagsLoading || formatsLoading;
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Output beheren</h1>
         <p className="text-gray-500 text-sm mt-1">
-          Organisatieformats en AI-modules in één scherm. Stel hier in hoe de output eruitziet en welke AI-functies actief zijn.
+          Formaten én AI-modules in één scherm. Stel per module de documentstructuur in (organisatieformat) en bepaal of de AI-functie actief is. Alles wat de output bepaalt, op één plek.
         </p>
       </div>
 
-      {/* Organisatieformats */}
-      <section className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-          <h2 className="font-semibold text-gray-900">Organisatieformats</h2>
-          <p className="text-gray-500 text-xs mt-0.5">Bepaal het sjabloon voor rapportages en plannen (placeholders: {"{datum}"}, {"{medewerker}"}, {"{inhoud}"})</p>
+      {flagsError && (
+        <div className={`p-3 rounded-lg text-sm ${flagsFallback ? "bg-amber-50 border border-amber-200 text-amber-800" : "bg-red-50 border border-red-200 text-red-700"}`}>
+          {flagsError}
         </div>
-        <div className="p-5">
-          {formatsError && !formatsLoading && (
-            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">{formatsError}</div>
-          )}
-          {formatsLoading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600" />
-            </div>
-          ) : formats.length === 0 ? (
-            <p className="text-gray-500 text-sm">Geen formats geconfigureerd. Start de backend om standaardformats te laden.</p>
-          ) : (
-            <div className="space-y-4">
-              {formats.map((format) => (
-                <div key={format.id} className="border border-gray-100 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-gray-900">{format.name}</span>
-                    {editingFormatId !== format.id ? (
-                      <button
-                        type="button"
-                        onClick={() => startEditFormat(format)}
-                        className="text-sm text-purple-600 hover:text-purple-700"
-                      >
-                        Bewerken
-                      </button>
-                    ) : (
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={saveFormat}
-                          disabled={savingFormat === format.id}
-                          className="text-sm bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700 disabled:opacity-50"
-                        >
-                          {savingFormat === format.id ? "Opslaan…" : "Opslaan"}
-                        </button>
-                        <button type="button" onClick={cancelEditFormat} className="text-sm text-gray-600 hover:text-gray-800">
-                          Annuleren
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  {editingFormatId === format.id ? (
-                    <textarea
-                      value={editTemplate}
-                      onChange={(e) => setEditTemplate(e.target.value)}
-                      rows={5}
-                      className="w-full border border-gray-200 rounded-lg p-2 text-sm font-mono"
-                      placeholder="Datum: {datum}&#10;Medewerker: {medewerker}&#10;&#10;{inhoud}"
-                    />
-                  ) : (
-                    <pre className="text-gray-600 text-xs whitespace-pre-wrap bg-gray-50 p-3 rounded">{format.template || "—"}</pre>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      )}
+      {formatsError && !loading && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">{formatsError}</div>
+      )}
 
-      {/* AI-modules */}
-      <section className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-          <h2 className="font-semibold text-gray-900">AI-modules</h2>
-          <p className="text-gray-500 text-xs mt-0.5">Schakel AI-functies in of uit voor medewerkers</p>
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600" />
         </div>
-        <div className="p-5">
-          {flagsError && (
-            <div className={`mb-4 p-3 rounded-lg text-sm ${flagsFallback ? "bg-amber-50 border border-amber-200 text-amber-800" : "bg-red-50 border border-red-200 text-red-700"}`}>
-              {flagsError}
-            </div>
-          )}
-          {flagsLoading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600" />
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-100">
-              {flags.map((flag) => (
-                <div key={flag.id} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-gray-900 text-sm">{flag.label}</p>
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${flag.enabled ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
-                      >
-                        {flag.enabled ? "Actief" : "Inactief"}
-                      </span>
-                    </div>
-                    <p className="text-gray-500 text-xs mt-0.5">{flag.description}</p>
-                  </div>
+      ) : (
+        <div className="space-y-6">
+          {modules.map(({ flag, format, moduleKey }) => (
+            <section
+              key={flag.id}
+              className="bg-white border border-gray-200 rounded-xl overflow-hidden"
+            >
+              {/* Per module: header met AI-toggle + organisatieformat in één paneel */}
+              <div className="px-5 py-4 border-b border-gray-100 bg-gray-50 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="font-semibold text-gray-900">{flag.label}</h2>
+                  <p className="text-gray-500 text-xs mt-0.5">{flag.description}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${flag.enabled ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                    {flag.enabled ? "AI actief" : "AI uit"}
+                  </span>
                   <button
                     type="button"
                     onClick={() => toggleFlag(flag)}
@@ -205,19 +156,69 @@ const AdminOutputPage: React.FC = () => {
                     role="switch"
                     aria-checked={flag.enabled}
                   >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${flag.enabled ? "translate-x-6" : "translate-x-1"}`}
-                    />
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${flag.enabled ? "translate-x-6" : "translate-x-1"}`} />
                   </button>
                 </div>
-              ))}
-            </div>
-          )}
-          <p className="mt-4 text-xs text-gray-400 text-center">
-            Wijzigingen worden direct opgeslagen en zijn onmiddellijk van kracht
-          </p>
+              </div>
+
+              {/* Organisatieformat voor deze module */}
+              <div className="p-5">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Organisatieformat</h3>
+                {format ? (
+                  <div className="border border-gray-100 rounded-lg p-4 bg-gray-50/50">
+                    {editingFormatId !== format.id ? (
+                      <>
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-xs text-gray-500">Sjabloon voor {flag.label} (placeholders: {"{datum}"}, {"{medewerker}"}, {"{inhoud}"})</span>
+                          <button
+                            type="button"
+                            onClick={() => startEditFormat(format)}
+                            className="text-sm text-purple-600 hover:text-purple-700"
+                          >
+                            Bewerken
+                          </button>
+                        </div>
+                        <pre className="text-gray-600 text-xs whitespace-pre-wrap bg-white p-3 rounded border border-gray-100">{format.template || "—"}</pre>
+                      </>
+                    ) : (
+                      <>
+                        <textarea
+                          value={editTemplate}
+                          onChange={(e) => setEditTemplate(e.target.value)}
+                          rows={5}
+                          className="w-full border border-gray-200 rounded-lg p-2 text-sm font-mono mb-3"
+                          placeholder="Datum: {datum}\nMedewerker: {medewerker}\n\n{inhoud}"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={saveFormat}
+                            disabled={savingFormat === format.id}
+                            className="text-sm bg-purple-600 text-white px-3 py-1.5 rounded hover:bg-purple-700 disabled:opacity-50"
+                          >
+                            {savingFormat === format.id ? "Opslaan…" : "Opslaan"}
+                          </button>
+                          <button type="button" onClick={cancelEditFormat} className="text-sm text-gray-600 hover:text-gray-800">
+                            Annuleren
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm">Geen format gekoppeld aan deze module. Start de backend om standaardformats te laden.</p>
+                )}
+              </div>
+            </section>
+          ))}
         </div>
-      </section>
+      )}
+
+      {!loading && modules.length > 0 && (
+        <p className="text-xs text-gray-400 text-center">
+          Wijzigingen worden direct opgeslagen en zijn onmiddellijk van kracht.
+        </p>
+      )}
     </div>
   );
 };

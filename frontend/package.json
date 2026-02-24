@@ -1,5 +1,5 @@
 {
-  "name": "ai-app-saas",
+  "name": "zorg-ai-assistent",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",

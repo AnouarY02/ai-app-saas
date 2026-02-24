@@ -1,26 +1,39 @@
-import { User } from '../types/userTypes';
-import { ListUsersRequest, UpdateUserRequest, PartialUpdateUserRequest } from '../types/userTypes';
+import { userStore, User, CreateUserInput, UpdateUserInput } from "../models/UserModel";
+import { v4 as uuidv4 } from "uuid";
 
-export const fetchUsers = async (data: ListUsersRequest): Promise<User[]> => {
-  // Fetch users from database (mocked)
-  return [];
-};
+export class UserService {
+  async findAll(): Promise<User[]> {
+    return Array.from(userStore.values());
+  }
 
-export const fetchUserById = async (id: string): Promise<User> => {
-  // Fetch user by ID from database (mocked)
-  return { id, username: 'test', email: 'test@example.com', passwordHash: '', role: 'User', createdAt: new Date(), updatedAt: new Date() };
-};
+  async findById(id: string): Promise<User | null> {
+    return userStore.get(id) || null;
+  }
 
-export const modifyUser = async (data: UpdateUserRequest): Promise<User> => {
-  // Update user in database (mocked)
-  return { id: data.id, username: data.username, email: data.email, passwordHash: '', role: 'User', createdAt: new Date(), updatedAt: new Date() };
-};
+  async findByEmail(email: string): Promise<User | null> {
+    for (const user of userStore.values()) {
+      if (user.email === email) return user;
+    }
+    return null;
+  }
 
-export const partiallyModifyUser = async (data: PartialUpdateUserRequest): Promise<User> => {
-  // Partially update user in database (mocked)
-  return { id: data.id, username: data.username || 'test', email: data.email || 'test@example.com', passwordHash: '', role: 'User', createdAt: new Date(), updatedAt: new Date() };
-};
+  async create(input: CreateUserInput): Promise<User> {
+    const id = uuidv4();
+    const now = new Date().toISOString();
+    const user: User = { id, ...input, role: input.role || "medewerker", active: input.active ?? true, createdAt: now, updatedAt: now };
+    userStore.set(id, user);
+    return user;
+  }
 
-export const removeUser = async (id: string): Promise<void> => {
-  // Remove user from database (mocked)
-};
+  async update(id: string, input: UpdateUserInput): Promise<User | null> {
+    const user = userStore.get(id);
+    if (!user) return null;
+    const updatedUser = { ...user, ...input, updatedAt: new Date().toISOString() };
+    userStore.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async delete(id: string): Promise<boolean> {
+    return userStore.delete(id);
+  }
+}
