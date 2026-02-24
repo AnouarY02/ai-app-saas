@@ -1,7 +1,27 @@
 import React from 'react';
+import { cva } from 'class-variance-authority';
 
-const Spinner: React.FC = () => {
-  return <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>;
-};
+const spinnerVariants = cva('animate-spin', {
+  variants: {
+    size: {
+      small: 'h-4 w-4',
+      medium: 'h-6 w-6',
+      large: 'h-8 w-8',
+    },
+  },
+  defaultVariants: {
+    size: 'medium',
+  },
+});
+
+export interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
+  size?: 'small' | 'medium' | 'large';
+}
+
+const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(({ size, className, ...props }, ref) => {
+  return <div ref={ref} className={`${spinnerVariants({ size })} ${className}`} {...props} />;
+});
+
+Spinner.displayName = 'Spinner';
 
 export default Spinner;

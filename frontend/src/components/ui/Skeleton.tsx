@@ -1,20 +1,26 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cva } from 'class-variance-authority';
 
-export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {}
+const skeletonVariants = cva('bg-gray-300 animate-pulse', {
+  variants: {
+    shape: {
+      circle: 'rounded-full',
+      rectangle: 'rounded-md',
+    },
+  },
+  defaultVariants: {
+    shape: 'rectangle',
+  },
+});
 
-export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "bg-gray-200 animate-pulse rounded-md",
-          className
-        )}
-        {...props}
-      />
-    );
-  }
-);
-Skeleton.displayName = "Skeleton";
+export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
+  shape?: 'circle' | 'rectangle';
+}
+
+const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(({ shape, className, ...props }, ref) => {
+  return <div ref={ref} className={`${skeletonVariants({ shape })} ${className}`} {...props} />;
+});
+
+Skeleton.displayName = 'Skeleton';
+
+export default Skeleton;

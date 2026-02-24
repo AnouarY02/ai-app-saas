@@ -1,11 +1,17 @@
 import React from 'react';
+import { cva } from 'class-variance-authority';
 
-interface CardProps {
-  children: React.ReactNode;
-}
+const cardVariants = cva('p-4 bg-white shadow-md rounded-md', {
+  variants: {},
+  defaultVariants: {},
+});
 
-const Card: React.FC<CardProps> = ({ children }) => {
-  return <div className="bg-white shadow-md rounded-lg p-4">{children}</div>;
-};
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(({ className, ...props }, ref) => {
+  return <div ref={ref} className={`${cardVariants()} ${className}`} {...props} />;
+});
+
+Card.displayName = 'Card';
 
 export default Card;

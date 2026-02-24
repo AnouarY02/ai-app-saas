@@ -1,5 +1,5 @@
-import { userStore, User, CreateUserInput, UpdateUserInput } from '../models/UserModel';
-import { v4 as uuidv4 } from 'uuid';
+import { userStore, User, CreateUserInput, UpdateUserInput } from "../models/UserModel";
+import { v4 as uuidv4 } from "uuid";
 
 export class UserService {
   async findAll(): Promise<User[]> {
@@ -20,7 +20,7 @@ export class UserService {
   async create(input: CreateUserInput): Promise<User> {
     const id = uuidv4();
     const now = new Date().toISOString();
-    const user: User = { id, ...input, createdAt: now, updatedAt: now };
+    const user: User = { id, ...input, role: input.role || "medewerker", active: input.active ?? true, createdAt: now, updatedAt: now };
     userStore.set(id, user);
     return user;
   }

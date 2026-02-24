@@ -1,21 +1,27 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cva } from 'class-variance-authority';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary';
+const buttonVariants = cva('px-4 py-2 font-semibold rounded', {
+  variants: {
+    variant: {
+      primary: 'bg-primary-600 text-white',
+      secondary: 'bg-gray-600 text-white',
+      outline: 'border border-primary-600 text-primary-600',
+    },
+  },
+  defaultVariants: {
+    variant: 'primary',
+  },
+});
+
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline';
 }
 
-const Button: React.FC<ButtonProps> = ({ variant = 'primary', className, ...props }) => {
-  return (
-    <button
-      className={clsx(
-        'px-4 py-2 font-medium rounded-md',
-        variant === 'primary' ? 'bg-brand-primary-500 text-white' : 'bg-brand-secondary-500 text-white',
-        className
-      )}
-      {...props}
-    />
-  );
-};
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ variant, className, ...props }, ref) => {
+  return <button ref={ref} className={`${buttonVariants({ variant })} ${className}`} {...props} />;
+});
+
+Button.displayName = 'Button';
 
 export default Button;
