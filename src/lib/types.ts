@@ -181,6 +181,7 @@ export interface Subscription {
 
 export type AnalyticsEvent =
   | 'signup_completed'
+  | 'onboarding_started'
   | 'onboarding_completed'
   | 'daily_card_viewed'
   | 'primary_action_completed'
@@ -191,6 +192,10 @@ export type AnalyticsEvent =
   | 'subscription_started'
   | 'subscription_canceled'
   | 'cognitive_switch_used'
+  | 'demo_card_generated'
+  | 'referral_shared'
+  | 'referral_signup'
+  | 'locale_changed'
 
 export interface AnalyticsPayload {
   event: AnalyticsEvent

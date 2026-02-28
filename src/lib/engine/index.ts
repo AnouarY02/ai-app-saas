@@ -25,6 +25,7 @@ interface GenerateCardOptions {
   recentLogs: DailyLog[]
   recentActions: ActionRecord[]
   useLLM?: boolean // premium feature
+  locale?: string
 }
 
 /**
@@ -34,7 +35,7 @@ interface GenerateCardOptions {
 export async function generateDailyCard(
   options: GenerateCardOptions,
 ): Promise<DailyCardResponse> {
-  const { profile, recentLogs, recentActions, useLLM = false } = options
+  const { profile, recentLogs, recentActions, useLLM = false, locale } = options
 
   // 1. Compute derived metrics
   const metrics = computeDerivedMetrics(profile, recentLogs)
@@ -63,6 +64,7 @@ export async function generateDailyCard(
       rulesOutput: { primary, secondary },
       tone,
       completionRate,
+      locale,
     })
 
     if (llmResult) {

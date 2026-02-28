@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit'
+import { detectBot } from '@/lib/security'
 import { z } from 'zod'
 import Stripe from 'stripe'
 
@@ -12,8 +13,13 @@ const checkoutSchema = z.object({
   plan: z.enum(['monthly', 'yearly']),
 })
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Bot protection on checkout endpoint
+    if (detectBot(request)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     const supabase = createServerSupabase()
     const { data: { user } } = await supabase.auth.getUser()
 

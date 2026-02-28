@@ -252,7 +252,149 @@ WHERE date > CURRENT_DATE - INTERVAL '7 days';
 
 ---
 
-## 8. Rollback Procedure
+## 8. Retention & Growth Queries
+
+### D1 / D7 retention
+
+```sql
+-- D1 retention (% of users who return 1 day after signup)
+WITH signups AS (
+  SELECT DISTINCT user_id, DATE(created_at) as signup_date
+  FROM analytics_events WHERE event = 'signup_completed'
+),
+d1 AS (
+  SELECT DISTINCT user_id, DATE(created_at) as activity_date
+  FROM analytics_events WHERE event = 'daily_card_viewed'
+)
+SELECT
+  s.signup_date,
+  COUNT(DISTINCT s.user_id) as signups,
+  COUNT(DISTINCT d.user_id) as returned_d1,
+  ROUND(COUNT(DISTINCT d.user_id)::numeric / NULLIF(COUNT(DISTINCT s.user_id), 0) * 100, 1) as d1_retention_pct
+FROM signups s
+LEFT JOIN d1 d ON s.user_id = d.user_id AND d.activity_date = s.signup_date + 1
+GROUP BY s.signup_date
+ORDER BY s.signup_date DESC
+LIMIT 30;
+
+-- D7 retention (% of users active 7 days after signup)
+WITH signups AS (
+  SELECT DISTINCT user_id, DATE(created_at) as signup_date
+  FROM analytics_events WHERE event = 'signup_completed'
+),
+d7 AS (
+  SELECT DISTINCT user_id, DATE(created_at) as activity_date
+  FROM analytics_events WHERE event = 'daily_card_viewed'
+)
+SELECT
+  s.signup_date,
+  COUNT(DISTINCT s.user_id) as signups,
+  COUNT(DISTINCT d.user_id) as returned_d7,
+  ROUND(COUNT(DISTINCT d.user_id)::numeric / NULLIF(COUNT(DISTINCT s.user_id), 0) * 100, 1) as d7_retention_pct
+FROM signups s
+LEFT JOIN d7 d ON s.user_id = d.user_id AND d.activity_date = s.signup_date + 7
+GROUP BY s.signup_date
+ORDER BY s.signup_date DESC
+LIMIT 30;
+```
+
+### Conversion rate (free → premium)
+
+```sql
+-- Free-to-premium conversion rate
+SELECT
+  COUNT(*) FILTER (WHERE plan = 'premium') as premium_users,
+  COUNT(*) as total_users,
+  ROUND(COUNT(*) FILTER (WHERE plan = 'premium')::numeric / NULLIF(COUNT(*), 0) * 100, 1) as conversion_pct
+FROM users
+WHERE onboarding_completed = true;
+
+-- Conversion by energy profile (which profiles convert best?)
+SELECT
+  op.energy_profile,
+  COUNT(*) FILTER (WHERE u.plan = 'premium') as premium,
+  COUNT(*) as total,
+  ROUND(COUNT(*) FILTER (WHERE u.plan = 'premium')::numeric / NULLIF(COUNT(*), 0) * 100, 1) as pct
+FROM users u
+JOIN onboarding_profiles op ON u.id = op.user_id
+GROUP BY op.energy_profile
+ORDER BY pct DESC;
+```
+
+### Daily Active Users (DAU)
+
+```sql
+-- DAU for last 30 days
+SELECT
+  DATE(created_at) as date,
+  COUNT(DISTINCT user_id) as dau
+FROM analytics_events
+WHERE event IN ('daily_card_viewed', 'checkin_completed_morning', 'checkin_completed_night')
+  AND created_at > CURRENT_DATE - INTERVAL '30 days'
+GROUP BY DATE(created_at)
+ORDER BY date DESC;
+
+-- WAU (Weekly Active Users)
+SELECT
+  DATE_TRUNC('week', created_at) as week,
+  COUNT(DISTINCT user_id) as wau
+FROM analytics_events
+WHERE event IN ('daily_card_viewed', 'checkin_completed_morning')
+  AND created_at > CURRENT_DATE - INTERVAL '12 weeks'
+GROUP BY week
+ORDER BY week DESC;
+```
+
+### Referral tracking
+
+```sql
+-- Referral funnel
+SELECT
+  status,
+  COUNT(*) as count
+FROM referrals
+GROUP BY status;
+
+-- Top referrers
+SELECT
+  r.referrer_id,
+  u.email,
+  COUNT(*) as referrals,
+  COUNT(*) FILTER (WHERE r.status = 'converted') as converted
+FROM referrals r
+JOIN users u ON r.referrer_id = u.id
+GROUP BY r.referrer_id, u.email
+ORDER BY referrals DESC
+LIMIT 20;
+```
+
+### Demo mode analytics
+
+```sql
+-- Demo card generations (growth signal)
+SELECT
+  DATE(created_at) as date,
+  COUNT(*) as demo_cards
+FROM analytics_events
+WHERE event = 'demo_card_generated'
+  AND created_at > CURRENT_DATE - INTERVAL '30 days'
+GROUP BY DATE(created_at)
+ORDER BY date DESC;
+```
+
+### i18n locale distribution
+
+```sql
+-- Users by locale
+SELECT locale, COUNT(*) as users
+FROM users
+GROUP BY locale
+ORDER BY users DESC;
+```
+
+---
+
+## 9. Rollback Procedure
 
 ### Vercel
 
@@ -294,7 +436,7 @@ Monitor with: Vercel Analytics, UptimeRobot, or Better Uptime.
 
 ---
 
-## 10. Cost Monitoring
+## 11. Cost Monitoring
 
 ### Supabase
 - Free tier: 50MB DB, 1GB bandwidth, 50K auth users

@@ -6,6 +6,11 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/onboarding'
 
+  // Detect locale from cookie or default to 'en'
+  const cookieHeader = request.headers.get('cookie') || ''
+  const localeMatch = cookieHeader.match(/volt-locale=(\w+)/)
+  const locale = localeMatch?.[1] || 'en'
+
   if (code) {
     const supabase = createServerSupabase()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
@@ -22,7 +27,7 @@ export async function GET(request: Request) {
 
         // If onboarding completed, go to dashboard
         if (profile) {
-          return NextResponse.redirect(`${origin}/dashboard`)
+          return NextResponse.redirect(`${origin}/${locale}/dashboard`)
         }
 
         // Ensure user record exists
@@ -35,10 +40,10 @@ export async function GET(request: Request) {
         }, { onConflict: 'id' })
       }
 
-      return NextResponse.redirect(`${origin}${next}`)
+      return NextResponse.redirect(`${origin}/${locale}${next}`)
     }
   }
 
   // Auth error — redirect to login
-  return NextResponse.redirect(`${origin}/login?error=auth`)
+  return NextResponse.redirect(`${origin}/${locale}/login?error=auth`)
 }

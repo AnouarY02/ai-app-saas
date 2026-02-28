@@ -4,10 +4,15 @@ import { generateDailyCard } from '@/lib/engine'
 import { trackServerEvent } from '@/lib/analytics'
 import { checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit'
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const supabase = createServerSupabase()
     const { data: { user } } = await supabase.auth.getUser()
+
+    // Detect locale from cookie or Accept-Language
+    const cookieHeader = request.headers.get('cookie') || ''
+    const localeMatch = cookieHeader.match(/volt-locale=(\w+)/)
+    const locale = localeMatch?.[1] || 'en'
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -87,6 +92,7 @@ export async function POST() {
       recentLogs: recentLogs || [],
       recentActions: recentActions || [],
       useLLM: userData?.plan === 'premium',
+      locale,
     })
 
     // Store in database

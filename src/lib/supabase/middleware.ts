@@ -1,6 +1,31 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const locales = ['en', 'nl', 'de', 'es', 'fr']
+
+/** Extract locale prefix from pathname, or return 'en' */
+function getLocaleFromPathname(pathname: string): string {
+  for (const locale of locales) {
+    if (pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`) {
+      return locale
+    }
+  }
+  return 'en'
+}
+
+/** Strip locale prefix from pathname */
+function stripLocale(pathname: string): string {
+  for (const locale of locales) {
+    if (pathname.startsWith(`/${locale}/`)) {
+      return pathname.slice(locale.length + 1)
+    }
+    if (pathname === `/${locale}`) {
+      return '/'
+    }
+  }
+  return pathname
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -29,23 +54,27 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  const pathname = request.nextUrl.pathname
+  const locale = getLocaleFromPathname(pathname)
+  const strippedPath = stripLocale(pathname)
+
   // Redirect unauthenticated users from protected routes
   const protectedPaths = ['/dashboard', '/onboarding', '/settings', '/progress', '/paywall']
-  const isProtected = protectedPaths.some((p) => request.nextUrl.pathname.startsWith(p))
+  const isProtected = protectedPaths.some((p) => strippedPath.startsWith(p))
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = `/${locale}/login`
     return NextResponse.redirect(url)
   }
 
   // Redirect authenticated users from auth pages
   const authPaths = ['/login', '/signup']
-  const isAuthPage = authPaths.some((p) => request.nextUrl.pathname.startsWith(p))
+  const isAuthPage = authPaths.some((p) => strippedPath.startsWith(p))
 
   if (user && isAuthPage) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = `/${locale}/dashboard`
     return NextResponse.redirect(url)
   }
 

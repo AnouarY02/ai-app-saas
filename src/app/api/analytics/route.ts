@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 const VALID_EVENTS = [
   'signup_completed',
+  'onboarding_started',
   'onboarding_completed',
   'daily_card_viewed',
   'primary_action_completed',
@@ -15,6 +16,10 @@ const VALID_EVENTS = [
   'subscription_started',
   'subscription_canceled',
   'cognitive_switch_used',
+  'demo_card_generated',
+  'referral_shared',
+  'referral_signup',
+  'locale_changed',
 ] as const
 
 const analyticsSchema = z.object({
