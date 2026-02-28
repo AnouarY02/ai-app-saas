@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { generateWeeklyReport } from '@/lib/engine'
 import { trackServerEvent } from '@/lib/analytics'
+import { checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit'
 
 export async function POST() {
   try {
@@ -10,6 +11,15 @@ export async function POST() {
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limit
+    const rl = checkRateLimit(user.id, 'engine')
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded' },
+        { status: 429, headers: rateLimitHeaders(rl) }
+      )
     }
 
     // Check premium

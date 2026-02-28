@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { generateDailyCard } from '@/lib/engine'
 import { trackServerEvent } from '@/lib/analytics'
+import { checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit'
 
 export async function POST() {
   try {
@@ -12,9 +13,18 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Rate limit: 10 req/min per user for engine routes
+    const rl = checkRateLimit(user.id, 'engine')
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded' },
+        { status: 429, headers: rateLimitHeaders(rl) }
+      )
+    }
+
     const today = new Date().toISOString().split('T')[0]
 
-    // Check if card already exists today
+    // Check if card already exists today (cache hit)
     const { data: existing } = await supabase
       .from('actions')
       .select('*')
@@ -45,7 +55,7 @@ export async function POST() {
       .single()
 
     if (!profile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Profile not found — complete onboarding first' }, { status: 404 })
     }
 
     // Load recent logs (7 days)
@@ -80,7 +90,7 @@ export async function POST() {
     })
 
     // Store in database
-    const { data: newAction } = await supabase
+    const { data: newAction, error: insertError } = await supabase
       .from('actions')
       .insert({
         user_id: user.id,
@@ -94,11 +104,16 @@ export async function POST() {
       .select()
       .single()
 
+    if (insertError) {
+      console.error('[API] Failed to store daily card:', insertError.message)
+    }
+
     await trackServerEvent(user.id, 'daily_card_viewed')
 
     return NextResponse.json({ card, action: newAction })
   } catch (error) {
-    console.error('[API] Daily card error:', error)
+    const msg = error instanceof Error ? error.message : 'Unknown error'
+    console.error('[API] Daily card error:', msg)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
