@@ -23,6 +23,7 @@ build/
 coverage/
 .next/
 out/
+*.tsbuildinfo
 
 # AI-Fabriek build outputs (CRITICAL: keep runs out of main)
 runs/
