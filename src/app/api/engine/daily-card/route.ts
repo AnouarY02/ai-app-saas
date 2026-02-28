@@ -3,6 +3,7 @@ import { createServerSupabase } from '@/lib/supabase/server'
 import { generateDailyCard } from '@/lib/engine'
 import { trackServerEvent } from '@/lib/analytics'
 import { checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit'
+import { shouldUseLLM } from '@/lib/llm-config'
 
 export async function POST(request: Request) {
   try {
@@ -86,16 +87,20 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
-    // Generate card
+    // Generate card — respect LLM_MODE config
+    const isPremium = userData?.plan === 'premium'
+    const useLLM = isPremium && shouldUseLLM('daily_card', isPremium)
+
     const card = await generateDailyCard({
       profile,
       recentLogs: recentLogs || [],
       recentActions: recentActions || [],
-      useLLM: userData?.plan === 'premium',
+      useLLM,
       locale,
     })
 
-    // Store in database
+    // Store in database — track generation method precisely
+    const genVersion = useLLM ? 'llm-v1' : isPremium ? 'rules-v1-premium' : 'rules-v1'
     const { data: newAction, error: insertError } = await supabase
       .from('actions')
       .insert({
@@ -105,7 +110,7 @@ export async function POST(request: Request) {
         secondary_actions_json: card.daily_card.secondary_actions,
         micro_education: card.daily_card.micro_education,
         tone: card.daily_card.tone,
-        generated_by_version: userData?.plan === 'premium' ? 'llm-v1' : 'rules-v1',
+        generated_by_version: genVersion,
       })
       .select()
       .single()

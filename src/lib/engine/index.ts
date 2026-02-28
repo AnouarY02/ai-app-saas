@@ -19,6 +19,8 @@ import {
   checkSafety,
 } from './rules'
 import { enhanceWithLLM } from './llm'
+import { shouldUseLLM } from '../llm-config'
+import { checkCostKillSwitch } from '../cost-telemetry'
 
 interface GenerateCardOptions {
   profile: OnboardingProfile
@@ -31,6 +33,7 @@ interface GenerateCardOptions {
 /**
  * Generate the Daily Energy Card for a user.
  * This is the main entry point for the decision engine.
+ * Respects LLM_MODE config and cost kill switch.
  */
 export async function generateDailyCard(
   options: GenerateCardOptions,
@@ -55,8 +58,11 @@ export async function generateDailyCard(
   // 6. Safety check
   const safety = checkSafety(profile, recentLogs)
 
-  // 7. Try LLM enhancement if premium
-  if (useLLM) {
+  // 7. Try LLM enhancement if premium and allowed by cost controls
+  const costMode = checkCostKillSwitch()
+  const llmAllowed = useLLM && shouldUseLLM('daily_card', useLLM) && costMode !== 'rules-only'
+
+  if (llmAllowed) {
     const llmResult = await enhanceWithLLM({
       profile,
       metrics,

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { trackEvent } from '@/lib/analytics'
 import { useTranslations } from '@/lib/i18n/context'
 import { createClient } from '@/lib/supabase/client'
-import { assignVariant } from '@/lib/growth/experiments'
+import { assignVariant, PREMIUM_PRO_TIER } from '@/lib/growth/experiments'
 import { getPricingForVariant, getTrialDaysRemaining } from '@/lib/growth/conversion'
 
 export default function PaywallPage() {
@@ -15,6 +15,7 @@ export default function PaywallPage() {
   const [loading, setLoading] = useState(false)
   const [pricing, setPricing] = useState(getPricingForVariant('9.99'))
   const [trialDays, setTrialDays] = useState<number | null>(null)
+  const [showPro, setShowPro] = useState(false)
 
   useEffect(() => {
     async function loadExperiment() {
@@ -41,17 +42,28 @@ export default function PaywallPage() {
     }
     loadExperiment()
     trackEvent('paywall_viewed')
+
+    // Check URL for ?pro=1 to show Premium Pro tier
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('pro') === '1') {
+      setShowPro(true)
+    }
   }, [])
 
-  async function handleSubscribe() {
+  async function handleSubscribe(tier: 'premium' | 'pro' = 'premium') {
     setLoading(true)
     try {
+      const priceOverride = tier === 'pro'
+        ? (plan === 'monthly' ? PREMIUM_PRO_TIER.monthly : PREMIUM_PRO_TIER.yearly)
+        : (plan === 'monthly' ? pricing.monthly : pricing.yearly)
+
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           plan,
-          price_override: plan === 'monthly' ? pricing.monthly : pricing.yearly,
+          price_override: priceOverride,
+          tier,
         }),
       })
 
@@ -143,7 +155,7 @@ export default function PaywallPage() {
           )}
         </div>
 
-        <Button onClick={handleSubscribe} loading={loading} className="w-full" size="lg">
+        <Button onClick={() => handleSubscribe('premium')} loading={loading} className="w-full" size="lg">
           {t('paywall.startTrial')}
         </Button>
 
@@ -152,6 +164,51 @@ export default function PaywallPage() {
             {t('paywall.disclaimer')}
           </p>
         </div>
+
+        {/* Premium Pro tier — hidden, unlocked via ?pro=1 */}
+        {showPro && (
+          <div className="mt-10 border-2 border-volt-400 rounded-2xl p-6">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-1 bg-volt-100 text-volt-700 text-xs font-bold px-3 py-1 rounded-full mb-3">
+                PRO
+              </div>
+              <h2 className="text-2xl font-bold">{t('paywall.proTitle')}</h2>
+              <p className="text-sm text-gray-500 mt-1">{t('paywall.proSub')}</p>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              {PREMIUM_PRO_TIER.features.map((feature) => (
+                <div key={feature} className="flex gap-2 text-sm">
+                  <span className="text-volt-500">&#10003;</span>
+                  <span>{feature}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center mb-4">
+              <div className="text-3xl font-bold">
+                {plan === 'monthly'
+                  ? `\u20ac${PREMIUM_PRO_TIER.monthly}/month`
+                  : `\u20ac${PREMIUM_PRO_TIER.yearlyMonthly}/month`}
+              </div>
+              {plan === 'yearly' && (
+                <div className="text-sm text-gray-500">
+                  {`\u20ac${PREMIUM_PRO_TIER.yearly}/year — save ${PREMIUM_PRO_TIER.discount}%`}
+                </div>
+              )}
+            </div>
+
+            <Button
+              onClick={() => handleSubscribe('pro')}
+              loading={loading}
+              className="w-full"
+              variant="secondary"
+              size="lg"
+            >
+              {t('paywall.proStartTrial')}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

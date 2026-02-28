@@ -14,10 +14,28 @@ export interface Experiment {
 export const EXPERIMENTS: Record<string, Experiment> = {
   pricing_test: {
     id: 'pricing_test',
-    variants: ['9.99', '12.99'],
+    variants: ['9.99', '14.99'],
     weights: [0.5, 0.5],
   },
 }
+
+/**
+ * Premium Pro tier — hidden tier for highest-value users.
+ * Unlocked via direct link or upgrade prompt in-app.
+ */
+export const PREMIUM_PRO_TIER = {
+  monthly: 19.99,
+  yearly: 149.99,
+  yearlyMonthly: 12.50,
+  discount: 38,
+  features: [
+    'Everything in Premium',
+    'Advanced energy analytics',
+    'Priority AI tuning',
+    'Future wearable integration',
+    'Export full data (CSV)',
+  ],
+} as const
 
 /**
  * Deterministic variant assignment based on userId + experimentId.

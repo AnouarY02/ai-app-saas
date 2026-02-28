@@ -1,7 +1,7 @@
 {
   "common": {
     "appName": "VOLT Sleep",
-    "tagline": "Wakker met energie. Elke dag.",
+    "tagline": "Energie voor ambitieuze mensen.",
     "loading": "Laden...",
     "save": "Opslaan",
     "back": "Terug",
@@ -25,8 +25,8 @@
   "landing": {
     "badge": "Evidence-based energy coaching",
     "hero": {
-      "headline": "Wakker met energie. Elke dag.",
-      "sub": "Jouw persoonlijke energy coach. Gebaseerd op gedragswetenschap, niet op giswerk.",
+      "headline": "Energie voor ambitieuze mensen.",
+      "sub": "Jouw persoonlijke energy coach. Gebaseerd op gedragswetenschap, gebouwd voor high performers.",
       "cta": "Start gratis — 30 seconden",
       "ctaSecondary": "Hoe werkt het?"
     },
@@ -242,6 +242,9 @@
   "paywall": {
     "title": "VOLT Premium",
     "sub": "Ontgrendel de volledige kracht van je energieplan.",
+    "proTitle": "VOLT Premium Pro",
+    "proSub": "Voor wie piekprestaties eist.",
+    "proStartTrial": "Start Pro proefperiode",
     "trialBadge": "7 dagen gratis",
     "trialCountdown": "Nog {{days}} dagen in je gratis proefperiode",
     "features": {

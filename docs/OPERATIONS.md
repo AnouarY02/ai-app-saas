@@ -761,13 +761,68 @@ SELECT
 FROM last_week_signups s
 LEFT JOIN d7_activity d ON s.user_id = d.user_id;
 
--- 6. LLM COST (from cost_telemetry — check application logs)
--- Use getDailyCostSummary() from src/lib/cost-telemetry.ts
--- Estimated: ~€0.001 per card × premium DAU × 7 days
+-- 6. LLM COST DASHBOARD
+-- Use getDailyCostSummary() and getMonthlyCostEstimate() from src/lib/cost-telemetry.ts
+-- API: checkCostKillSwitch() returns current cost mode (full/reduced/rules-only)
+-- Per-user tracking: getUserMonthlyTokens(userId) and isUserOverTokenCap(userId)
+--
+-- TOKEN BUDGETS:
+--   Daily Card:       500 input / 500 output tokens
+--   Weekly Insight:   1500 input / 1500 output tokens
+--   Cognitive Switch: 500 input / 500 output tokens
+--   Energy Share:     300 input / 300 output tokens
+--
+-- KILL SWITCH THRESHOLDS:
+--   $500/month → auto-switch to "reduced" mode (daily cards = rules-only)
+--   $1000/month → auto-switch to "rules-only" mode (no LLM)
+--   Per-user cap: 50,000 tokens/month (~$0.20/user)
+--
+-- LLM_MODE env var: "full" | "reduced" | "rules-only"
+--   full = LLM for all premium features
+--   reduced = LLM only for weekly insights + cognitive switch
+--   rules-only = no LLM (emergency kill switch)
+
+-- LLM cost by generation method (from actions table):
+SELECT
+  generated_by_version,
+  COUNT(*) as card_count,
+  DATE_TRUNC('day', created_at) as day
+FROM actions
+WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'
+GROUP BY generated_by_version, DATE_TRUNC('day', created_at)
+ORDER BY day DESC, generated_by_version;
+
+-- Premium users using LLM vs rules (cost efficiency):
+SELECT
+  CASE WHEN generated_by_version LIKE 'llm%' THEN 'LLM' ELSE 'Rules' END as engine,
+  COUNT(*) as cards_generated,
+  COUNT(DISTINCT user_id) as unique_users,
+  ROUND(COUNT(*)::numeric / COUNT(DISTINCT user_id), 1) as avg_cards_per_user
+FROM actions
+WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'
+GROUP BY CASE WHEN generated_by_version LIKE 'llm%' THEN 'LLM' ELSE 'Rules' END;
 
 -- 7. MARGIN ESTIMATE
 -- Revenue - (Supabase + Vercel + LLM cost) / Revenue × 100
+-- Target: >85% gross margin, LLM cost under 15% of revenue
 -- At scale: ~85-90% margin (LLM cost is primary variable)
+
+-- Revenue per visitor by experiment variant:
+SELECT
+  ea.variant,
+  COUNT(DISTINCT ea.user_id) as users,
+  COUNT(DISTINCT s.user_id) as converted,
+  ROUND(COUNT(DISTINCT s.user_id)::numeric / NULLIF(COUNT(DISTINCT ea.user_id), 0) * 100, 1) as conv_rate,
+  COALESCE(SUM(CASE s.plan WHEN 'premium' THEN 9.99 ELSE 0 END), 0) as est_revenue,
+  ROUND(
+    COALESCE(SUM(CASE s.plan WHEN 'premium' THEN 9.99 ELSE 0 END), 0)::numeric
+    / NULLIF(COUNT(DISTINCT ea.user_id), 0), 2
+  ) as revenue_per_visitor
+FROM experiment_assignments ea
+LEFT JOIN subscriptions s ON ea.user_id = s.user_id AND s.status IN ('active', 'trialing')
+WHERE ea.experiment_id = 'pricing_test'
+GROUP BY ea.variant
+ORDER BY revenue_per_visitor DESC;
 ```
 
 ### Report Format

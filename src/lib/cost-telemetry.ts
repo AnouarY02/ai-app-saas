@@ -2,8 +2,11 @@
 // VOLT Sleep — LLM Cost Telemetry
 // ============================================================
 // Tracks LLM API calls per user for cost monitoring.
+// Includes per-user monthly cap and kill switch checks.
 // In production, persist to Supabase for dashboarding.
 // ============================================================
+
+import { MONTHLY_TOKEN_CAP_PER_USER, COST_THRESHOLDS } from './llm-config'
 
 interface CostEntry {
   userId: string
@@ -12,10 +15,14 @@ interface CostEntry {
   outputTokens: number
   timestamp: number
   locale: string
+  feature?: string
 }
 
 // In-memory buffer — flush to DB periodically in production
 const costBuffer: CostEntry[] = []
+
+// Per-user monthly token tracker
+const userMonthlyTokens: Map<string, { tokens: number; month: string }> = new Map()
 
 // Cost per 1M tokens (approximate, Haiku 4.5 pricing)
 const COST_PER_M_INPUT = 0.80  // $0.80 per 1M input tokens
@@ -31,6 +38,60 @@ export function recordLLMCall(entry: Omit<CostEntry, 'timestamp'>): void {
   if (costBuffer.length > 10000) {
     costBuffer.splice(0, costBuffer.length - 10000)
   }
+
+  // Track per-user monthly tokens
+  const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM
+  const existing = userMonthlyTokens.get(entry.userId)
+  const totalTokens = entry.inputTokens + entry.outputTokens
+
+  if (existing && existing.month === currentMonth) {
+    existing.tokens += totalTokens
+  } else {
+    userMonthlyTokens.set(entry.userId, { tokens: totalTokens, month: currentMonth })
+  }
+
+  // Evict stale entries (users from previous months)
+  if (userMonthlyTokens.size > 5000) {
+    for (const [key, val] of userMonthlyTokens) {
+      if (val.month !== currentMonth) {
+        userMonthlyTokens.delete(key)
+      }
+    }
+  }
+}
+
+/**
+ * Check if a user has exceeded their monthly token cap.
+ */
+export function isUserOverTokenCap(userId: string): boolean {
+  const currentMonth = new Date().toISOString().slice(0, 7)
+  const record = userMonthlyTokens.get(userId)
+  if (!record || record.month !== currentMonth) return false
+  return record.tokens >= MONTHLY_TOKEN_CAP_PER_USER
+}
+
+/**
+ * Get a user's monthly token usage.
+ */
+export function getUserMonthlyTokens(userId: string): number {
+  const currentMonth = new Date().toISOString().slice(0, 7)
+  const record = userMonthlyTokens.get(userId)
+  if (!record || record.month !== currentMonth) return 0
+  return record.tokens
+}
+
+/**
+ * Check if the system should trigger cost reduction mode.
+ */
+export function checkCostKillSwitch(): 'full' | 'reduced' | 'rules-only' {
+  const estimate = getMonthlyCostEstimate()
+  if (estimate.monthlyEstimateUSD >= COST_THRESHOLDS.monthlyKillThreshold) {
+    return 'rules-only'
+  }
+  if (estimate.monthlyEstimateUSD >= COST_THRESHOLDS.monthlyReducedThreshold) {
+    return 'reduced'
+  }
+  return 'full'
 }
 
 /**
@@ -42,6 +103,7 @@ export function getDailyCostSummary(): {
   totalOutputTokens: number
   estimatedCostUSD: number
   callsByUser: Record<string, number>
+  callsByFeature: Record<string, number>
 } {
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
@@ -56,8 +118,11 @@ export function getDailyCostSummary(): {
     (totalOutputTokens / 1_000_000) * COST_PER_M_OUTPUT
 
   const callsByUser: Record<string, number> = {}
+  const callsByFeature: Record<string, number> = {}
   for (const entry of todayEntries) {
     callsByUser[entry.userId] = (callsByUser[entry.userId] || 0) + 1
+    const feat = entry.feature || 'unknown'
+    callsByFeature[feat] = (callsByFeature[feat] || 0) + 1
   }
 
   return {
@@ -66,6 +131,7 @@ export function getDailyCostSummary(): {
     totalOutputTokens,
     estimatedCostUSD: Math.round(estimatedCostUSD * 10000) / 10000,
     callsByUser,
+    callsByFeature,
   }
 }
 

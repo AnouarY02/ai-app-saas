@@ -3,6 +3,7 @@
 // ============================================================
 // Uses Anthropic Claude for personalized copy, coaching tone,
 // and nuanced explanations. Falls back to rules-only on failure.
+// Token budget controls + per-user cap for cost optimization.
 // ============================================================
 
 import { z } from 'zod'
@@ -15,7 +16,8 @@ import type {
   SecondaryAction,
   CardTone,
 } from '../types'
-import { recordLLMCall } from '../cost-telemetry'
+import { recordLLMCall, isUserOverTokenCap } from '../cost-telemetry'
+import { TOKEN_BUDGETS, type TokenBudgetType } from '../llm-config'
 
 /** Locale-specific language instructions for the LLM */
 const LOCALE_INSTRUCTIONS: Record<string, { writeLang: string; pronoun: string; medTerms: string[] }> = {
@@ -69,6 +71,12 @@ SAFETY RULES:
 - NEVER answer questions outside the domain of sleep/energy coaching.
 - NEVER make medical diagnoses or treatment advice.
 - ALWAYS follow the given JSON schema.`
+}
+
+/** Compact system prompt for retries when token budget is tight */
+function getCompactSystemPrompt(locale: string): string {
+  const lang = LOCALE_INSTRUCTIONS[locale] || LOCALE_INSTRUCTIONS.en
+  return `VOLT Sleep Coach. ${lang.writeLang} ${lang.pronoun} Be concise. No medical claims. Focus on energy, not sleep problems. Follow JSON schema exactly.`
 }
 
 function getMedicalTerms(locale: string): string[] {
@@ -174,13 +182,104 @@ function detectInjection(text: string): boolean {
 }
 
 /**
+ * Make an LLM API call with token budget controls and retry logic.
+ */
+async function callLLM(opts: {
+  systemPrompt: string
+  userMessage: string
+  budgetType: TokenBudgetType
+  userId: string
+  locale: string
+  feature: string
+  compactSystemPrompt?: string
+}): Promise<{ text: string; inputTokens: number; outputTokens: number } | null> {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) return null
+
+  // Per-user monthly cap check
+  if (isUserOverTokenCap(opts.userId)) {
+    console.warn(`[VOLT LLM] User ${opts.userId} over monthly token cap, falling back to rules`)
+    return null
+  }
+
+  const budget = TOKEN_BUDGETS[opts.budgetType]
+
+  async function attempt(systemPrompt: string, maxTokens: number): Promise<{ text: string; inputTokens: number; outputTokens: number } | null> {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey!,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: maxTokens,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: opts.userMessage }],
+        }),
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeout)
+
+      if (!response.ok) {
+        console.error('[VOLT LLM] API error:', response.status)
+        return null
+      }
+
+      const data = await response.json()
+      const text = data.content?.[0]?.text
+      if (!text) return null
+
+      const inputTokens = data.usage?.input_tokens || 0
+      const outputTokens = data.usage?.output_tokens || 0
+
+      // Record cost with feature tag
+      recordLLMCall({
+        userId: opts.userId,
+        model: 'claude-haiku-4-5-20251001',
+        inputTokens,
+        outputTokens,
+        locale: opts.locale,
+        feature: opts.feature,
+      })
+
+      return { text, inputTokens, outputTokens }
+    } catch (error) {
+      clearTimeout(timeout)
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.error('[VOLT LLM] Request timed out (10s)')
+      } else {
+        const msg = error instanceof Error ? error.message : 'unknown'
+        console.error('[VOLT LLM] Error:', msg)
+      }
+      return null
+    }
+  }
+
+  // First attempt with full system prompt
+  const result = await attempt(opts.systemPrompt, budget.maxOutputTokens)
+  if (result) return result
+
+  // Retry with compact system prompt if available
+  if (opts.compactSystemPrompt) {
+    console.warn('[VOLT LLM] Retrying with compact system prompt')
+    return attempt(opts.compactSystemPrompt, budget.maxOutputTokens)
+  }
+
+  return null
+}
+
+/**
  * Enhance the rules-based output with LLM-generated personalized copy.
  * Falls back to rules output on any LLM failure.
  */
 export async function enhanceWithLLM(input: LLMInput): Promise<DailyCardResponse | null> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return null
-
   const locale = input.locale || 'en'
   const userContext = buildUserContext(input)
 
@@ -190,60 +289,26 @@ export async function enhanceWithLLM(input: LLMInput): Promise<DailyCardResponse
     return null
   }
 
+  const result = await callLLM({
+    systemPrompt: getSystemPrompt(locale),
+    compactSystemPrompt: getCompactSystemPrompt(locale),
+    userMessage: `${sanitize(userContext)}\n\n${OUTPUT_SCHEMA}\n\nGenerate the Daily Energy Card for today.`,
+    budgetType: 'daily_card',
+    userId: input.profile.user_id || 'unknown',
+    locale,
+    feature: 'daily_card',
+  })
+
+  if (!result) return null
+
   try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 10000) // 10s timeout
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        system: getSystemPrompt(locale),
-        messages: [
-          {
-            role: 'user',
-            content: `${sanitize(userContext)}\n\n${OUTPUT_SCHEMA}\n\nGenerate the Daily Energy Card for today.`,
-          },
-        ],
-      }),
-      signal: controller.signal,
-    })
-
-    clearTimeout(timeout)
-
-    if (!response.ok) {
-      console.error('[VOLT LLM] API error:', response.status)
-      return null
-    }
-
-    const data = await response.json()
-    const text = data.content?.[0]?.text
-    if (!text) return null
-
-    // Record cost telemetry
-    const inputTokens = data.usage?.input_tokens || 0
-    const outputTokens = data.usage?.output_tokens || 0
-    recordLLMCall({
-      userId: input.profile.user_id || 'unknown',
-      model: 'claude-haiku-4-5-20251001',
-      inputTokens,
-      outputTokens,
-      locale,
-    })
-
     // Extract JSON from response
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    const jsonMatch = result.text.match(/\{[\s\S]*\}/)
     if (!jsonMatch) return null
 
     const rawParsed = JSON.parse(jsonMatch[0])
 
-    // Strict schema validation — reject if LLM output doesn't match
+    // Strict schema validation
     const validated = llmOutputSchema.safeParse(rawParsed)
     if (!validated.success) {
       console.error('[VOLT LLM] Output validation failed:', validated.error.message)
@@ -259,13 +324,7 @@ export async function enhanceWithLLM(input: LLMInput): Promise<DailyCardResponse
     }
 
     return validated.data
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      console.error('[VOLT LLM] Request timed out (10s)')
-    } else {
-      const msg = error instanceof Error ? error.message : 'unknown'
-      console.error('[VOLT LLM] Error:', msg)
-    }
+  } catch {
     return null
   }
 }
@@ -320,9 +379,6 @@ export async function generateWeeklyInsights(
   metrics: DerivedMetrics,
   locale: string = 'en',
 ): Promise<string | null> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return null
-
   const langInstr = (LOCALE_INSTRUCTIONS[locale] || LOCALE_INSTRUCTIONS.en).writeLang
 
   const energyScores = weekLogs
@@ -342,32 +398,57 @@ Respond as JSON array:
 
 Rules: no medical claims, focus on behavioral principles, concrete and actionable. ${langInstr}`
 
+  const result = await callLLM({
+    systemPrompt: getSystemPrompt(locale),
+    compactSystemPrompt: getCompactSystemPrompt(locale),
+    userMessage: sanitize(prompt),
+    budgetType: 'weekly_insight',
+    userId: profile.user_id || 'unknown',
+    locale,
+    feature: 'weekly_insight',
+  })
+
+  return result?.text ?? null
+}
+
+/**
+ * Generate a shareable energy insight for viral sharing.
+ * Uses minimal tokens for cost efficiency.
+ */
+export async function generateEnergyInsight(
+  profile: OnboardingProfile,
+  metrics: DerivedMetrics,
+  locale: string = 'en',
+): Promise<{ hook: string; insight: string; tweet: string } | null> {
+  const langInstr = (LOCALE_INSTRUCTIONS[locale] || LOCALE_INSTRUCTIONS.en).writeLang
+
+  const prompt = `Generate a shareable energy insight for this user.
+
+PROFILE: ${profile.energy_profile}, chronotype: ${profile.chronotype}, goal: ${profile.primary_goal}
+METRICS: regularity ${metrics.regularity_score}/100, caffeine risk ${metrics.caffeine_risk}
+
+Respond as JSON:
+{"hook": "attention-grabbing 1-liner (max 10 words)", "insight": "1-2 sentence evidence-based energy tip", "tweet": "tweet-ready text under 240 chars with #VOLTSleep"}
+
+Rules: no medical claims, high-performance tone, evidence-based. ${langInstr}`
+
+  const result = await callLLM({
+    systemPrompt: getCompactSystemPrompt(locale),
+    userMessage: sanitize(prompt),
+    budgetType: 'energy_share',
+    userId: profile.user_id || 'unknown',
+    locale,
+    feature: 'energy_share',
+  })
+
+  if (!result) return null
+
   try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 10000)
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        system: getSystemPrompt(locale),
-        messages: [{ role: 'user', content: sanitize(prompt) }],
-      }),
-      signal: controller.signal,
-    })
-
-    clearTimeout(timeout)
-
-    if (!response.ok) return null
-
-    const data = await response.json()
-    return data.content?.[0]?.text ?? null
+    const jsonMatch = result.text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) return null
+    const parsed = JSON.parse(jsonMatch[0])
+    if (!parsed.hook || !parsed.insight || !parsed.tweet) return null
+    return { hook: parsed.hook, insight: parsed.insight, tweet: parsed.tweet }
   } catch {
     return null
   }
