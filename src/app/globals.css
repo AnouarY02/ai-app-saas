@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-volt-500 hover:bg-volt-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-[0.98];
+  }
+  .btn-secondary {
+    @apply bg-night-100 hover:bg-night-200 text-night-800 font-medium py-3 px-6 rounded-xl transition-all duration-200;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+  }
+  .card-elevated {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-50 p-6;
+  }
+  .energy-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium;
+  }
+}
