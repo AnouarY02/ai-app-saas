@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Slider } from '@/components/ui/Slider'
@@ -19,6 +19,11 @@ export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewCard, setPreviewCard] = useState<any>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const stepStartTime = useRef<number>(Date.now())
+  const highestStep = useRef<number>(1)
 
   const CHRONOTYPE_OPTIONS = [
     { value: 'morning', label: t('onboarding.chronotypeMorning'), description: t('onboarding.chronotypeMorningDesc') },
@@ -61,6 +66,78 @@ export default function OnboardingPage() {
     setData((prev) => ({ ...prev, [key]: value }))
   }
 
+  // Track onboarding start
+  useEffect(() => {
+    trackEvent('onboarding_started')
+  }, [])
+
+  // Track abandonment on unmount (if not completed)
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (highestStep.current < TOTAL_STEPS) {
+        trackEvent('onboarding_abandoned', {
+          last_step: highestStep.current,
+          time_spent_ms: Date.now() - stepStartTime.current,
+        })
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [])
+
+  // Track step completion on step change
+  function handleNextStep() {
+    const timeOnStep = Date.now() - stepStartTime.current
+    trackEvent('onboarding_step_completed', {
+      step,
+      time_on_step_ms: timeOnStep,
+    })
+
+    const nextStep = step + 1
+    highestStep.current = Math.max(highestStep.current, nextStep)
+    stepStartTime.current = Date.now()
+
+    // After step 2 → show Instant Value Preview
+    if (step === 2) {
+      loadPreviewCard()
+      setShowPreview(true)
+    } else {
+      setStep(nextStep)
+    }
+  }
+
+  // Load preview card (rules-only, via demo API)
+  async function loadPreviewCard() {
+    setPreviewLoading(true)
+    try {
+      const response = await fetch('/api/demo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wake_target_weekday: data.wake_target_weekday,
+          wake_target_weekend: data.wake_target_weekend,
+          baseline_energy: data.baseline_energy,
+          has_afternoon_dip: data.has_afternoon_dip,
+          stress_level: data.stress_level,
+        }),
+      })
+      if (response.ok) {
+        const result = await response.json()
+        setPreviewCard(result.card)
+        trackEvent('instant_value_preview')
+      }
+    } catch {
+      // Silently fail — preview is optional
+    } finally {
+      setPreviewLoading(false)
+    }
+  }
+
+  function dismissPreview() {
+    setShowPreview(false)
+    setStep(3)
+  }
+
   const energyProfile = classifyEnergyProfile(data)
   const profileInfo = t(`onboarding.profiles.${energyProfile}.title`)
   const profileDesc = t(`onboarding.profiles.${energyProfile}.description`)
@@ -90,11 +167,13 @@ export default function OnboardingPage() {
         onboarding_completed: true,
       }).eq('id', user.id)
 
+      trackEvent('onboarding_step_completed', { step: 5, time_on_step_ms: Date.now() - stepStartTime.current })
       trackEvent('onboarding_completed', {
         energy_profile: energyProfile,
         chronotype: data.chronotype,
         primary_goal: data.primary_goal,
         start_route: data.start_route,
+        total_time_ms: Date.now() - stepStartTime.current,
       })
 
       router.push('dashboard')
@@ -103,6 +182,56 @@ export default function OnboardingPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Instant Value Preview overlay
+  if (showPreview) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="max-w-lg mx-auto px-6 pt-12 pb-32">
+          <div className="text-center mb-8">
+            <div className="text-4xl mb-3">&#9889;</div>
+            <h2 className="text-2xl font-bold mb-2">{t('onboarding.previewTitle')}</h2>
+            <p className="text-gray-500 text-sm">{t('onboarding.previewSub')}</p>
+          </div>
+
+          {previewLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-2 border-volt-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : previewCard ? (
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-6">
+              <div className="bg-gradient-to-r from-volt-500 to-volt-600 text-white px-6 py-4">
+                <div className="text-sm font-medium opacity-90">{t('dashboard.todayFocusOn')}</div>
+                <h3 className="text-lg font-bold mt-1">
+                  {previewCard.daily_card.primary_action.title}
+                </h3>
+              </div>
+              <div className="px-6 py-4">
+                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+                  {t('dashboard.whyItWorks')}
+                </div>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  {previewCard.daily_card.primary_action.why}
+                </p>
+              </div>
+            </div>
+          ) : null}
+
+          <p className="text-center text-sm text-gray-400 mb-6">
+            {t('onboarding.previewNote')}
+          </p>
+        </div>
+
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
+          <div className="max-w-lg mx-auto">
+            <Button onClick={dismissPreview} className="w-full">
+              {t('onboarding.previewContinue')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -343,7 +472,7 @@ export default function OnboardingPage() {
             </Button>
           )}
           {step < TOTAL_STEPS ? (
-            <Button onClick={() => setStep((s) => s + 1)} className="flex-1">
+            <Button onClick={handleNextStep} className="flex-1">
               {t('common.next')}
             </Button>
           ) : (

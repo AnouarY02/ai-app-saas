@@ -151,6 +151,10 @@
     "routeFocusDesc": "2-3 acties per dag, maximaal resultaat.",
     "autonomyNote": "Jij kiest het tempo. Je kunt dit altijd aanpassen in instellingen.",
     "startPlan": "Start mijn plan",
+    "previewTitle": "Hier is een preview van je plan",
+    "previewSub": "Op basis van wat je tot nu toe hebt verteld, zouden we dit vandaag aanraden.",
+    "previewNote": "Dit is slechts een preview. Maak de onboarding af voor een volledig gepersonaliseerd plan.",
+    "previewContinue": "Doorgaan met instellen",
     "profiles": {
       "stabilizer": {
         "title": "Stabilizer",
@@ -187,7 +191,22 @@
     "important": "Belangrijk",
     "safetyHelpline": "Hulp nodig? Bel 113 (zelfmoordpreventie) of neem contact op met je huisarts.",
     "progress": "Voortgang",
-    "streakDays": "{{count}} dagen"
+    "streakDays": "{{count}} dagen",
+    "streakAtRisk": "risico",
+    "streakAtRiskTitle": "Je streak loopt gevaar!",
+    "streakAtRiskDesc": "Rond vandaag je actie af om je {{count}}-daagse streak te behouden.",
+    "trialCountdown": "Nog {{days}} dagen in je gratis proefperiode",
+    "microWinTitle": "Je energie verbetert!",
+    "microWinDesc": "Energie +{{delta}} punten omhoog deze week. Ga zo door!",
+    "momentum": "Gewoonte-momentum",
+    "trend": {
+      "up": "Verbetering",
+      "down": "Dalend",
+      "stable": "Stabiel"
+    },
+    "unlockInsights": "Ontgrendel je energiepatroon",
+    "unlockCta": "Bekijk je Weekly Energy Report",
+    "tryPremium": "Probeer Premium 7 dagen gratis \u2192"
   },
   "checkin": {
     "morningTitle": "Ochtend check-in",
@@ -207,13 +226,16 @@
   },
   "progress": {
     "title": "Jouw voortgang",
-    "completionRate": "Voltooiingspercentage",
-    "avgEnergy": "Gemiddelde energie",
+    "completionRate": "Voltooiing",
+    "avgEnergy": "Gem. energie",
     "daysActive": "Dagen actief",
+    "streak": "Streak",
+    "momentum": "Momentum",
     "energyTrend": "Energie trend",
     "recentActions": "Recente acties",
     "weeklyReport": "Weekrapport",
     "weeklyReportLocked": "Ontgrendel je Weekly Energy Report met Premium.",
+    "unlockPattern": "Ontgrendel je energiepatroon",
     "upgrade": "Upgrade naar Premium",
     "noData": "Doe een paar check-ins om je voortgang te zien."
   },
@@ -221,6 +243,7 @@
     "title": "VOLT Premium",
     "sub": "Ontgrendel de volledige kracht van je energieplan.",
     "trialBadge": "7 dagen gratis",
+    "trialCountdown": "Nog {{days}} dagen in je gratis proefperiode",
     "features": {
       "engine": "Adaptive Decision Engine",
       "engineDesc": "AI-aangedreven personalisatie die zich aanpast aan je patronen.",
@@ -237,7 +260,8 @@
     "monthlyPrice": "€9,99/maand",
     "yearly": "Jaarlijks",
     "yearlyPrice": "€5,75/maand",
-    "yearlySub": "€69/jaar — bespaar 42%",
+    "yearlySub": "\u20ac69/jaar \u2014 bespaar 42%",
+    "yearlySave": "bespaar {{discount}}%",
     "startTrial": "Start 7 dagen gratis proefperiode",
     "disclaimer": "Annuleer op elk moment. Na de proefperiode word je automatisch belast.",
     "paymentMethods": "Betaalmethoden: card, iDEAL"
@@ -252,7 +276,14 @@
     "intensityLabel": "Intensiteit",
     "deleteAccount": "Account verwijderen (GDPR)",
     "deleteConfirm": "Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden.",
-    "disclaimerText": "VOLT Sleep is geen medisch hulpmiddel en biedt geen diagnose of behandeling. Bij ernstige slaapproblemen adviseren wij contact met je huisarts."
+    "disclaimerText": "VOLT Sleep is geen medisch hulpmiddel en biedt geen diagnose of behandeling. Bij ernstige slaapproblemen adviseren wij contact met je huisarts.",
+    "referralTitle": "Nodig vrienden uit",
+    "referralDesc": "Deel VOLT Sleep en verdien gratis premium dagen.",
+    "referralCount": "{{count}} succesvolle referrals",
+    "referralEarned": "{{days}} dagen premium verdiend",
+    "referralNext": "{{referrals}} meer referrals \u2192 {{reward}}",
+    "referralShare": "Deel je referral link",
+    "referralCopied": "Gekopieerd naar klembord!"
   },
   "cognitiveSwitch": {
     "title": "Cognitive Switch",

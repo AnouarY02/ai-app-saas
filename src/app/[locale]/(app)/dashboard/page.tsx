@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/client'
 import { trackEvent } from '@/lib/analytics'
 import { useTranslations } from '@/lib/i18n/context'
+import { calculateStreak, detectMicroWin, calculateMomentum } from '@/lib/growth/streaks'
+import { checkConversionTrigger, getTrialDaysRemaining } from '@/lib/growth/conversion'
+import { checkActivation } from '@/lib/growth/activation'
 import type { DailyCardResponse, ActionRecord } from '@/lib/types'
 
 export default function DashboardPage() {
@@ -17,8 +20,14 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [completing, setCompleting] = useState(false)
   const [streak, setStreak] = useState(0)
+  const [streakStatus, setStreakStatus] = useState<'active' | 'at_risk' | 'broken'>('broken')
   const [showMorningCheck, setShowMorningCheck] = useState(false)
   const [showNightCheck, setShowNightCheck] = useState(false)
+  const [microWin, setMicroWin] = useState<{ improved: boolean; delta: number } | null>(null)
+  const [momentum, setMomentum] = useState<{ score: number; trend: 'up' | 'down' | 'stable' }>({ score: 0, trend: 'stable' })
+  const [conversionTrigger, setConversionTrigger] = useState<{ shouldTrigger: boolean; message?: string } | null>(null)
+  const [trialDays, setTrialDays] = useState<number | null>(null)
+  const [isPremium, setIsPremium] = useState(false)
 
   const loadDashboard = useCallback(async () => {
     try {
@@ -27,6 +36,15 @@ export default function DashboardPage() {
       if (!user) { router.push('login'); return }
 
       const today = new Date().toISOString().split('T')[0]
+
+      // Load user data
+      const { data: userData } = await supabase
+        .from('users')
+        .select('plan')
+        .eq('id', user.id)
+        .single()
+      const userIsPremium = userData?.plan === 'premium'
+      setIsPremium(userIsPremium)
 
       // Check if card exists for today
       const { data: existingAction } = await supabase
@@ -57,7 +75,7 @@ export default function DashboardPage() {
         }
       }
 
-      // Calculate streak
+      // Load recent actions for streak + momentum
       const { data: recentActions } = await supabase
         .from('actions')
         .select('date, completed_primary')
@@ -66,12 +84,63 @@ export default function DashboardPage() {
         .limit(30)
 
       if (recentActions) {
-        let s = 0
-        for (const a of recentActions) {
-          if (a.completed_primary) s++
-          else break
+        // Streak calculation (forgiving)
+        const streakData = calculateStreak(recentActions)
+        setStreak(streakData.current)
+        setStreakStatus(streakData.status)
+
+        // Momentum
+        const momentumData = calculateMomentum(recentActions)
+        setMomentum(momentumData)
+
+        // Conversion trigger (free users only)
+        if (!userIsPremium) {
+          const completedCards = recentActions.filter((a) => a.completed_primary).length
+          // Load energy logs for delta
+          const { data: recentLogs } = await supabase
+            .from('daily_logs')
+            .select('energy_morning, date')
+            .eq('user_id', user.id)
+            .order('date', { ascending: false })
+            .limit(14)
+
+          const win = detectMicroWin(recentLogs || [])
+          setMicroWin(win)
+
+          const trigger = checkConversionTrigger(completedCards, win.delta, false)
+          if (trigger.shouldTrigger) {
+            setConversionTrigger(trigger)
+            trackEvent('conversion_trigger', { reason: trigger.reason })
+          }
+        } else {
+          // Premium: detect micro wins
+          const { data: recentLogs } = await supabase
+            .from('daily_logs')
+            .select('energy_morning, date')
+            .eq('user_id', user.id)
+            .order('date', { ascending: false })
+            .limit(14)
+          const win = detectMicroWin(recentLogs || [])
+          setMicroWin(win)
         }
-        setStreak(s)
+
+        // Streak milestone tracking
+        if (streakData.current > 0 && streakData.current % 7 === 0) {
+          trackEvent('streak_milestone', { days: streakData.current })
+        }
+      }
+
+      // Trial countdown
+      if (userIsPremium) {
+        const { data: sub } = await supabase
+          .from('subscriptions')
+          .select('status, current_period_end')
+          .eq('user_id', user.id)
+          .single()
+        if (sub) {
+          const days = getTrialDaysRemaining(sub)
+          setTrialDays(days)
+        }
       }
 
       // Check if morning check is needed
@@ -92,6 +161,9 @@ export default function DashboardPage() {
       }
 
       trackEvent('daily_card_viewed')
+
+      // Check activation
+      await checkActivation(supabase, user.id)
     } catch (err) {
       console.error('Dashboard error:', err)
     } finally {
@@ -115,10 +187,21 @@ export default function DashboardPage() {
 
       setAction({ ...action, completed_primary: true })
       trackEvent('primary_action_completed')
+
+      // Check activation after action completion
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const result = await checkActivation(supabase, user.id)
+        if (result.activated) {
+          trackEvent('user_activated')
+        }
+      }
     } finally {
       setCompleting(false)
     }
   }
+
+  const trendArrow = momentum.trend === 'up' ? '\u2197' : momentum.trend === 'down' ? '\u2198' : '\u2192'
 
   if (loading) {
     return (
@@ -130,6 +213,13 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Trial countdown banner */}
+      {trialDays !== null && trialDays <= 3 && (
+        <div className="bg-volt-500 text-white text-center py-2 text-sm font-medium">
+          {t('dashboard.trialCountdown', { days: trialDays })}
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-white border-b border-gray-100 px-6 py-4">
         <div className="max-w-lg mx-auto flex items-center justify-between">
@@ -143,8 +233,13 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-4">
             {streak > 0 && (
-              <div className="flex items-center gap-1 text-volt-600 font-medium text-sm">
+              <div className={`flex items-center gap-1 font-medium text-sm ${
+                streakStatus === 'at_risk' ? 'text-orange-500' : 'text-volt-600'
+              }`}>
                 <span>&#128293;</span> {t('dashboard.streakDays', { count: streak })}
+                {streakStatus === 'at_risk' && (
+                  <span className="text-xs text-orange-400 ml-1">{t('dashboard.streakAtRisk')}</span>
+                )}
               </div>
             )}
             <Link href="settings" className="text-gray-400 hover:text-gray-600">
@@ -158,6 +253,30 @@ export default function DashboardPage() {
       </header>
 
       <div className="max-w-lg mx-auto px-6 py-6 space-y-6">
+        {/* Micro Win celebration */}
+        {microWin?.improved && (
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center animate-in fade-in">
+            <div className="text-2xl mb-1">&#127881;</div>
+            <div className="font-semibold text-green-800">{t('dashboard.microWinTitle')}</div>
+            <div className="text-sm text-green-600 mt-1">
+              {t('dashboard.microWinDesc', { delta: microWin.delta.toFixed(1) })}
+            </div>
+          </div>
+        )}
+
+        {/* Streak at risk nudge */}
+        {streakStatus === 'at_risk' && streak > 0 && !action?.completed_primary && (
+          <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">&#128293;</span>
+              <div>
+                <div className="font-medium text-orange-800 text-sm">{t('dashboard.streakAtRiskTitle')}</div>
+                <div className="text-xs text-orange-600">{t('dashboard.streakAtRiskDesc', { count: streak })}</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Morning/Night check-in prompts */}
         {showMorningCheck && (
           <Link
@@ -287,12 +406,63 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* Habit Momentum indicator */}
+        {momentum.score > 0 && (
+          <div className="card">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-gray-700">{t('dashboard.momentum')}</div>
+              <div className="flex items-center gap-2">
+                <span className={`text-lg ${
+                  momentum.trend === 'up' ? 'text-green-500' : momentum.trend === 'down' ? 'text-red-400' : 'text-gray-400'
+                }`}>
+                  {trendArrow}
+                </span>
+                <span className="text-sm text-gray-500">{t(`dashboard.trend.${momentum.trend}`)}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Micro education */}
         {card?.daily_card.micro_education && (
           <div className="bg-night-50 rounded-xl p-4 text-sm text-night-800">
             <div className="font-semibold mb-1">&#128161; {t('dashboard.didYouKnow')}</div>
             <p>{card.daily_card.micro_education}</p>
           </div>
+        )}
+
+        {/* Premium Tease: Blurred Weekly Insight preview (free users only) */}
+        {!isPremium && (
+          <Link href="paywall" className="block relative overflow-hidden rounded-2xl border border-gray-200">
+            <div className="bg-gradient-to-b from-volt-50 to-white p-5 blur-[2px] select-none pointer-events-none">
+              <div className="font-semibold text-gray-800 mb-2">{t('progress.weeklyReport')}</div>
+              <div className="space-y-2">
+                <div className="h-3 bg-gray-200 rounded-full w-3/4" />
+                <div className="h-3 bg-gray-200 rounded-full w-1/2" />
+                <div className="h-3 bg-volt-200 rounded-full w-2/3" />
+              </div>
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center bg-white/60">
+              <div className="text-center">
+                <div className="text-lg mb-1">&#128274;</div>
+                <div className="font-semibold text-sm text-gray-900">{t('dashboard.unlockInsights')}</div>
+                <div className="text-xs text-volt-600 mt-1">{t('dashboard.unlockCta')}</div>
+              </div>
+            </div>
+          </Link>
+        )}
+
+        {/* Conversion trigger banner (free users only) */}
+        {conversionTrigger?.shouldTrigger && !isPremium && (
+          <Link href="paywall" className="block bg-volt-50 border border-volt-200 rounded-2xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="text-2xl">&#9889;</div>
+              <div>
+                <div className="font-medium text-volt-800 text-sm">{conversionTrigger.message}</div>
+                <div className="text-xs text-volt-600 mt-0.5">{t('dashboard.tryPremium')}</div>
+              </div>
+            </div>
+          </Link>
         )}
 
         {/* Safety message */}

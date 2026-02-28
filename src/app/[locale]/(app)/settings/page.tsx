@@ -7,15 +7,20 @@ import { Button } from '@/components/ui/Button'
 import { TimeInput } from '@/components/ui/TimeInput'
 import { ToggleGroup } from '@/components/ui/ToggleGroup'
 import { createClient } from '@/lib/supabase/client'
+import { trackEvent } from '@/lib/analytics'
 import { useTranslations } from '@/lib/i18n/context'
+import { getShareText, calculateReferralReward } from '@/lib/growth/referrals'
 
 export default function SettingsPage() {
-  const { t } = useTranslations()
+  const { t, locale } = useTranslations()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [profile, setProfile] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
+  const [referralCode, setReferralCode] = useState<string | null>(null)
+  const [referralCount, setReferralCount] = useState(0)
+  const [shareSuccess, setShareSuccess] = useState(false)
 
   const ROUTE_OPTIONS = [
     { value: 'light', label: t('onboarding.routeLight'), description: t('onboarding.routeLightDesc') },
@@ -35,6 +40,7 @@ export default function SettingsPage() {
         .eq('id', authUser.id)
         .single()
       setUser(userData)
+      setReferralCode(userData?.referral_code || null)
 
       const { data: profileData } = await supabase
         .from('onboarding_profiles')
@@ -42,6 +48,14 @@ export default function SettingsPage() {
         .eq('user_id', authUser.id)
         .single()
       setProfile(profileData)
+
+      // Load referral count
+      const { count } = await supabase
+        .from('referrals')
+        .select('*', { count: 'exact', head: true })
+        .eq('referrer_id', authUser.id)
+        .eq('status', 'converted')
+      setReferralCount(count || 0)
     } finally {
       setLoading(false)
     }
@@ -71,6 +85,32 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleShare() {
+    if (!referralCode) return
+    const share = getShareText(locale, referralCode)
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: share.title,
+          text: share.text,
+          url: share.url,
+        })
+        trackEvent('referral_shared', { method: 'native' })
+        setShareSuccess(true)
+        setTimeout(() => setShareSuccess(false), 3000)
+      } catch {
+        // User cancelled share
+      }
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(`${share.text}\n${share.url}`)
+      trackEvent('referral_shared', { method: 'clipboard' })
+      setShareSuccess(true)
+      setTimeout(() => setShareSuccess(false), 3000)
+    }
+  }
+
   async function handleLogout() {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -94,6 +134,8 @@ export default function SettingsPage() {
       </div>
     )
   }
+
+  const reward = calculateReferralReward(referralCount)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -122,6 +164,41 @@ export default function SettingsPage() {
             )}
           </div>
         </div>
+
+        {/* Referral section */}
+        {referralCode && (
+          <div className="card space-y-4">
+            <h3 className="font-semibold">{t('settings.referralTitle')}</h3>
+            <p className="text-sm text-gray-500">{t('settings.referralDesc')}</p>
+
+            <div className="bg-gray-50 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-gray-700">
+                    {t('settings.referralCount', { count: referralCount })}
+                  </div>
+                  {reward.earnedDays > 0 && (
+                    <div className="text-xs text-volt-600 mt-1">
+                      {t('settings.referralEarned', { days: reward.earnedDays })}
+                    </div>
+                  )}
+                  {reward.nextMilestone && (
+                    <div className="text-xs text-gray-400 mt-1">
+                      {t('settings.referralNext', {
+                        referrals: reward.nextMilestone.referrals,
+                        reward: reward.nextMilestone.reward,
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <Button onClick={handleShare} variant="ghost" className="w-full">
+              {shareSuccess ? t('settings.referralCopied') : t('settings.referralShare')}
+            </Button>
+          </div>
+        )}
 
         {/* Wake targets */}
         <div className="card space-y-4">

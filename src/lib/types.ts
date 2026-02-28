@@ -183,6 +183,8 @@ export type AnalyticsEvent =
   | 'signup_completed'
   | 'onboarding_started'
   | 'onboarding_completed'
+  | 'onboarding_step_completed'
+  | 'onboarding_abandoned'
   | 'daily_card_viewed'
   | 'primary_action_completed'
   | 'checkin_completed_night'
@@ -195,7 +197,15 @@ export type AnalyticsEvent =
   | 'demo_card_generated'
   | 'referral_shared'
   | 'referral_signup'
+  | 'referral_converted'
   | 'locale_changed'
+  | 'user_activated'
+  | 'instant_value_preview'
+  | 'conversion_trigger'
+  | 'experiment_assigned'
+  | 'energy_improvement'
+  | 'streak_milestone'
+  | 'share_card_generated'
 
 export interface AnalyticsPayload {
   event: AnalyticsEvent

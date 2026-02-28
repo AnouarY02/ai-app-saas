@@ -455,3 +455,334 @@ Monitor with: Vercel Analytics, UptimeRobot, or Better Uptime.
 ### Vercel
 - Free tier: 100GB bandwidth, serverless functions
 - Pro ($20/mo): 1TB bandwidth
+
+---
+
+## 12. Revenue Analytics Dashboard
+
+### Activation Rate
+
+```sql
+-- Activation rate (users who completed onboarding + viewed card + checked in within 48h)
+SELECT
+  DATE_TRUNC('week', u.created_at) as cohort_week,
+  COUNT(*) as total_users,
+  COUNT(*) FILTER (WHERE u.activated_at IS NOT NULL) as activated,
+  ROUND(
+    COUNT(*) FILTER (WHERE u.activated_at IS NOT NULL)::numeric
+    / NULLIF(COUNT(*), 0) * 100, 1
+  ) as activation_rate_pct
+FROM users u
+WHERE u.onboarding_completed = true
+GROUP BY cohort_week
+ORDER BY cohort_week DESC
+LIMIT 12;
+```
+
+### D1 / D7 Retention
+
+```sql
+-- D1 retention by cohort
+WITH cohorts AS (
+  SELECT user_id, DATE(MIN(created_at)) as signup_date
+  FROM analytics_events WHERE event = 'signup_completed'
+  GROUP BY user_id
+),
+activity AS (
+  SELECT DISTINCT user_id, DATE(created_at) as active_date
+  FROM analytics_events
+  WHERE event IN ('daily_card_viewed', 'checkin_completed_morning', 'checkin_completed_night')
+)
+SELECT
+  c.signup_date,
+  COUNT(DISTINCT c.user_id) as cohort_size,
+  COUNT(DISTINCT CASE WHEN a.active_date = c.signup_date + 1 THEN c.user_id END) as d1_retained,
+  COUNT(DISTINCT CASE WHEN a.active_date = c.signup_date + 7 THEN c.user_id END) as d7_retained,
+  ROUND(COUNT(DISTINCT CASE WHEN a.active_date = c.signup_date + 1 THEN c.user_id END)::numeric
+    / NULLIF(COUNT(DISTINCT c.user_id), 0) * 100, 1) as d1_pct,
+  ROUND(COUNT(DISTINCT CASE WHEN a.active_date = c.signup_date + 7 THEN c.user_id END)::numeric
+    / NULLIF(COUNT(DISTINCT c.user_id), 0) * 100, 1) as d7_pct
+FROM cohorts c
+LEFT JOIN activity a ON c.user_id = a.user_id
+GROUP BY c.signup_date
+ORDER BY c.signup_date DESC
+LIMIT 30;
+```
+
+### Free → Premium Conversion
+
+```sql
+-- Conversion rate with experiment variant breakdown
+SELECT
+  COALESCE(ea.variant, 'no_experiment') as pricing_variant,
+  COUNT(DISTINCT u.id) as total_users,
+  COUNT(DISTINCT u.id) FILTER (WHERE u.plan = 'premium') as premium_users,
+  ROUND(
+    COUNT(DISTINCT u.id) FILTER (WHERE u.plan = 'premium')::numeric
+    / NULLIF(COUNT(DISTINCT u.id), 0) * 100, 1
+  ) as conversion_pct
+FROM users u
+LEFT JOIN experiment_assignments ea
+  ON u.id = ea.user_id AND ea.experiment_id = 'pricing_test'
+WHERE u.onboarding_completed = true
+GROUP BY COALESCE(ea.variant, 'no_experiment')
+ORDER BY conversion_pct DESC;
+```
+
+### ARPU (Average Revenue Per User)
+
+```sql
+-- Monthly ARPU (active users only)
+WITH monthly_revenue AS (
+  SELECT
+    DATE_TRUNC('month', s.created_at) as month,
+    SUM(CASE
+      WHEN s.plan = 'premium' AND s.status = 'active' THEN 9.99
+      ELSE 0
+    END) as revenue
+  FROM subscriptions s
+  GROUP BY month
+),
+monthly_active AS (
+  SELECT
+    DATE_TRUNC('month', created_at) as month,
+    COUNT(DISTINCT user_id) as active_users
+  FROM analytics_events
+  WHERE event = 'daily_card_viewed'
+  GROUP BY month
+)
+SELECT
+  r.month,
+  r.revenue,
+  a.active_users,
+  ROUND(r.revenue / NULLIF(a.active_users, 0), 2) as arpu
+FROM monthly_revenue r
+JOIN monthly_active a ON r.month = a.month
+ORDER BY r.month DESC
+LIMIT 12;
+```
+
+### LTV Estimate
+
+```sql
+-- LTV = ARPU × Average Lifetime (months)
+WITH user_lifetimes AS (
+  SELECT
+    user_id,
+    EXTRACT(EPOCH FROM (
+      COALESCE(MAX(created_at), NOW()) - MIN(created_at)
+    )) / (30 * 86400) as lifetime_months
+  FROM analytics_events
+  GROUP BY user_id
+  HAVING COUNT(*) > 1
+)
+SELECT
+  ROUND(AVG(lifetime_months), 1) as avg_lifetime_months,
+  ROUND(AVG(lifetime_months) * 9.99, 2) as estimated_ltv
+FROM user_lifetimes;
+```
+
+### Churn Rate
+
+```sql
+-- Monthly churn rate
+WITH monthly_active AS (
+  SELECT
+    DATE_TRUNC('month', created_at) as month,
+    user_id
+  FROM analytics_events
+  WHERE event IN ('daily_card_viewed', 'checkin_completed_morning')
+  GROUP BY month, user_id
+)
+SELECT
+  a.month,
+  COUNT(DISTINCT a.user_id) as active_users,
+  COUNT(DISTINCT a.user_id) FILTER (
+    WHERE a.user_id NOT IN (
+      SELECT user_id FROM monthly_active
+      WHERE month = a.month + INTERVAL '1 month'
+    )
+  ) as churned,
+  ROUND(
+    COUNT(DISTINCT a.user_id) FILTER (
+      WHERE a.user_id NOT IN (
+        SELECT user_id FROM monthly_active
+        WHERE month = a.month + INTERVAL '1 month'
+      )
+    )::numeric / NULLIF(COUNT(DISTINCT a.user_id), 0) * 100, 1
+  ) as churn_rate_pct
+FROM monthly_active a
+GROUP BY a.month
+ORDER BY a.month DESC
+LIMIT 12;
+```
+
+### Referral Conversion
+
+```sql
+-- Referral funnel + conversion
+SELECT
+  COUNT(*) as total_referrals,
+  COUNT(*) FILTER (WHERE status = 'signed_up') as signed_up,
+  COUNT(*) FILTER (WHERE status = 'converted') as converted,
+  ROUND(
+    COUNT(*) FILTER (WHERE status = 'converted')::numeric
+    / NULLIF(COUNT(*), 0) * 100, 1
+  ) as referral_conversion_pct,
+  SUM(reward_days_granted) as total_reward_days
+FROM referrals;
+
+-- Top referrers with reward tracking
+SELECT
+  u.email,
+  COUNT(r.*) as referrals,
+  COUNT(r.*) FILTER (WHERE r.status = 'converted') as converted,
+  SUM(r.reward_days_granted) as days_earned
+FROM referrals r
+JOIN users u ON r.referrer_id = u.id
+GROUP BY u.email
+ORDER BY referrals DESC
+LIMIT 20;
+```
+
+### Onboarding Funnel (Friction Audit)
+
+```sql
+-- Drop-off per onboarding step
+SELECT
+  (properties->>'step')::int as step,
+  COUNT(DISTINCT user_id) as users_reached,
+  AVG((properties->>'time_on_step_ms')::numeric / 1000) as avg_seconds_on_step
+FROM analytics_events
+WHERE event = 'onboarding_step_completed'
+GROUP BY step
+ORDER BY step;
+
+-- Abandonment events
+SELECT
+  (properties->>'last_step')::int as abandoned_at_step,
+  COUNT(*) as abandonments
+FROM analytics_events
+WHERE event = 'onboarding_abandoned'
+GROUP BY abandoned_at_step
+ORDER BY abandoned_at_step;
+```
+
+### Experiment Results
+
+```sql
+-- A/B test results (pricing)
+SELECT
+  ea.variant,
+  COUNT(DISTINCT ea.user_id) as users,
+  COUNT(DISTINCT ea.user_id) FILTER (WHERE ea.converted) as conversions,
+  ROUND(
+    COUNT(DISTINCT ea.user_id) FILTER (WHERE ea.converted)::numeric
+    / NULLIF(COUNT(DISTINCT ea.user_id), 0) * 100, 1
+  ) as conversion_rate_pct
+FROM experiment_assignments ea
+WHERE ea.experiment_id = 'pricing_test'
+GROUP BY ea.variant
+ORDER BY conversion_rate_pct DESC;
+```
+
+---
+
+## 13. Weekly Growth Report
+
+Run these queries weekly (via Supabase Edge Function or manual SQL) and review:
+
+```sql
+-- VOLT Sleep Weekly Growth Report
+-- Run: Every Monday, covers previous 7 days
+-- ================================================
+
+-- 1. USER METRICS
+SELECT
+  'Users' as metric,
+  COUNT(*) as total,
+  COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '7 days') as new_this_week,
+  COUNT(*) FILTER (WHERE onboarding_completed = true) as onboarded,
+  COUNT(*) FILTER (WHERE activated_at IS NOT NULL) as activated,
+  COUNT(*) FILTER (WHERE plan = 'premium') as premium
+FROM users;
+
+-- 2. ACTIVE USERS
+SELECT
+  'DAU (avg)' as metric,
+  ROUND(AVG(dau)) as value
+FROM (
+  SELECT DATE(created_at), COUNT(DISTINCT user_id) as dau
+  FROM analytics_events
+  WHERE event IN ('daily_card_viewed', 'checkin_completed_morning')
+    AND created_at > NOW() - INTERVAL '7 days'
+  GROUP BY DATE(created_at)
+) daily;
+
+-- 3. REVENUE (estimated)
+SELECT
+  'Revenue' as metric,
+  COUNT(*) FILTER (WHERE status = 'active' AND plan = 'premium') as paying_users,
+  ROUND(
+    COUNT(*) FILTER (WHERE status = 'active' AND plan = 'premium') * 9.99, 2
+  ) as estimated_mrr
+FROM subscriptions;
+
+-- 4. CONVERSION
+SELECT
+  'Conversion' as metric,
+  ROUND(
+    COUNT(*) FILTER (WHERE plan = 'premium')::numeric
+    / NULLIF(COUNT(*), 0) * 100, 1
+  ) as free_to_premium_pct
+FROM users WHERE onboarding_completed = true;
+
+-- 5. RETENTION (D7 for last week's cohort)
+WITH last_week_signups AS (
+  SELECT DISTINCT user_id
+  FROM analytics_events
+  WHERE event = 'signup_completed'
+    AND created_at BETWEEN NOW() - INTERVAL '14 days' AND NOW() - INTERVAL '7 days'
+),
+d7_activity AS (
+  SELECT DISTINCT user_id
+  FROM analytics_events
+  WHERE event = 'daily_card_viewed'
+    AND created_at > NOW() - INTERVAL '7 days'
+)
+SELECT
+  'D7 Retention' as metric,
+  COUNT(DISTINCT s.user_id) as cohort_size,
+  COUNT(DISTINCT d.user_id) as retained,
+  ROUND(
+    COUNT(DISTINCT d.user_id)::numeric
+    / NULLIF(COUNT(DISTINCT s.user_id), 0) * 100, 1
+  ) as d7_pct
+FROM last_week_signups s
+LEFT JOIN d7_activity d ON s.user_id = d.user_id;
+
+-- 6. LLM COST (from cost_telemetry — check application logs)
+-- Use getDailyCostSummary() from src/lib/cost-telemetry.ts
+-- Estimated: ~€0.001 per card × premium DAU × 7 days
+
+-- 7. MARGIN ESTIMATE
+-- Revenue - (Supabase + Vercel + LLM cost) / Revenue × 100
+-- At scale: ~85-90% margin (LLM cost is primary variable)
+```
+
+### Report Format
+
+```
+VOLT Sleep Weekly Report — Week of [DATE]
+==========================================
+Users:      [total] (+[new] this week)
+Activated:  [count] ([pct]% activation rate)
+DAU:        [avg daily]
+Premium:    [count] ([pct]% conversion)
+MRR:        €[amount]
+D7 Ret:     [pct]%
+LLM Cost:   €[amount] (margin: [pct]%)
+Referrals:  [new] this week ([converted] converted)
+==========================================
+Top action: [focus area for next week]
+```

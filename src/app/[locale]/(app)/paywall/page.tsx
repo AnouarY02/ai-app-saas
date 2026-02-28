@@ -1,25 +1,58 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { trackEvent } from '@/lib/analytics'
 import { useTranslations } from '@/lib/i18n/context'
+import { createClient } from '@/lib/supabase/client'
+import { assignVariant } from '@/lib/growth/experiments'
+import { getPricingForVariant, getTrialDaysRemaining } from '@/lib/growth/conversion'
 
 export default function PaywallPage() {
   const { t } = useTranslations()
   const [plan, setPlan] = useState<'monthly' | 'yearly'>('yearly')
   const [loading, setLoading] = useState(false)
+  const [pricing, setPricing] = useState(getPricingForVariant('9.99'))
+  const [trialDays, setTrialDays] = useState<number | null>(null)
+
+  useEffect(() => {
+    async function loadExperiment() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const variant = assignVariant(user.id, 'pricing_test')
+        setPricing(getPricingForVariant(variant))
+        trackEvent('experiment_assigned', {
+          experiment: 'pricing_test',
+          variant,
+        })
+
+        // Check trial status
+        const { data: sub } = await supabase
+          .from('subscriptions')
+          .select('status, current_period_end')
+          .eq('user_id', user.id)
+          .single()
+        if (sub) {
+          setTrialDays(getTrialDaysRemaining(sub))
+        }
+      }
+    }
+    loadExperiment()
+    trackEvent('paywall_viewed')
+  }, [])
 
   async function handleSubscribe() {
     setLoading(true)
-    trackEvent('paywall_viewed')
-
     try {
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({
+          plan,
+          price_override: plan === 'monthly' ? pricing.monthly : pricing.yearly,
+        }),
       })
 
       const { url } = await response.json()
@@ -35,6 +68,13 @@ export default function PaywallPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Trial countdown */}
+      {trialDays !== null && trialDays <= 3 && (
+        <div className="bg-volt-500 text-white text-center py-2 text-sm font-medium">
+          {t('paywall.trialCountdown', { days: trialDays })}
+        </div>
+      )}
+
       <header className="px-6 py-4 flex items-center justify-between max-w-lg mx-auto">
         <Link href="dashboard" className="text-gray-400 hover:text-gray-600">
           &larr; {t('common.back')}
@@ -86,7 +126,7 @@ export default function PaywallPage() {
           >
             {t('paywall.yearly')}
             <span className="absolute -top-2 -right-2 bg-volt-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-              -42%
+              -{pricing.discount}%
             </span>
           </button>
         </div>
@@ -94,11 +134,11 @@ export default function PaywallPage() {
         {/* Price card */}
         <div className="card-elevated text-center mb-6">
           <div className="text-4xl font-bold mb-1">
-            {plan === 'monthly' ? t('paywall.monthlyPrice') : t('paywall.yearlyPrice')}
+            {plan === 'monthly' ? pricing.monthlyDisplay : pricing.yearlyMonthly}
           </div>
           {plan === 'yearly' && (
             <div className="text-sm text-gray-500">
-              {t('paywall.yearlySub')}
+              {pricing.yearlyDisplay} — {t('paywall.yearlySave', { discount: pricing.discount })}
             </div>
           )}
         </div>

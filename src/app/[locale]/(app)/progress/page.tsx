@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { trackEvent } from '@/lib/analytics'
 import { useTranslations } from '@/lib/i18n/context'
+import { calculateStreak, calculateMomentum, detectMicroWin } from '@/lib/growth/streaks'
 import type { DailyLog, ActionRecord, WeeklyReport } from '@/lib/types'
 
 export default function ProgressPage() {
@@ -15,6 +17,9 @@ export default function ProgressPage() {
   const [weeklyReport, setWeeklyReport] = useState<WeeklyReport | null>(null)
   const [loading, setLoading] = useState(true)
   const [isPremium, setIsPremium] = useState(false)
+  const [streak, setStreak] = useState(0)
+  const [momentum, setMomentum] = useState<{ score: number; trend: 'up' | 'down' | 'stable' }>({ score: 0, trend: 'stable' })
+  const [microWin, setMicroWin] = useState<{ improved: boolean; delta: number }>({ improved: false, delta: 0 })
 
   const loadProgress = useCallback(async () => {
     try {
@@ -46,6 +51,18 @@ export default function ProgressPage() {
         .limit(limit)
       setActions(actionsData || [])
 
+      // Streak + Momentum
+      if (actionsData) {
+        const streakData = calculateStreak(actionsData)
+        setStreak(streakData.current)
+        setMomentum(calculateMomentum(actionsData))
+      }
+
+      // Micro Win detection
+      if (logsData) {
+        setMicroWin(detectMicroWin(logsData))
+      }
+
       if (userData?.plan === 'premium') {
         const { data: reportData } = await supabase
           .from('weekly_reports')
@@ -59,6 +76,7 @@ export default function ProgressPage() {
             ...reportData,
             insights: reportData.insights_json,
           })
+          trackEvent('weekly_report_viewed')
         }
       }
     } catch (err) {
@@ -78,6 +96,7 @@ export default function ProgressPage() {
     ? (logs.filter((l) => l.energy_morning).reduce((sum, l) => sum + (l.energy_morning || 0), 0) /
        logs.filter((l) => l.energy_morning).length).toFixed(1)
     : '-'
+  const trendArrow = momentum.trend === 'up' ? '\u2197' : momentum.trend === 'down' ? '\u2198' : '\u2192'
 
   if (loading) {
     return (
@@ -100,8 +119,19 @@ export default function ProgressPage() {
       </header>
 
       <div className="max-w-lg mx-auto px-6 py-6 space-y-6">
+        {/* Micro Win banner */}
+        {microWin.improved && (
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
+            <div className="text-2xl mb-1">&#127881;</div>
+            <div className="font-semibold text-green-800">{t('dashboard.microWinTitle')}</div>
+            <div className="text-sm text-green-600 mt-1">
+              {t('dashboard.microWinDesc', { delta: microWin.delta.toFixed(1) })}
+            </div>
+          </div>
+        )}
+
         {/* Stats overview */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-3">
           <div className="card text-center">
             <div className="text-2xl font-bold text-volt-600">{completionRate}%</div>
             <div className="text-xs text-gray-500 mt-1">{t('progress.completionRate')}</div>
@@ -111,8 +141,16 @@ export default function ProgressPage() {
             <div className="text-xs text-gray-500 mt-1">{t('progress.avgEnergy')}</div>
           </div>
           <div className="card text-center">
-            <div className="text-2xl font-bold text-volt-600">{actions.length}</div>
-            <div className="text-xs text-gray-500 mt-1">{t('progress.daysActive')}</div>
+            <div className="text-2xl font-bold text-volt-600">{streak}</div>
+            <div className="text-xs text-gray-500 mt-1">{t('progress.streak')}</div>
+          </div>
+          <div className="card text-center">
+            <div className={`text-2xl font-bold ${
+              momentum.trend === 'up' ? 'text-green-500' : momentum.trend === 'down' ? 'text-red-400' : 'text-gray-400'
+            }`}>
+              {trendArrow}
+            </div>
+            <div className="text-xs text-gray-500 mt-1">{t('progress.momentum')}</div>
           </div>
         </div>
 
@@ -204,16 +242,42 @@ export default function ProgressPage() {
             ))}
           </div>
         ) : !isPremium ? (
-          <Link href="paywall" className="block card border-2 border-dashed border-gray-300 text-center">
-            <div className="text-2xl mb-2">&#128274;</div>
-            <div className="font-semibold mb-1">{t('progress.weeklyReport')}</div>
-            <p className="text-sm text-gray-500 mb-3">
-              {t('progress.weeklyReportLocked')}
-            </p>
-            <span className="text-volt-600 text-sm font-medium">
-              {t('progress.upgrade')} &rarr;
-            </span>
-          </Link>
+          <div className="relative overflow-hidden rounded-2xl border-2 border-dashed border-gray-300">
+            {/* Blurred preview */}
+            <div className="p-5 blur-[3px] select-none pointer-events-none">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold">{t('progress.weeklyReport')}</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="bg-gray-50 rounded-lg p-3 text-center">
+                  <div className="text-lg font-bold">7.2</div>
+                  <div className="text-xs text-gray-500">{t('progress.avgEnergy')}</div>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3 text-center">
+                  <div className="text-lg font-bold">68</div>
+                  <div className="text-xs text-gray-500">Regularity</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 bg-gray-200 rounded-full w-3/4" />
+                <div className="h-3 bg-gray-200 rounded-full w-1/2" />
+                <div className="h-3 bg-volt-200 rounded-full w-2/3" />
+              </div>
+            </div>
+            {/* Overlay CTA */}
+            <Link href="paywall" className="absolute inset-0 flex items-center justify-center bg-white/70">
+              <div className="text-center">
+                <div className="text-2xl mb-2">&#128274;</div>
+                <div className="font-semibold mb-1">{t('progress.unlockPattern')}</div>
+                <p className="text-sm text-gray-500 mb-3">
+                  {t('progress.weeklyReportLocked')}
+                </p>
+                <span className="text-volt-600 text-sm font-medium">
+                  {t('progress.upgrade')} &rarr;
+                </span>
+              </div>
+            </Link>
+          </div>
         ) : null}
       </div>
     </div>

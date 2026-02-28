@@ -151,6 +151,10 @@
     "routeFocusDesc": "2-3 Aktionen pro Tag, maximale Ergebnisse.",
     "autonomyNote": "Du wählst das Tempo. Du kannst dies jederzeit in den Einstellungen ändern.",
     "startPlan": "Meinen Plan starten",
+    "previewTitle": "Hier ist eine Vorschau deines Plans",
+    "previewSub": "Basierend auf deinen bisherigen Angaben würden wir dir heute Folgendes empfehlen.",
+    "previewNote": "Dies ist nur eine Vorschau. Schließe das Onboarding ab für einen vollständig personalisierten Plan.",
+    "previewContinue": "Einrichtung fortsetzen",
     "profiles": {
       "stabilizer": { "title": "Stabilizer", "description": "Dein Rhythmus ist recht stabil. Wir optimieren für maximale Energie." },
       "crash-prone": { "title": "Crash-Prone", "description": "Deine Energietiefs sind spürbar. Wir arbeiten an Rhythmus und Gewohnheiten." },
@@ -175,7 +179,22 @@
     "important": "Wichtig",
     "safetyHelpline": "Hilfe benötigt? Ruf die Telefonseelsorge an (0800 111 0 111) oder kontaktiere deinen Arzt.",
     "progress": "Fortschritt",
-    "streakDays": "{{count}} Tage"
+    "streakDays": "{{count}} Tage",
+    "streakAtRisk": "gefährdet",
+    "streakAtRiskTitle": "Deine Serie ist gefährdet!",
+    "streakAtRiskDesc": "Schließe die heutige Aktion ab, um deine {{count}}-Tage-Serie zu erhalten.",
+    "trialCountdown": "Noch {{days}} Tage in deiner kostenlosen Testphase",
+    "microWinTitle": "Deine Energie verbessert sich!",
+    "microWinDesc": "Energie +{{delta}} Punkte diese Woche. Weiter so!",
+    "momentum": "Gewohnheits-Momentum",
+    "trend": {
+      "up": "Verbesserung",
+      "down": "Rückgang",
+      "stable": "Stabil"
+    },
+    "unlockInsights": "Entdecke dein Energiemuster",
+    "unlockCta": "Sieh deinen wöchentlichen Energiebericht",
+    "tryPremium": "Teste Premium 7 Tage kostenlos \u2192"
   },
   "checkin": {
     "morningTitle": "Morgen-Check-in",
@@ -195,13 +214,16 @@
   },
   "progress": {
     "title": "Dein Fortschritt",
-    "completionRate": "Abschlussrate",
-    "avgEnergy": "Durchschnittsenergie",
+    "completionRate": "Abschluss",
+    "avgEnergy": "\u00d8 Energie",
     "daysActive": "Tage aktiv",
+    "streak": "Serie",
+    "momentum": "Momentum",
     "energyTrend": "Energietrend",
     "recentActions": "Letzte Aktionen",
     "weeklyReport": "Wochenbericht",
     "weeklyReportLocked": "Schalte deinen wöchentlichen Energiebericht mit Premium frei.",
+    "unlockPattern": "Entdecke dein Energiemuster",
     "upgrade": "Auf Premium upgraden",
     "noData": "Mache ein paar Check-ins, um deinen Fortschritt zu sehen."
   },
@@ -209,6 +231,7 @@
     "title": "VOLT Premium",
     "sub": "Entfessle die volle Kraft deines Energieplans.",
     "trialBadge": "7 Tage kostenlos",
+    "trialCountdown": "Noch {{days}} Tage in deiner kostenlosen Testphase",
     "features": {
       "engine": "Adaptive Decision Engine",
       "engineDesc": "KI-gestützte Personalisierung, die sich an deine Muster anpasst.",
@@ -225,7 +248,8 @@
     "monthlyPrice": "€9,99/Monat",
     "yearly": "Jährlich",
     "yearlyPrice": "€5,75/Monat",
-    "yearlySub": "€69/Jahr — 42% sparen",
+    "yearlySub": "\u20ac69/Jahr \u2014 42% sparen",
+    "yearlySave": "{{discount}}% sparen",
     "startTrial": "7 Tage kostenlos testen",
     "disclaimer": "Jederzeit kündbar. Nach der Testphase wirst du automatisch belastet.",
     "paymentMethods": "Zahlungsmethoden: Karte, iDEAL"
@@ -240,7 +264,14 @@
     "intensityLabel": "Intensität",
     "deleteAccount": "Konto löschen (DSGVO)",
     "deleteConfirm": "Bist du sicher, dass du dein Konto löschen möchtest? Dies kann nicht rückgängig gemacht werden.",
-    "disclaimerText": "VOLT Sleep ist kein Medizinprodukt. Bei ernsthaften Schlafproblemen empfehlen wir, einen Arzt zu konsultieren."
+    "disclaimerText": "VOLT Sleep ist kein Medizinprodukt. Bei ernsthaften Schlafproblemen empfehlen wir, einen Arzt zu konsultieren.",
+    "referralTitle": "Freunde einladen",
+    "referralDesc": "Teile VOLT Sleep und verdiene kostenlose Premium-Tage.",
+    "referralCount": "{{count}} erfolgreiche Empfehlungen",
+    "referralEarned": "{{days}} Premium-Tage verdient",
+    "referralNext": "{{referrals}} weitere Empfehlungen \u2192 {{reward}}",
+    "referralShare": "Empfehlungslink teilen",
+    "referralCopied": "In die Zwischenablage kopiert!"
   },
   "cognitiveSwitch": {
     "title": "Cognitive Switch",

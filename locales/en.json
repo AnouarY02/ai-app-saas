@@ -151,6 +151,10 @@
     "routeFocusDesc": "2-3 actions per day, maximum results.",
     "autonomyNote": "You choose the pace. You can always change this in settings.",
     "startPlan": "Start my plan",
+    "previewTitle": "Here's a preview of your plan",
+    "previewSub": "Based on what you've told us so far, this is what we'd recommend today.",
+    "previewNote": "This is just a preview. Complete the onboarding for a fully personalized plan.",
+    "previewContinue": "Continue setup",
     "profiles": {
       "stabilizer": {
         "title": "Stabilizer",
@@ -181,13 +185,28 @@
     "ifItDoesntWork": "If it doesn't work",
     "ifLabel": "If",
     "thenLabel": "Then",
-    "markDone": "Done ✓",
-    "completed": "✓ Completed! Great job.",
+    "markDone": "Done \u2713",
+    "completed": "\u2713 Completed! Great job.",
     "didYouKnow": "Did you know?",
     "important": "Important",
     "safetyHelpline": "Need help? Call your local crisis line or contact your doctor.",
     "progress": "Progress",
-    "streakDays": "{{count}} days"
+    "streakDays": "{{count}} days",
+    "streakAtRisk": "at risk",
+    "streakAtRiskTitle": "Your streak is at risk!",
+    "streakAtRiskDesc": "Complete today's action to keep your {{count}}-day streak alive.",
+    "trialCountdown": "{{days}} days left in your free trial",
+    "microWinTitle": "Your energy is improving!",
+    "microWinDesc": "Energy up +{{delta}} points this week. Keep it going!",
+    "momentum": "Habit momentum",
+    "trend": {
+      "up": "Improving",
+      "down": "Slipping",
+      "stable": "Steady"
+    },
+    "unlockInsights": "Unlock your energy pattern",
+    "unlockCta": "See your Weekly Energy Report",
+    "tryPremium": "Try Premium free for 7 days \u2192"
   },
   "checkin": {
     "morningTitle": "Morning check-in",
@@ -207,13 +226,16 @@
   },
   "progress": {
     "title": "Your progress",
-    "completionRate": "Completion rate",
-    "avgEnergy": "Average energy",
+    "completionRate": "Completion",
+    "avgEnergy": "Avg energy",
     "daysActive": "Days active",
+    "streak": "Streak",
+    "momentum": "Momentum",
     "energyTrend": "Energy trend",
     "recentActions": "Recent actions",
     "weeklyReport": "Weekly Report",
     "weeklyReportLocked": "Unlock your Weekly Energy Report with Premium.",
+    "unlockPattern": "Unlock your energy pattern",
     "upgrade": "Upgrade to Premium",
     "noData": "Complete a few check-ins to see your progress."
   },
@@ -221,6 +243,7 @@
     "title": "VOLT Premium",
     "sub": "Unlock the full power of your energy plan.",
     "trialBadge": "7 days free",
+    "trialCountdown": "{{days}} days left in your free trial",
     "features": {
       "engine": "Adaptive Decision Engine",
       "engineDesc": "AI-powered personalization that adapts to your patterns.",
@@ -234,10 +257,11 @@
       "exportDesc": "Share your progress with a beautiful card."
     },
     "monthly": "Monthly",
-    "monthlyPrice": "€9.99/month",
+    "monthlyPrice": "\u20ac9.99/month",
     "yearly": "Yearly",
-    "yearlyPrice": "€5.75/month",
-    "yearlySub": "€69/year — save 42%",
+    "yearlyPrice": "\u20ac5.75/month",
+    "yearlySub": "\u20ac69/year \u2014 save 42%",
+    "yearlySave": "save {{discount}}%",
     "startTrial": "Start 7-day free trial",
     "disclaimer": "Cancel anytime. After the trial, you'll be charged automatically.",
     "paymentMethods": "Payment methods: card, iDEAL"
@@ -245,14 +269,21 @@
   "settings": {
     "title": "Settings",
     "plan": "Plan",
-    "upgradeLink": "Upgrade →",
+    "upgradeLink": "Upgrade \u2192",
     "wakeTimes": "Wake times",
     "weekdayLabel": "Weekdays",
     "weekendLabel": "Weekends",
     "intensityLabel": "Intensity",
     "deleteAccount": "Delete account (GDPR)",
     "deleteConfirm": "Are you sure you want to delete your account? This cannot be undone.",
-    "disclaimerText": "VOLT Sleep is not a medical device and does not provide diagnosis or treatment. For serious sleep problems, we recommend contacting your doctor."
+    "disclaimerText": "VOLT Sleep is not a medical device and does not provide diagnosis or treatment. For serious sleep problems, we recommend contacting your doctor.",
+    "referralTitle": "Invite friends",
+    "referralDesc": "Share VOLT Sleep and earn free premium days.",
+    "referralCount": "{{count}} successful referrals",
+    "referralEarned": "{{days}} days premium earned",
+    "referralNext": "{{referrals}} more referrals \u2192 {{reward}}",
+    "referralShare": "Share your referral link",
+    "referralCopied": "Copied to clipboard!"
   },
   "cognitiveSwitch": {
     "title": "Cognitive Switch",
