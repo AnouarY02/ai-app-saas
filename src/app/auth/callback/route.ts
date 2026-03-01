@@ -1,7 +1,7 @@
-import { createServerSupabase } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
+import { type NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/onboarding'
@@ -12,12 +12,36 @@ export async function GET(request: Request) {
   const locale = localeMatch?.[1] || 'en'
 
   if (code) {
-    const supabase = createServerSupabase()
+    // Track cookies that Supabase sets during session exchange
+    const cookiesToForward: Array<{ name: string; value: string; options?: Record<string, unknown> }> = []
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll()
+          },
+          setAll(cookies) {
+            cookiesToForward.push(...cookies)
+            // Also update request cookies so subsequent reads see the session
+            cookies.forEach(({ name, value }) =>
+              request.cookies.set(name, value)
+            )
+          },
+        },
+      }
+    )
+
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
       // Check if user has completed onboarding
       const { data: { user } } = await supabase.auth.getUser()
+
+      let redirectPath = `/${locale}${next}`
+
       if (user) {
         const { data: profile } = await supabase
           .from('onboarding_profiles')
@@ -27,20 +51,25 @@ export async function GET(request: Request) {
 
         // If onboarding completed, go to dashboard
         if (profile) {
-          return NextResponse.redirect(`${origin}/${locale}/dashboard`)
+          redirectPath = `/${locale}/dashboard`
+        } else {
+          // Ensure user record exists
+          await supabase.from('users').upsert({
+            id: user.id,
+            email: user.email!,
+            plan: 'free',
+            timezone: 'Europe/Amsterdam',
+            onboarding_completed: false,
+          }, { onConflict: 'id' })
         }
-
-        // Ensure user record exists
-        await supabase.from('users').upsert({
-          id: user.id,
-          email: user.email!,
-          plan: 'free',
-          timezone: 'Europe/Amsterdam',
-          onboarding_completed: false,
-        }, { onConflict: 'id' })
       }
 
-      return NextResponse.redirect(`${origin}/${locale}${next}`)
+      // Explicitly forward session cookies on the redirect response
+      const response = NextResponse.redirect(`${origin}${redirectPath}`)
+      cookiesToForward.forEach(({ name, value, options }) => {
+        response.cookies.set(name, value, options as any)
+      })
+      return response
     }
   }
 
