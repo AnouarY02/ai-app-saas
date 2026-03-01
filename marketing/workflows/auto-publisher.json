@@ -1,0 +1,256 @@
+{
+  "name": "VOLT Sleep — Auto Publisher",
+  "notes": "Checks the publish queue every 15 minutes and posts scheduled content to TikTok, Instagram, YouTube, and Facebook. Requires platform API credentials.",
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "Check Queue Every 15 Min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [100, 300],
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "*/15 * * * *" }]
+        }
+      }
+    },
+    {
+      "id": "load_queue",
+      "name": "Load Scheduled Posts (Due Now)",
+      "type": "n8n-nodes-base.supabase",
+      "position": [300, 300],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "content_posts",
+        "filters": {
+          "conditions": [
+            { "keyName": "status", "condition": "equal", "keyValue": "scheduled" },
+            { "keyName": "scheduled_at", "condition": "smallerEqual", "keyValue": "={{ new Date().toISOString() }}" }
+          ]
+        },
+        "options": { "returnAll": true }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "split_platform",
+      "name": "Route by Platform",
+      "type": "n8n-nodes-base.switch",
+      "position": [500, 300],
+      "parameters": {
+        "dataPropertyName": "platform",
+        "rules": {
+          "rules": [
+            { "value": "tiktok", "output": 0 },
+            { "value": "instagram", "output": 1 },
+            { "value": "youtube", "output": 2 },
+            { "value": "facebook", "output": 3 }
+          ]
+        }
+      }
+    },
+    {
+      "id": "post_tiktok",
+      "name": "Post to TikTok",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, 100],
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.tiktokapis.com/v2/post/publish/content/init/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json; charset=UTF-8" }
+          ]
+        },
+        "sendBody": true,
+        "jsonBody": "={{ JSON.stringify({ post_info: { title: $json.caption, privacy_level: 'PUBLIC_TO_EVERYONE', disable_duet: false, disable_stitch: false, disable_comment: false, brand_content_toggle: false, brand_organic_toggle: false }, source_info: { source: 'PULL_FROM_URL', video_url: $json.video_url || '' }, post_mode: 'DIRECT_POST', media_type: 'VIDEO' }) }}",
+        "options": {}
+      },
+      "credentials": { "httpHeaderAuth": { "name": "TikTok API" } },
+      "notes": "Requires TikTok Content Posting API access. Apply at developers.tiktok.com. Video must be uploaded first or provide a public URL."
+    },
+    {
+      "id": "post_instagram",
+      "name": "Post to Instagram Reels",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, 250],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v19.0/={{ $json.ig_user_id || $env.INSTAGRAM_USER_ID }}/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "media_type", "value": "REELS" },
+            { "name": "video_url", "value": "={{ $json.video_url || '' }}" },
+            { "name": "caption", "value": "={{ $json.caption }}" },
+            { "name": "share_to_feed", "value": "true" }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Meta Graph API" } },
+      "notes": "Step 1: Create media container. Step 2: Publish with /media_publish endpoint. Requires Instagram Graph API with pages_manage_posts permission."
+    },
+    {
+      "id": "publish_instagram",
+      "name": "Publish Instagram Container",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1000, 250],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v19.0/={{ $env.INSTAGRAM_USER_ID }}/media_publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "creation_id", "value": "={{ $json.id }}" }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Meta Graph API" } }
+    },
+    {
+      "id": "post_youtube",
+      "name": "Upload to YouTube Shorts",
+      "type": "n8n-nodes-base.youTube",
+      "position": [750, 400],
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $json.caption.substring(0, 100) }}",
+        "description": "={{ $json.caption + '\\n\\n' + $json.hashtags + '\\n\\nVOLT Sleep — Free energy optimization app' }}",
+        "categoryId": "26",
+        "privacyStatus": "public",
+        "options": {
+          "tags": "={{ $json.hashtags.replace(/#/g, '').split(' ').filter(Boolean) }}"
+        }
+      },
+      "credentials": { "youTubeOAuth2Api": { "name": "YouTube API" } },
+      "notes": "Requires YouTube Data API v3 + OAuth2 credentials. Videos shorter than 60s are automatically classified as Shorts."
+    },
+    {
+      "id": "post_facebook",
+      "name": "Post to Facebook Reels",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, 550],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v19.0/={{ $env.FACEBOOK_PAGE_ID }}/video_reels",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "upload_phase", "value": "finish" },
+            { "name": "video_url", "value": "={{ $json.video_url || '' }}" },
+            { "name": "description", "value": "={{ $json.caption }}" }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Meta Graph API" } },
+      "notes": "Requires Facebook Reels API. Page must have Reels enabled."
+    },
+    {
+      "id": "mark_published",
+      "name": "Mark as Published",
+      "type": "n8n-nodes-base.supabase",
+      "position": [1200, 300],
+      "parameters": {
+        "operation": "update",
+        "tableId": "content_posts",
+        "filters": {
+          "conditions": [
+            { "keyName": "id", "condition": "equal", "keyValue": "={{ $json.id }}" }
+          ]
+        },
+        "fieldsToSend": {
+          "fields": [
+            { "name": "status", "value": "published" },
+            { "name": "published_at", "value": "={{ new Date().toISOString() }}" }
+          ]
+        }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "mark_failed",
+      "name": "Mark as Failed",
+      "type": "n8n-nodes-base.supabase",
+      "position": [1200, 500],
+      "parameters": {
+        "operation": "update",
+        "tableId": "content_posts",
+        "filters": {
+          "conditions": [
+            { "keyName": "id", "condition": "equal", "keyValue": "={{ $json.id }}" }
+          ]
+        },
+        "fieldsToSend": {
+          "fields": [
+            { "name": "status", "value": "failed" }
+          ]
+        }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "notify_failure",
+      "name": "Notify on Failure (Email)",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [1400, 500],
+      "parameters": {
+        "fromEmail": "content@voltsleep.nl",
+        "toEmail": "={{ $env.ADMIN_EMAIL }}",
+        "subject": "VOLT Content: Post Failed — {{ $json.platform }} Day {{ $json.day_number }}",
+        "text": "Post failed to publish.\n\nPlatform: {{ $json.platform }}\nDay: {{ $json.day_number }}\nPost: {{ $json.post_index }}\nCaption: {{ $json.caption }}\n\nCheck n8n execution log for details."
+      },
+      "credentials": { "smtp": { "name": "VOLT SMTP" } }
+    }
+  ],
+  "connections": {
+    "trigger": { "main": [["load_queue"]] },
+    "load_queue": { "main": [["split_platform"]] },
+    "split_platform": {
+      "main": [
+        ["post_tiktok"],
+        ["post_instagram"],
+        ["post_youtube"],
+        ["post_facebook"]
+      ]
+    },
+    "post_tiktok": {
+      "main": [["mark_published"]],
+      "error": [["mark_failed"]]
+    },
+    "post_instagram": {
+      "main": [["publish_instagram"]],
+      "error": [["mark_failed"]]
+    },
+    "publish_instagram": {
+      "main": [["mark_published"]],
+      "error": [["mark_failed"]]
+    },
+    "post_youtube": {
+      "main": [["mark_published"]],
+      "error": [["mark_failed"]]
+    },
+    "post_facebook": {
+      "main": [["mark_published"]],
+      "error": [["mark_failed"]]
+    },
+    "mark_failed": { "main": [["notify_failure"]] }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "name": "VOLT Sleep — Performance Tracker",
+  "notes": "Runs daily at 08:00 UTC. Pulls metrics from platform APIs, stores in content_performance, identifies top hooks, and updates hook weights automatically.",
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "Daily Trigger (08:00 UTC)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [100, 300],
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 8 * * *" }]
+        }
+      }
+    },
+    {
+      "id": "load_published",
+      "name": "Load Posts Published 24-48h Ago",
+      "type": "n8n-nodes-base.supabase",
+      "position": [300, 300],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "content_posts",
+        "filters": {
+          "conditions": [
+            { "keyName": "status", "condition": "equal", "keyValue": "published" },
+            {
+              "keyName": "published_at",
+              "condition": "largerEqual",
+              "keyValue": "={{ new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() }}"
+            },
+            {
+              "keyName": "published_at",
+              "condition": "smallerEqual",
+              "keyValue": "={{ new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() }}"
+            }
+          ]
+        },
+        "options": { "returnAll": true }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "split_platform",
+      "name": "Route by Platform",
+      "type": "n8n-nodes-base.switch",
+      "position": [500, 300],
+      "parameters": {
+        "dataPropertyName": "platform",
+        "rules": {
+          "rules": [
+            { "value": "tiktok", "output": 0 },
+            { "value": "instagram", "output": 1 },
+            { "value": "youtube", "output": 2 },
+            { "value": "facebook", "output": 3 }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fetch_tiktok_metrics",
+      "name": "Fetch TikTok Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, 100],
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.tiktokapis.com/v2/video/query/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonBody": "={{ JSON.stringify({ filters: { video_ids: [$json.external_id] }, fields: ['like_count', 'comment_count', 'share_count', 'view_count'] }) }}",
+        "options": {}
+      },
+      "credentials": { "httpHeaderAuth": { "name": "TikTok API" } },
+      "notes": "Requires TikTok Research API or Content Posting API with video.list scope."
+    },
+    {
+      "id": "fetch_instagram_metrics",
+      "name": "Fetch Instagram Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, 250],
+      "parameters": {
+        "method": "GET",
+        "url": "https://graph.facebook.com/v19.0/={{ $json.external_id }}/insights",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "qs": {
+          "metric": "plays,likes,comments,shares,saved,reach",
+          "period": "lifetime"
+        },
+        "options": {}
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Meta Graph API" } },
+      "notes": "Requires instagram_manage_insights permission."
+    },
+    {
+      "id": "fetch_youtube_metrics",
+      "name": "Fetch YouTube Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, 400],
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "qs": {
+          "id": "={{ $json.external_id }}",
+          "part": "statistics",
+          "key": "={{ $env.YOUTUBE_API_KEY }}"
+        },
+        "options": {}
+      },
+      "credentials": { "httpHeaderAuth": { "name": "YouTube API Key" } },
+      "notes": "Uses YouTube Data API v3. No OAuth needed for public video stats."
+    },
+    {
+      "id": "fetch_facebook_metrics",
+      "name": "Fetch Facebook Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, 550],
+      "parameters": {
+        "method": "GET",
+        "url": "https://graph.facebook.com/v19.0/={{ $json.external_id }}/insights",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "qs": {
+          "metric": "post_video_views,post_reactions_by_type_total,post_video_avg_time_watched",
+          "period": "lifetime"
+        },
+        "options": {}
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Meta Graph API" } },
+      "notes": "Requires pages_read_engagement permission."
+    },
+    {
+      "id": "normalize_metrics",
+      "name": "Normalize Metrics (All Platforms)",
+      "type": "n8n-nodes-base.code",
+      "position": [1000, 300],
+      "parameters": {
+        "jsCode": "const post = $input.first().json;\nconst data = $json;\n\n// Normalize metrics from different platform API responses\nlet metrics = {\n  post_id: post.id,\n  platform: post.platform,\n  views: 0,\n  likes: 0,\n  comments: 0,\n  shares: 0,\n  saves: 0,\n  click_through: 0,\n  watch_time_avg_seconds: 0,\n};\n\nif (post.platform === 'tiktok' && data.data?.videos?.[0]) {\n  const v = data.data.videos[0];\n  metrics.views = v.view_count || 0;\n  metrics.likes = v.like_count || 0;\n  metrics.comments = v.comment_count || 0;\n  metrics.shares = v.share_count || 0;\n}\n\nif (post.platform === 'instagram' && data.data) {\n  for (const insight of data.data) {\n    if (insight.name === 'plays') metrics.views = insight.values?.[0]?.value || 0;\n    if (insight.name === 'likes') metrics.likes = insight.values?.[0]?.value || 0;\n    if (insight.name === 'comments') metrics.comments = insight.values?.[0]?.value || 0;\n    if (insight.name === 'shares') metrics.shares = insight.values?.[0]?.value || 0;\n    if (insight.name === 'saved') metrics.saves = insight.values?.[0]?.value || 0;\n    if (insight.name === 'reach') metrics.click_through = insight.values?.[0]?.value || 0;\n  }\n}\n\nif (post.platform === 'youtube' && data.items?.[0]?.statistics) {\n  const s = data.items[0].statistics;\n  metrics.views = parseInt(s.viewCount || '0', 10);\n  metrics.likes = parseInt(s.likeCount || '0', 10);\n  metrics.comments = parseInt(s.commentCount || '0', 10);\n}\n\nif (post.platform === 'facebook' && data.data) {\n  for (const insight of data.data) {\n    if (insight.name === 'post_video_views') metrics.views = insight.values?.[0]?.value || 0;\n    if (insight.name === 'post_video_avg_time_watched') metrics.watch_time_avg_seconds = insight.values?.[0]?.value || 0;\n  }\n}\n\n// Compute engagement rate\nmetrics.engagement_rate = metrics.views > 0\n  ? ((metrics.likes + metrics.comments + metrics.shares + metrics.saves) / metrics.views * 100).toFixed(2)\n  : 0;\n\nreturn [{ json: { ...metrics, topic_id: post.topic_id } }];"
+      }
+    },
+    {
+      "id": "save_performance",
+      "name": "Save to content_performance",
+      "type": "n8n-nodes-base.supabase",
+      "position": [1200, 200],
+      "parameters": {
+        "operation": "create",
+        "tableId": "content_performance"
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "aggregate_topic_stats",
+      "name": "Compute Topic Averages",
+      "type": "n8n-nodes-base.code",
+      "position": [1200, 400],
+      "parameters": {
+        "jsCode": "const items = $input.all().map(i => i.json);\n\n// Group by topic_id\nconst byTopic = {};\nfor (const item of items) {\n  if (!item.topic_id) continue;\n  if (!byTopic[item.topic_id]) {\n    byTopic[item.topic_id] = { views: [], engagement: [] };\n  }\n  byTopic[item.topic_id].views.push(item.views || 0);\n  byTopic[item.topic_id].engagement.push(parseFloat(item.engagement_rate) || 0);\n}\n\n// Compute averages and determine weight\nconst results = [];\nfor (const [topicId, data] of Object.entries(byTopic)) {\n  const avgViews = Math.round(data.views.reduce((a, b) => a + b, 0) / data.views.length);\n  const avgEngagement = (data.engagement.reduce((a, b) => a + b, 0) / data.engagement.length).toFixed(2);\n  \n  // Weight logic: top performers get 2x, average stays 1x, underperformers get 0.5x\n  let weight = 1.0;\n  if (avgEngagement > 5.0 || avgViews > 10000) weight = 2.0;  // Winner\n  if (avgEngagement > 3.0 || avgViews > 5000) weight = 1.5;   // Good\n  if (avgEngagement < 1.0 && avgViews < 500) weight = 0.5;    // Underperformer\n  \n  results.push({\n    json: {\n      topic_id: topicId,\n      avg_views: avgViews,\n      avg_engagement: parseFloat(avgEngagement),\n      new_weight: weight,\n    }\n  });\n}\n\nreturn results;"
+      }
+    },
+    {
+      "id": "update_hook_weights",
+      "name": "Update Hook Weights",
+      "type": "n8n-nodes-base.supabase",
+      "position": [1450, 400],
+      "parameters": {
+        "operation": "update",
+        "tableId": "content_topics",
+        "filters": {
+          "conditions": [
+            { "keyName": "id", "condition": "equal", "keyValue": "={{ $json.topic_id }}" }
+          ]
+        },
+        "fieldsToSend": {
+          "fields": [
+            { "name": "weight", "value": "={{ $json.new_weight }}" },
+            { "name": "avg_views", "value": "={{ $json.avg_views }}" },
+            { "name": "avg_engagement", "value": "={{ $json.avg_engagement }}" }
+          ]
+        }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "weekly_report",
+      "name": "Weekly Summary (Sunday Only)",
+      "type": "n8n-nodes-base.code",
+      "position": [1450, 200],
+      "parameters": {
+        "jsCode": "const today = new Date();\nif (today.getDay() !== 0) {\n  // Not Sunday — skip weekly report\n  return [];\n}\n\nconst items = $input.all().map(i => i.json);\n\nconst totalViews = items.reduce((s, i) => s + (i.views || 0), 0);\nconst totalLikes = items.reduce((s, i) => s + (i.likes || 0), 0);\nconst totalComments = items.reduce((s, i) => s + (i.comments || 0), 0);\nconst totalShares = items.reduce((s, i) => s + (i.shares || 0), 0);\nconst avgEngagement = items.length > 0\n  ? (items.reduce((s, i) => s + parseFloat(i.engagement_rate || 0), 0) / items.length).toFixed(2)\n  : 0;\n\n// Find top performing post\nconst topPost = items.sort((a, b) => (b.views || 0) - (a.views || 0))[0];\n\nconst report = {\n  week_ending: today.toISOString().split('T')[0],\n  total_posts: items.length,\n  total_views: totalViews,\n  total_likes: totalLikes,\n  total_comments: totalComments,\n  total_shares: totalShares,\n  avg_engagement_rate: avgEngagement,\n  top_post_platform: topPost?.platform || 'N/A',\n  top_post_views: topPost?.views || 0,\n  summary: `Week ending ${today.toISOString().split('T')[0]}:\\n` +\n    `Posts: ${items.length} | Views: ${totalViews.toLocaleString()} | ` +\n    `Likes: ${totalLikes.toLocaleString()} | Comments: ${totalComments.toLocaleString()} | ` +\n    `Shares: ${totalShares.toLocaleString()}\\n` +\n    `Avg engagement: ${avgEngagement}%\\n` +\n    `Top post: ${topPost?.platform || 'N/A'} with ${(topPost?.views || 0).toLocaleString()} views`\n};\n\nreturn [{ json: report }];"
+      }
+    },
+    {
+      "id": "send_weekly_email",
+      "name": "Email Weekly Report",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [1700, 200],
+      "parameters": {
+        "fromEmail": "content@voltsleep.nl",
+        "toEmail": "={{ $env.ADMIN_EMAIL }}",
+        "subject": "VOLT Content Weekly Report — {{ $json.week_ending }}",
+        "text": "={{ $json.summary }}"
+      },
+      "credentials": { "smtp": { "name": "VOLT SMTP" } }
+    }
+  ],
+  "connections": {
+    "trigger": { "main": [["load_published"]] },
+    "load_published": { "main": [["split_platform"]] },
+    "split_platform": {
+      "main": [
+        ["fetch_tiktok_metrics"],
+        ["fetch_instagram_metrics"],
+        ["fetch_youtube_metrics"],
+        ["fetch_facebook_metrics"]
+      ]
+    },
+    "fetch_tiktok_metrics": { "main": [["normalize_metrics"]] },
+    "fetch_instagram_metrics": { "main": [["normalize_metrics"]] },
+    "fetch_youtube_metrics": { "main": [["normalize_metrics"]] },
+    "fetch_facebook_metrics": { "main": [["normalize_metrics"]] },
+    "normalize_metrics": { "main": [["save_performance", "aggregate_topic_stats", "weekly_report"]] },
+    "aggregate_topic_stats": { "main": [["update_hook_weights"]] },
+    "weekly_report": { "main": [["send_weekly_email"]] }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  }
+}
