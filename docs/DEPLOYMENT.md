@@ -164,18 +164,37 @@ Use Stripe test mode first:
 
 In Vercel project settings → **Environment Variables**, add ALL of these:
 
-| Variable | Scope | Notes |
-|----------|-------|-------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Production + Preview | Public |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Production + Preview | Public |
-| `SUPABASE_SERVICE_ROLE_KEY` | Production + Preview | **Server only** |
-| `STRIPE_SECRET_KEY` | Production + Preview | Server only |
-| `STRIPE_WEBHOOK_SECRET` | Production only | Server only |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Production + Preview | Public |
-| `STRIPE_PRICE_MONTHLY` | Production + Preview | Server only |
-| `STRIPE_PRICE_YEARLY` | Production + Preview | Server only |
-| `ANTHROPIC_API_KEY` | Production + Preview | Server only |
-| `NEXT_PUBLIC_APP_URL` | Production | `https://your-domain.com` |
+| Variable | Scope | Source | Notes |
+|----------|-------|--------|-------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Production + Preview | Supabase → Settings → API → URL | Public |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Production + Preview | Supabase → Settings → API → anon key | Public |
+| `SUPABASE_SERVICE_ROLE_KEY` | Production + Preview | Supabase → Settings → API → service_role | **Server only** |
+| `STRIPE_SECRET_KEY` | Production + Preview | Stripe → Developers → API keys → Secret key | Server only |
+| `STRIPE_WEBHOOK_SECRET` | Production only | Stripe → Developers → Webhooks → Signing secret | Server only |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Production + Preview | Stripe → Developers → API keys → Publishable key | Public |
+| `STRIPE_PRICE_MONTHLY` | Production + Preview | Stripe → Products → Price ID (monthly) | Server only |
+| `STRIPE_PRICE_YEARLY` | Production + Preview | Stripe → Products → Price ID (yearly) | Server only |
+| `ANTHROPIC_API_KEY` | Production + Preview | Anthropic → Console → API keys | Server only |
+| `NEXT_PUBLIC_APP_URL` | Production | Your production URL | `https://voltsleep.nl` |
+| `LLM_MODE` | Production + Preview | Set to `full`, `reduced`, or `rules-only` | Server only, default: `full` |
+| `APPLE_SHARED_SECRET` | Production | App Store Connect → Shared Secret | Server only (iOS IAP) |
+| `GOOGLE_PLAY_SERVICE_ACCOUNT_KEY` | Production | Google Cloud Console → Service Account JSON | Server only (Android IAP) |
+| `NEXT_PUBLIC_TIKTOK_PIXEL_ID` | Production only | TikTok Ads → Events → Pixel ID | Optional, marketing |
+| `NEXT_PUBLIC_META_PIXEL_ID` | Production only | Meta Events Manager → Pixel ID | Optional, marketing |
+
+**Environment Variable Mapping:**
+
+If your local `.env` uses different key names, see the mapping table in `.env.example`.
+
+**CLI alternative (faster):**
+```bash
+# Set multiple vars at once via Vercel CLI
+npx vercel env add NEXT_PUBLIC_SUPABASE_URL production preview
+npx vercel env add SUPABASE_SERVICE_ROLE_KEY production preview
+# Repeat for each variable
+```
+
+> **Security rule:** Variables without `NEXT_PUBLIC_` prefix are server-only and never exposed to the browser. Double-check by searching the production JS bundle: `curl -s https://your-domain.com | grep -i "service_role"` → must return nothing.
 
 ### 3.3 Deploy
 
@@ -203,6 +222,7 @@ npx vercel --prod
 ### 4.1 Smoke Test Checklist
 
 ```
+CORE FLOW:
 [ ] Landing page loads at /
 [ ] Signup with magic link works
 [ ] Magic link email received
@@ -212,14 +232,32 @@ npx vercel --prod
 [ ] Morning check-in saves data
 [ ] Night check-in saves data
 [ ] Progress page loads (free: 7 days)
+
+PAYMENTS (Web):
 [ ] Paywall page loads with correct prices
 [ ] Stripe checkout opens (test mode)
 [ ] After payment: user.plan = 'premium'
+[ ] Webhook fires: subscription created in DB
+
+PREMIUM FEATURES:
 [ ] Weekly report generates (premium only)
 [ ] Cognitive Switch works (premium only)
+[ ] Free users see paywall when accessing premium features
+
+GDPR / ACCOUNT:
 [ ] Settings: logout works
-[ ] Settings: account deletion works
+[ ] Settings: data export downloads JSON (GET /api/account/export)
+[ ] Settings: account deletion cancels subscription + deletes all data
 [ ] Deleted user cannot login
+
+LEGAL PAGES:
+[ ] /privacy loads with AI processing section
+[ ] /terms loads with medical disclaimer
+
+SECURITY:
+[ ] No service_role key in client JS bundle
+[ ] Rate limiting returns 429 after threshold
+[ ] CSP headers present on all pages
 ```
 
 ### 4.2 Security Verification

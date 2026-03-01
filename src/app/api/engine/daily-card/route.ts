@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { generateDailyCard } from '@/lib/engine'
-import { trackServerEvent } from '@/lib/analytics'
+import { trackServerEvent } from '@/lib/analytics-server'
 import { checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit'
 import { shouldUseLLM } from '@/lib/llm-config'
 

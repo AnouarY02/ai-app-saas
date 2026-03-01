@@ -1,0 +1,162 @@
+{
+  "name": "VOLT Sleep — Daily Content Factory",
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "Daily Trigger (06:00 UTC)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [100, 300],
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 6 * * *" }]
+        }
+      }
+    },
+    {
+      "id": "load_hooks",
+      "name": "Load Hook Library (Supabase)",
+      "type": "n8n-nodes-base.supabase",
+      "position": [300, 300],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "content_topics",
+        "filters": {
+          "conditions": [
+            { "keyName": "is_active", "condition": "equal", "keyValue": true },
+            { "keyName": "locale", "condition": "equal", "keyValue": "en" }
+          ]
+        },
+        "options": { "returnAll": true }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "check_recent",
+      "name": "Filter: Not Used in 14 Days",
+      "type": "n8n-nodes-base.filter",
+      "position": [500, 300],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "value1": "={{ $json.last_used_at }}",
+              "operation": "isEmpty"
+            }
+          ],
+          "combineOperation": "any"
+        }
+      },
+      "notes": "Also allows hooks with last_used_at > 14 days ago. Handled in code node."
+    },
+    {
+      "id": "select_topics",
+      "name": "Select 3 Topics (Weighted)",
+      "type": "n8n-nodes-base.code",
+      "position": [700, 300],
+      "parameters": {
+        "jsCode": "const topics = $input.all().map(i => i.json);\nconst now = new Date();\nconst fourteenDaysAgo = new Date(now - 14 * 24 * 60 * 60 * 1000);\n\n// Filter: not used in 14 days\nconst eligible = topics.filter(t => {\n  if (!t.last_used_at) return true;\n  return new Date(t.last_used_at) < fourteenDaysAgo;\n});\n\n// Weighted random selection\nconst totalWeight = eligible.reduce((s, t) => s + parseFloat(t.weight || 1), 0);\nconst selected = [];\nconst used = new Set();\n\nwhile (selected.length < 3 && used.size < eligible.length) {\n  let r = Math.random() * totalWeight;\n  for (const topic of eligible) {\n    if (used.has(topic.id)) continue;\n    r -= parseFloat(topic.weight || 1);\n    if (r <= 0) {\n      selected.push(topic);\n      used.add(topic.id);\n      break;\n    }\n  }\n}\n\nreturn selected.map(t => ({ json: t }));"
+      }
+    },
+    {
+      "id": "generate_script",
+      "name": "Generate Script (Claude)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [900, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1000, messages: [{ role: 'user', content: `You are a short-form video scriptwriter for VOLT Sleep, an energy optimization app. Write a 15-30 second video script.\\n\\nHook: ${$json.hook}\\nAngle: ${$json.angle}\\n\\nRules:\\n- NO medical claims (no \"cure\", \"treat\", \"diagnose\", \"insomnia\", \"disorder\")\\n- Performance/energy framing ONLY\\n- Simple, sharp language\\n- No shame\\n- Include exactly one actionable tip\\n\\nFormat:\\n[HOOK 0-2s] (pattern interrupt)\\n[PROBLEM 2-8s] (name the pain)\\n[REFRAME 8-18s] (behavioral science insight, 1-2 sentences)\\n[TIP 18-25s] (concrete action)\\n[CTA 25-30s] \"VOLT Sleep gives you 1 action per day. Free. Link in bio.\"\\n\\nAlso provide:\\n- Caption (under 150 chars, include 1 question)\\n- 5 hashtags\\n- Thumbnail text (5 words max)\\n- 3 on-screen text overlays with timestamps` }] }) }}"
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Anthropic API" } }
+    },
+    {
+      "id": "parse_script",
+      "name": "Parse Script Output",
+      "type": "n8n-nodes-base.code",
+      "position": [1100, 300],
+      "parameters": {
+        "jsCode": "const response = $json;\nconst content = response.content?.[0]?.text || '';\n\n// Parse sections\nconst hookMatch = content.match(/\\[HOOK[^\\]]*\\](.+?)\\n/s);\nconst problemMatch = content.match(/\\[PROBLEM[^\\]]*\\](.+?)\\[/s);\nconst reframeMatch = content.match(/\\[REFRAME[^\\]]*\\](.+?)\\[/s);\nconst tipMatch = content.match(/\\[TIP[^\\]]*\\](.+?)\\[/s);\nconst ctaMatch = content.match(/\\[CTA[^\\]]*\\](.+?)$/ms);\nconst captionMatch = content.match(/Caption:(.+?)\\n/i);\nconst hashtagMatch = content.match(/hashtag[s]?:(.+?)\\n/i);\nconst thumbMatch = content.match(/Thumbnail[^:]*:(.+?)\\n/i);\n\nreturn [{\n  json: {\n    script: content,\n    caption: (captionMatch?.[1] || '').trim(),\n    hashtags: (hashtagMatch?.[1] || '#energy #sleep #focus #voltsleep #productivity').trim(),\n    thumbnail_text: (thumbMatch?.[1] || '').trim(),\n    hook_text: (hookMatch?.[1] || '').trim(),\n  }\n}];"
+      }
+    },
+    {
+      "id": "generate_srt",
+      "name": "Generate SRT Subtitles",
+      "type": "n8n-nodes-base.code",
+      "position": [1300, 300],
+      "parameters": {
+        "jsCode": "const script = $json.script;\nconst lines = script.split('\\n').filter(l => l.trim() && !l.startsWith('-') && !l.startsWith('Caption') && !l.startsWith('Hashtag') && !l.startsWith('Thumbnail'));\n\nlet srt = '';\nlet counter = 1;\nlet timeMs = 0;\nconst avgDuration = 3000; // 3s per line\n\nfor (const line of lines.slice(0, 10)) {\n  const clean = line.replace(/\\[.*?\\]/g, '').trim();\n  if (!clean || clean.length < 3) continue;\n  \n  const startSec = Math.floor(timeMs / 1000);\n  const endSec = Math.floor((timeMs + avgDuration) / 1000);\n  const startTime = formatSrtTime(timeMs);\n  const endTime = formatSrtTime(timeMs + avgDuration);\n  \n  srt += `${counter}\\n${startTime} --> ${endTime}\\n${clean}\\n\\n`;\n  counter++;\n  timeMs += avgDuration;\n}\n\nfunction formatSrtTime(ms) {\n  const h = Math.floor(ms / 3600000).toString().padStart(2, '0');\n  const m = Math.floor((ms % 3600000) / 60000).toString().padStart(2, '0');\n  const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');\n  const msRem = (ms % 1000).toString().padStart(3, '0');\n  return `${h}:${m}:${s},${msRem}`;\n}\n\nreturn [{ json: { ...$json, srt_subtitles: srt } }];"
+      }
+    },
+    {
+      "id": "format_platforms",
+      "name": "Format for Each Platform",
+      "type": "n8n-nodes-base.code",
+      "position": [1500, 300],
+      "parameters": {
+        "jsCode": "const post = $json;\nconst baseUrl = 'https://voltsleep.nl';\nconst day = new Date().toISOString().split('T')[0];\n\nconst platforms = ['tiktok', 'instagram', 'youtube', 'facebook'];\nconst times = ['09:00', '13:00', '19:00'];\nconst postIndex = $itemIndex + 1;\nconst scheduleTime = times[postIndex - 1] || '09:00';\n\nconst results = platforms.map(platform => {\n  const utm = `${baseUrl}?utm_source=${platform}&utm_medium=organic&utm_campaign=daily_${day}&utm_content=hook_${postIndex}`;\n  \n  let caption = post.caption;\n  // Platform-specific formatting\n  if (platform === 'tiktok') {\n    caption = `${post.caption}\\n\\n${post.hashtags}\\n\\nLink in bio`;\n  } else if (platform === 'instagram') {\n    caption = `${post.caption}\\n\\n${post.hashtags}\\n\\nLink in bio for free energy profile`;\n  } else if (platform === 'youtube') {\n    caption = `${post.caption} #shorts ${post.hashtags}`;\n  } else if (platform === 'facebook') {\n    caption = `${post.caption}\\n\\n${post.hashtags}`;\n  }\n  \n  return {\n    json: {\n      platform,\n      day_number: Math.ceil((new Date() - new Date('2026-03-01')) / (1000 * 60 * 60 * 24)) + 1,\n      post_index: postIndex,\n      script: post.script,\n      caption,\n      hashtags: post.hashtags,\n      cta_variant: postIndex === 1 ? 'soft' : postIndex === 2 ? 'direct' : 'urgency',\n      srt_subtitles: post.srt_subtitles,\n      thumbnail_text: post.thumbnail_text,\n      utm_link: utm,\n      scheduled_at: `${day}T${scheduleTime}:00Z`,\n      status: 'scheduled',\n    }\n  };\n});\n\nreturn results;"
+      }
+    },
+    {
+      "id": "save_posts",
+      "name": "Save to Publish Queue (Supabase)",
+      "type": "n8n-nodes-base.supabase",
+      "position": [1700, 300],
+      "parameters": {
+        "operation": "create",
+        "tableId": "content_posts"
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "update_topic_usage",
+      "name": "Update Topic Last Used",
+      "type": "n8n-nodes-base.supabase",
+      "position": [1700, 500],
+      "parameters": {
+        "operation": "update",
+        "tableId": "content_topics",
+        "filters": {
+          "conditions": [
+            { "keyName": "id", "condition": "equal", "keyValue": "={{ $json.topic_id }}" }
+          ]
+        },
+        "fieldsToSend": {
+          "fields": [
+            { "name": "last_used_at", "value": "={{ new Date().toISOString() }}" },
+            { "name": "times_used", "value": "={{ parseInt($json.times_used || 0) + 1 }}" }
+          ]
+        }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    }
+  ],
+  "connections": {
+    "trigger": { "main": [["load_hooks"]] },
+    "load_hooks": { "main": [["check_recent"]] },
+    "check_recent": { "main": [["select_topics"]] },
+    "select_topics": { "main": [["generate_script"]] },
+    "generate_script": { "main": [["parse_script"]] },
+    "parse_script": { "main": [["generate_srt"]] },
+    "generate_srt": { "main": [["format_platforms"]] },
+    "format_platforms": { "main": [["save_posts", "update_topic_usage"]] }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  }
+}

@@ -5,9 +5,11 @@ import { detectBot } from '@/lib/security'
 import { z } from 'zod'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20' as Stripe.LatestApiVersion,
-})
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2024-06-20' as Stripe.LatestApiVersion,
+  })
+}
 
 const checkoutSchema = z.object({
   plan: z.enum(['monthly', 'yearly']),
@@ -63,6 +65,8 @@ export async function POST(request: NextRequest) {
       .single()
 
     let customerId = subscription?.stripe_customer_id
+
+    const stripe = getStripe()
 
     if (!customerId) {
       const customer = await stripe.customers.create({

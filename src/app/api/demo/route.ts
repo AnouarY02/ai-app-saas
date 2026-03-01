@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit'
-import { trackServerEvent } from '@/lib/analytics'
+import { trackServerEvent } from '@/lib/analytics-server'
 import { selectActions, computeDerivedMetrics, selectTone, selectMicroEducation } from '@/lib/engine/rules'
 import type { OnboardingProfile } from '@/lib/types'
 

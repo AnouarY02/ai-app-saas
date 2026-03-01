@@ -2,16 +2,19 @@ import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { createServiceSupabase } from '@/lib/supabase/server'
-import { trackServerEvent } from '@/lib/analytics'
+import { trackServerEvent } from '@/lib/analytics-server'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20' as Stripe.LatestApiVersion,
-})
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2024-06-20' as Stripe.LatestApiVersion,
+  })
+}
 
 // Disable body parsing — Stripe needs the raw body for signature verification
 export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
+  const stripe = getStripe()
   const body = await request.text()
   const sig = headers().get('stripe-signature')
 
