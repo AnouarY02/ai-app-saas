@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest --passWithNoTests",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "setup": "node scripts/setup.mjs",
+    "setup:env-only": "node scripts/setup.mjs --skip-deploy",
+    "deploy": "npm run build && npx vercel --prod",
+    "deploy:preview": "npm run build && npx vercel"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.0",
