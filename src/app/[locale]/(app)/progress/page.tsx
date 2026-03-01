@@ -1,0 +1,285 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
+import { trackEvent } from '@/lib/analytics'
+import { useTranslations } from '@/lib/i18n/context'
+import { calculateStreak, calculateMomentum, detectMicroWin } from '@/lib/growth/streaks'
+import type { DailyLog, ActionRecord, WeeklyReport } from '@/lib/types'
+
+export default function ProgressPage() {
+  const { t, locale } = useTranslations()
+  const router = useRouter()
+  const [logs, setLogs] = useState<DailyLog[]>([])
+  const [actions, setActions] = useState<ActionRecord[]>([])
+  const [weeklyReport, setWeeklyReport] = useState<WeeklyReport | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [isPremium, setIsPremium] = useState(false)
+  const [streak, setStreak] = useState(0)
+  const [momentum, setMomentum] = useState<{ score: number; trend: 'up' | 'down' | 'stable' }>({ score: 0, trend: 'stable' })
+  const [microWin, setMicroWin] = useState<{ improved: boolean; delta: number }>({ improved: false, delta: 0 })
+
+  const loadProgress = useCallback(async () => {
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push('login'); return }
+
+      const { data: userData } = await supabase
+        .from('users')
+        .select('plan')
+        .eq('id', user.id)
+        .single()
+      setIsPremium(userData?.plan === 'premium')
+
+      const limit = userData?.plan === 'premium' ? 30 : 7
+      const { data: logsData } = await supabase
+        .from('daily_logs')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false })
+        .limit(limit)
+      setLogs(logsData || [])
+
+      const { data: actionsData } = await supabase
+        .from('actions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false })
+        .limit(limit)
+      setActions(actionsData || [])
+
+      // Streak + Momentum
+      if (actionsData) {
+        const streakData = calculateStreak(actionsData)
+        setStreak(streakData.current)
+        setMomentum(calculateMomentum(actionsData))
+      }
+
+      // Micro Win detection
+      if (logsData) {
+        setMicroWin(detectMicroWin(logsData))
+      }
+
+      if (userData?.plan === 'premium') {
+        const { data: reportData } = await supabase
+          .from('weekly_reports')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('week_start', { ascending: false })
+          .limit(1)
+          .single()
+        if (reportData) {
+          setWeeklyReport({
+            ...reportData,
+            insights: reportData.insights_json,
+          })
+          trackEvent('weekly_report_viewed')
+        }
+      }
+    } catch (err) {
+      console.error('Progress error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [router])
+
+  useEffect(() => {
+    loadProgress()
+  }, [loadProgress])
+
+  const completedCount = actions.filter((a) => a.completed_primary).length
+  const completionRate = actions.length > 0 ? Math.round((completedCount / actions.length) * 100) : 0
+  const avgEnergy = logs.length > 0
+    ? (logs.filter((l) => l.energy_morning).reduce((sum, l) => sum + (l.energy_morning || 0), 0) /
+       logs.filter((l) => l.energy_morning).length).toFixed(1)
+    : '-'
+  const trendArrow = momentum.trend === 'up' ? '\u2197' : momentum.trend === 'down' ? '\u2198' : '\u2192'
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-volt-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-100 px-6 py-4">
+        <div className="max-w-lg mx-auto flex items-center justify-between">
+          <Link href="dashboard" className="text-gray-400 hover:text-gray-600">
+            &larr; {t('common.back')}
+          </Link>
+          <h1 className="font-bold text-lg">{t('progress.title')}</h1>
+          <div className="w-6" />
+        </div>
+      </header>
+
+      <div className="max-w-lg mx-auto px-6 py-6 space-y-6">
+        {/* Micro Win banner */}
+        {microWin.improved && (
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
+            <div className="text-2xl mb-1">&#127881;</div>
+            <div className="font-semibold text-green-800">{t('dashboard.microWinTitle')}</div>
+            <div className="text-sm text-green-600 mt-1">
+              {t('dashboard.microWinDesc', { delta: microWin.delta.toFixed(1) })}
+            </div>
+          </div>
+        )}
+
+        {/* Stats overview */}
+        <div className="grid grid-cols-4 gap-3">
+          <div className="card text-center">
+            <div className="text-2xl font-bold text-volt-600">{completionRate}%</div>
+            <div className="text-xs text-gray-500 mt-1">{t('progress.completionRate')}</div>
+          </div>
+          <div className="card text-center">
+            <div className="text-2xl font-bold text-volt-600">{avgEnergy}</div>
+            <div className="text-xs text-gray-500 mt-1">{t('progress.avgEnergy')}</div>
+          </div>
+          <div className="card text-center">
+            <div className="text-2xl font-bold text-volt-600">{streak}</div>
+            <div className="text-xs text-gray-500 mt-1">{t('progress.streak')}</div>
+          </div>
+          <div className="card text-center">
+            <div className={`text-2xl font-bold ${
+              momentum.trend === 'up' ? 'text-green-500' : momentum.trend === 'down' ? 'text-red-400' : 'text-gray-400'
+            }`}>
+              {trendArrow}
+            </div>
+            <div className="text-xs text-gray-500 mt-1">{t('progress.momentum')}</div>
+          </div>
+        </div>
+
+        {/* Energy timeline */}
+        <div className="card">
+          <h3 className="font-semibold mb-4">{t('progress.energyTrend')}</h3>
+          <div className="flex items-end gap-1 h-32">
+            {[...logs].reverse().map((log, i) => {
+              const energy = log.energy_morning || 0
+              const height = (energy / 10) * 100
+              const color = energy >= 7 ? 'bg-green-400' : energy >= 4 ? 'bg-yellow-400' : 'bg-red-400'
+              return (
+                <div key={log.date || i} className="flex-1 flex flex-col items-center justify-end h-full">
+                  <div
+                    className={`w-full rounded-t-sm ${color} transition-all`}
+                    style={{ height: `${height}%`, minHeight: energy > 0 ? '4px' : '0' }}
+                  />
+                  <div className="text-[8px] text-gray-400 mt-1 truncate">
+                    {new Date(log.date).toLocaleDateString(locale, { weekday: 'short' })}
+                  </div>
+                </div>
+              )
+            })}
+            {logs.length === 0 && (
+              <div className="flex-1 text-center text-gray-400 text-sm py-12">
+                {t('progress.noData')}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Action history */}
+        <div className="card">
+          <h3 className="font-semibold mb-4">{t('progress.recentActions')}</h3>
+          <div className="space-y-3">
+            {actions.slice(0, 7).map((action) => (
+              <div key={action.id} className="flex items-center gap-3">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs
+                  ${action.completed_primary ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                  {action.completed_primary ? '&#10003;' : '&#8226;'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium truncate">
+                    {action.primary_action_json?.title || '-'}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {new Date(action.date).toLocaleDateString(locale, {
+                      weekday: 'short',
+                      day: 'numeric',
+                      month: 'short',
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))}
+            {actions.length === 0 && (
+              <p className="text-sm text-gray-400 text-center py-4">
+                {t('progress.noData')}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Weekly report (premium) */}
+        {isPremium && weeklyReport ? (
+          <div className="card border-2 border-volt-400">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold">{t('progress.weeklyReport')}</h3>
+              <span className="text-xs font-medium text-volt-600 bg-volt-50 px-2 py-1 rounded-full">
+                {t('common.premium').toUpperCase()}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold">{weeklyReport.avg_energy ?? '-'}</div>
+                <div className="text-xs text-gray-500">{t('progress.avgEnergy')}</div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold">{weeklyReport.regularity_score ?? '-'}</div>
+                <div className="text-xs text-gray-500">Regularity</div>
+              </div>
+            </div>
+            {weeklyReport.insights.map((insight, i) => (
+              <div key={i} className="border-t border-gray-100 py-3">
+                <div className="font-medium text-sm">{insight.title}</div>
+                <p className="text-sm text-gray-500 mt-1">{insight.description}</p>
+                <p className="text-xs text-volt-600 mt-1">{insight.impact}</p>
+              </div>
+            ))}
+          </div>
+        ) : !isPremium ? (
+          <div className="relative overflow-hidden rounded-2xl border-2 border-dashed border-gray-300">
+            {/* Blurred preview */}
+            <div className="p-5 blur-[3px] select-none pointer-events-none">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold">{t('progress.weeklyReport')}</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="bg-gray-50 rounded-lg p-3 text-center">
+                  <div className="text-lg font-bold">7.2</div>
+                  <div className="text-xs text-gray-500">{t('progress.avgEnergy')}</div>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3 text-center">
+                  <div className="text-lg font-bold">68</div>
+                  <div className="text-xs text-gray-500">Regularity</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 bg-gray-200 rounded-full w-3/4" />
+                <div className="h-3 bg-gray-200 rounded-full w-1/2" />
+                <div className="h-3 bg-volt-200 rounded-full w-2/3" />
+              </div>
+            </div>
+            {/* Overlay CTA */}
+            <Link href="paywall" className="absolute inset-0 flex items-center justify-center bg-white/70">
+              <div className="text-center">
+                <div className="text-2xl mb-2">&#128274;</div>
+                <div className="font-semibold mb-1">{t('progress.unlockPattern')}</div>
+                <p className="text-sm text-gray-500 mb-3">
+                  {t('progress.weeklyReportLocked')}
+                </p>
+                <span className="text-volt-600 text-sm font-medium">
+                  {t('progress.upgrade')} &rarr;
+                </span>
+              </div>
+            </Link>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  )
+}
