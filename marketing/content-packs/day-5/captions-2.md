@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-Your alarm isn't failing you. Your light exposure is. Outdoor vs indoor: 100x difference.
+** Your alarm isn't failing you. Your light exposure is. Outdoor vs indoor: 100x difference.
 
-#morninglight #wakeup #circadian #energy #voltsleep
+** #morninglight #wakeup #circadian #energy #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-Your alarm isn't failing you. Your light exposure is. Outdoor vs indoor: 100x difference.
+** Your alarm isn't failing you. Your light exposure is. Outdoor vs indoor: 100x difference.
 
-#morninglight #wakeup #circadian #energy #voltsleep
+** #morninglight #wakeup #circadian #energy #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-Your alarm isn't failing you. Your light exposure is. Outdoor vs indoor: 100x difference. #shorts #morninglight #wakeup #circadian #energy #voltsleep
+** Your alarm isn't failing you. Your light exposure is. Outdoor vs indoor: 100x difference. #shorts ** #morninglight #wakeup #circadian #energy #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day5_2026-03-02&utm_content=hook_2
 
@@ -38,8 +38,8 @@ Your alarm isn't failing you. Your light exposure is. Outdoor vs indoor: 100x di
 ## FACEBOOK
 
 **Caption:**
-Your alarm isn't failing you. Your light exposure is. Outdoor vs indoor: 100x difference.
+** Your alarm isn't failing you. Your light exposure is. Outdoor vs indoor: 100x difference.
 
-#morninglight #wakeup #circadian #energy #voltsleep
+** #morninglight #wakeup #circadian #energy #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day5_2026-03-02&utm_content=hook_2

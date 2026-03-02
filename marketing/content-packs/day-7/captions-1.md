@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-Behavior change research says: less is more. One action, 7 days. That's how habits form. What's yours?
+** Behavior change research says: less is more. One action, 7 days. That's how habits form. What's yours?
 
-#habits #behaviorchange #oneaction #simplicity #voltsleep
+** #habits #behaviorchange #oneaction #simplicity #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-Behavior change research says: less is more. One action, 7 days. That's how habits form. What's yours?
+** Behavior change research says: less is more. One action, 7 days. That's how habits form. What's yours?
 
-#habits #behaviorchange #oneaction #simplicity #voltsleep
+** #habits #behaviorchange #oneaction #simplicity #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-Behavior change research says: less is more. One action, 7 days. That's how habits form. What's yours? #shorts #habits #behaviorchange #oneaction #simplicity #voltsleep
+** Behavior change research says: less is more. One action, 7 days. That's how habits form. What's yours? #shorts ** #habits #behaviorchange #oneaction #simplicity #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day7_2026-03-02&utm_content=hook_1
 
@@ -38,8 +38,8 @@ Behavior change research says: less is more. One action, 7 days. That's how habi
 ## FACEBOOK
 
 **Caption:**
-Behavior change research says: less is more. One action, 7 days. That's how habits form. What's yours?
+** Behavior change research says: less is more. One action, 7 days. That's how habits form. What's yours?
 
-#habits #behaviorchange #oneaction #simplicity #voltsleep
+** #habits #behaviorchange #oneaction #simplicity #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day7_2026-03-02&utm_content=hook_1

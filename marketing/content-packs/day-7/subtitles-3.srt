@@ -1,25 +1,44 @@
 1
 00:00:00,000 --> 00:00:02,000
-7 days. 1 action per
-day. Here's what changes.
+7 days. 1 action per day. Here's what changes.
 
 2
-00:00:02,000 --> 00:00:06,000
+00:00:02,000 --> 00:00:04,000
 You think energy improvement takes months.
-New mattress, new routine, new supplements.
 
 3
-00:00:06,000 --> 00:00:16,000
-We've seen patterns change in 7 days. Not because of magic.
-Because small, consistent actions compound fast when they're the RIGHT actions.
+00:00:04,000 --> 00:00:06,000
+New mattress, new routine, new supplements.
 
 4
-00:00:16,000 --> 00:00:22,000
-Day 1: fix your caffeine timing. Day 3: add morning light.
-Day 5: stabilize your wake time. Day 7: notice the difference.
+00:00:06,000 --> 00:00:08,500
+We've seen patterns change in 7 days.
 
 5
-00:00:22,000 --> 00:00:28,000
-I built an app that guides you through
-this. Free. 30 seconds. Link in bio.
+00:00:08,500 --> 00:00:11,000
+Not because of magic.
+
+6
+00:00:11,000 --> 00:00:13,500
+Because small, consistent actions compound fast
+
+7
+00:00:13,500 --> 00:00:16,000
+when they're the RIGHT actions.
+
+8
+00:00:16,000 --> 00:00:17,500
+Day 1: fix your caffeine timing.
+
+9
+00:00:17,500 --> 00:00:19,000
+Day 3: add morning light.
+
+10
+00:00:19,000 --> 00:00:20,500
+Day 5: stabilize your wake time.
+
+11
+00:00:20,500 --> 00:00:22,000
+Day 7: notice the difference.
 

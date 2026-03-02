@@ -1,25 +1,32 @@
 1
 00:00:00,000 --> 00:00:02,000
-The 45-second habit that
-doubled my afternoon focus.
+The 45-second habit that doubled my afternoon focus.
 
 2
-00:00:02,000 --> 00:00:06,000
-I used to lose every afternoon. 2
-PM hit and my brain was gone.
+00:00:02,000 --> 00:00:04,000
+I used to lose every afternoon.
 
 3
-00:00:06,000 --> 00:00:16,000
-I started doing a 45-second check-in with myself. "How's my energy? What
-did I do this morning?" Just awareness — no action needed.
+00:00:04,000 --> 00:00:06,000
+2 PM hit and my brain was gone.
 
 4
-00:00:16,000 --> 00:00:22,000
-Set a reminder at 2 PM. Rate your energy
-1-10. After 7 days you'll know your pattern.
+00:00:06,000 --> 00:00:09,333
+I started doing a 45-second check-in with myself.
 
 5
-00:00:22,000 --> 00:00:28,000
-I built an app that does this
-check-in for you. Free. 30 seconds.
+00:00:09,333 --> 00:00:12,667
+"How's my energy? What did I do this morning?"
+
+6
+00:00:12,667 --> 00:00:16,000
+Just awareness — no action needed.
+
+7
+00:00:16,000 --> 00:00:19,000
+Set a reminder at 2 PM. Rate your energy 1-10.
+
+8
+00:00:19,000 --> 00:00:22,000
+After 7 days you'll know your pattern.
 

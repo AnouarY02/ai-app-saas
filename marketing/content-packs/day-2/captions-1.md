@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-Weekend sleep-ins aren't recovery. They're jet lag. How much later do you wake on weekends?
+** Weekend sleep-ins aren't recovery. They're jet lag. How much later do you wake on weekends?
 
-#socialjetlag #monday #mondaymotivation #sleep #voltsleep
+** #socialjetlag #monday #mondaymotivation #sleep #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-Weekend sleep-ins aren't recovery. They're jet lag. How much later do you wake on weekends?
+** Weekend sleep-ins aren't recovery. They're jet lag. How much later do you wake on weekends?
 
-#socialjetlag #monday #mondaymotivation #sleep #voltsleep
+** #socialjetlag #monday #mondaymotivation #sleep #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-Weekend sleep-ins aren't recovery. They're jet lag. How much later do you wake on weekends? #shorts #socialjetlag #monday #mondaymotivation #sleep #voltsleep
+** Weekend sleep-ins aren't recovery. They're jet lag. How much later do you wake on weekends? #shorts ** #socialjetlag #monday #mondaymotivation #sleep #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day2_2026-03-02&utm_content=hook_1
 
@@ -38,8 +38,8 @@ Weekend sleep-ins aren't recovery. They're jet lag. How much later do you wake o
 ## FACEBOOK
 
 **Caption:**
-Weekend sleep-ins aren't recovery. They're jet lag. How much later do you wake on weekends?
+** Weekend sleep-ins aren't recovery. They're jet lag. How much later do you wake on weekends?
 
-#socialjetlag #monday #mondaymotivation #sleep #voltsleep
+** #socialjetlag #monday #mondaymotivation #sleep #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day2_2026-03-02&utm_content=hook_1

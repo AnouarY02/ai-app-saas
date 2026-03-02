@@ -1,0 +1,203 @@
+{
+  "name": "VOLT Sleep — Short-form Video Template",
+  "description": "9:16 vertical video template for TikTok/Reels/Shorts. Use with Creatomate, Shotstack, or CapCut.",
+  "dimensions": {
+    "width": 1080,
+    "height": 1920,
+    "aspect_ratio": "9:16"
+  },
+  "duration_seconds": 30,
+  "fps": 30,
+  "style": {
+    "background": {
+      "type": "gradient",
+      "colors": ["#0a0a1a", "#111133"],
+      "direction": "to_bottom"
+    },
+    "accent_color": "#fbbf24",
+    "text_color": "#ffffff",
+    "tip_color": "#22c55e",
+    "font_primary": "Inter Bold",
+    "font_secondary": "Inter Regular",
+    "font_fallback": "DejaVu Sans Bold"
+  },
+  "layout": {
+    "logo": {
+      "text": "VOLT SLEEP",
+      "position": { "x": "center", "y": 80 },
+      "font_size": 28,
+      "color": "#fbbf24",
+      "visible": "always"
+    },
+    "hook": {
+      "position": { "x": "center", "y": 400 },
+      "font_size": 56,
+      "color": "#fbbf24",
+      "animation": "fade_in",
+      "timing": { "start": 0, "end": 3 }
+    },
+    "problem": {
+      "position": { "x": "center", "y": 600 },
+      "font_size": 40,
+      "color": "#ffffff",
+      "animation": "fade_in",
+      "timing": { "start": 3, "end": 8 }
+    },
+    "reframe": {
+      "position": { "x": "center", "y": 600 },
+      "font_size": 40,
+      "color": "#ffffff",
+      "animation": "fade_in",
+      "timing": { "start": 8, "end": 18 }
+    },
+    "tip": {
+      "position": { "x": "center", "y": 800 },
+      "font_size": 44,
+      "color": "#22c55e",
+      "animation": "fade_in",
+      "timing": { "start": 18, "end": 25 }
+    },
+    "cta": {
+      "position": { "x": "center", "y": 1400 },
+      "font_size": 40,
+      "color": "#fbbf24",
+      "animation": "fade_in",
+      "timing": { "start": 25, "end": 30 }
+    },
+    "subtitles": {
+      "position": { "x": "center", "y": 1600 },
+      "font_size": 36,
+      "color": "#ffffff",
+      "background": "#000000AA",
+      "padding": 12,
+      "visible": "when_speaking"
+    },
+    "day_indicator": {
+      "position": { "x": "center", "y": 1840 },
+      "font_size": 24,
+      "color": "#ffffff80",
+      "visible": "always"
+    }
+  },
+  "audio": {
+    "tts_provider": "openai",
+    "tts_model": "tts-1",
+    "voice": "nova",
+    "speed": 1.0,
+    "format": "mp3"
+  },
+  "export": {
+    "format": "mp4",
+    "codec": "h264",
+    "quality": "high",
+    "crf": 23,
+    "audio_bitrate": "128k"
+  },
+  "creatomate_template": {
+    "note": "Import this structure into Creatomate as a custom template",
+    "elements": [
+      {
+        "name": "Background",
+        "type": "shape",
+        "shape": "rectangle",
+        "fill": "#0a0a1a",
+        "x": "50%", "y": "50%",
+        "width": "100%", "height": "100%"
+      },
+      {
+        "name": "Accent-Bar",
+        "type": "shape",
+        "shape": "rectangle",
+        "fill": "#fbbf24",
+        "x": "50%", "y": "0.15%",
+        "width": "100%", "height": "0.3%"
+      },
+      {
+        "name": "Logo",
+        "type": "text",
+        "text": "VOLT SLEEP",
+        "font_family": "Inter",
+        "font_weight": "700",
+        "font_size": "3.5vw",
+        "fill": "#fbbf24",
+        "x": "50%", "y": "4%"
+      },
+      {
+        "name": "Hook-Text",
+        "type": "text",
+        "text": "{{hook}}",
+        "font_family": "Inter",
+        "font_weight": "700",
+        "font_size": "5.5vw",
+        "fill": "#fbbf24",
+        "x": "50%", "y": "22%",
+        "width": "85%",
+        "text_align": "center",
+        "time": 0, "duration": 3,
+        "animations": [{ "type": "fade", "fade_duration": 0.4 }]
+      },
+      {
+        "name": "Problem-Text",
+        "type": "text",
+        "text": "{{problem}}",
+        "font_family": "Inter",
+        "font_weight": "400",
+        "font_size": "4vw",
+        "fill": "#ffffff",
+        "x": "50%", "y": "35%",
+        "width": "80%",
+        "text_align": "center",
+        "time": 3, "duration": 5,
+        "animations": [{ "type": "fade", "fade_duration": 0.4 }]
+      },
+      {
+        "name": "Reframe-Text",
+        "type": "text",
+        "text": "{{reframe}}",
+        "font_family": "Inter",
+        "font_weight": "400",
+        "font_size": "4vw",
+        "fill": "#ffffff",
+        "x": "50%", "y": "35%",
+        "width": "80%",
+        "text_align": "center",
+        "time": 8, "duration": 10,
+        "animations": [{ "type": "fade", "fade_duration": 0.4 }]
+      },
+      {
+        "name": "Tip-Text",
+        "type": "text",
+        "text": "{{tip}}",
+        "font_family": "Inter",
+        "font_weight": "700",
+        "font_size": "4.5vw",
+        "fill": "#22c55e",
+        "x": "50%", "y": "45%",
+        "width": "80%",
+        "text_align": "center",
+        "time": 18, "duration": 7,
+        "animations": [{ "type": "fade", "fade_duration": 0.4 }]
+      },
+      {
+        "name": "CTA-Text",
+        "type": "text",
+        "text": "VOLT Sleep — Free. Link in bio.",
+        "font_family": "Inter",
+        "font_weight": "700",
+        "font_size": "4vw",
+        "fill": "#fbbf24",
+        "x": "50%", "y": "75%",
+        "width": "85%",
+        "text_align": "center",
+        "time": 25, "duration": 5,
+        "animations": [{ "type": "fade", "fade_duration": 0.4 }]
+      },
+      {
+        "name": "Audio",
+        "type": "audio",
+        "source": "{{audio_url}}",
+        "time": 0
+      }
+    ]
+  }
+}

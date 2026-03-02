@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-That late-night scroll is costing you 90 minutes of recovery. When do you put your phone down?
+** That late-night scroll is costing you 90 minutes of recovery. When do you put your phone down?
 
-#screentime #bluelight #sleep #melatonin #voltsleep
+** #screentime #bluelight #sleep #melatonin #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-That late-night scroll is costing you 90 minutes of recovery. When do you put your phone down?
+** That late-night scroll is costing you 90 minutes of recovery. When do you put your phone down?
 
-#screentime #bluelight #sleep #melatonin #voltsleep
+** #screentime #bluelight #sleep #melatonin #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-That late-night scroll is costing you 90 minutes of recovery. When do you put your phone down? #shorts #screentime #bluelight #sleep #melatonin #voltsleep
+** That late-night scroll is costing you 90 minutes of recovery. When do you put your phone down? #shorts ** #screentime #bluelight #sleep #melatonin #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day5_2026-03-02&utm_content=hook_1
 
@@ -38,8 +38,8 @@ That late-night scroll is costing you 90 minutes of recovery. When do you put yo
 ## FACEBOOK
 
 **Caption:**
-That late-night scroll is costing you 90 minutes of recovery. When do you put your phone down?
+** That late-night scroll is costing you 90 minutes of recovery. When do you put your phone down?
 
-#screentime #bluelight #sleep #melatonin #voltsleep
+** #screentime #bluelight #sleep #melatonin #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day5_2026-03-02&utm_content=hook_1

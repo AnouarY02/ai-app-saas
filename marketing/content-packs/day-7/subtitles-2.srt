@@ -1,25 +1,40 @@
 1
 00:00:00,000 --> 00:00:02,000
-Most sleep apps give you 20
-charts. You need 1 action.
+Most sleep apps give you 20 charts. You need 1 action.
 
 2
-00:00:02,000 --> 00:00:06,000
-You downloaded a sleep tracker. It gave you scores, graphs,
-stages, heart rate, HRV... You felt worse, not better.
+00:00:02,000 --> 00:00:03,333
+You downloaded a sleep tracker.
 
 3
-00:00:06,000 --> 00:00:16,000
-Information overload doesn't change behavior. One clear instruction does. "Move your
-last coffee to 1 PM." That's it. That's today's action.
+00:00:03,333 --> 00:00:04,667
+It gave you scores, graphs, stages, heart rate, HRV...
 
 4
-00:00:16,000 --> 00:00:22,000
-Delete the app that gives you anxiety. Replace
-it with one that gives you clarity.
+00:00:04,667 --> 00:00:06,000
+You felt worse, not better.
 
 5
-00:00:22,000 --> 00:00:28,000
-Link in bio — 1 action per
-day. Backed by behavioral science. Free.
+00:00:06,000 --> 00:00:08,500
+Information overload doesn't change behavior.
+
+6
+00:00:08,500 --> 00:00:11,000
+One clear instruction does.
+
+7
+00:00:11,000 --> 00:00:13,500
+"Move your last coffee to 1 PM."
+
+8
+00:00:13,500 --> 00:00:16,000
+That's it. That's today's action.
+
+9
+00:00:16,000 --> 00:00:19,000
+Delete the app that gives you anxiety.
+
+10
+00:00:19,000 --> 00:00:22,000
+Replace it with one that gives you clarity.
 

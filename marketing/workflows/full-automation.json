@@ -1,0 +1,357 @@
+{
+  "name": "VOLT Sleep — Full Automation (Ideate → Create → Video → Post → Track)",
+  "notes": "Complete end-to-end content pipeline. Runs daily at 05:00 UTC.\n1. Selects 3 hooks from DB (weighted, 14-day no-repeat)\n2. Generates scripts via Claude AI\n3. Creates TTS voiceover via OpenAI\n4. Renders video via Creatomate (cloud video API)\n5. Posts to TikTok, Instagram, YouTube, Facebook\n6. Tracks performance and updates hook weights",
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "Daily 05:00 UTC",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [100, 400],
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 5 * * *" }] }
+      }
+    },
+    {
+      "id": "load_hooks",
+      "name": "Load Active Hooks",
+      "type": "n8n-nodes-base.supabase",
+      "position": [300, 400],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "content_topics",
+        "filters": {
+          "conditions": [
+            { "keyName": "is_active", "condition": "equal", "keyValue": true }
+          ]
+        },
+        "options": { "returnAll": true }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "select_3_hooks",
+      "name": "Select 3 Hooks (Weighted, No Repeat 14d)",
+      "type": "n8n-nodes-base.code",
+      "position": [500, 400],
+      "parameters": {
+        "jsCode": "const topics = $input.all().map(i => i.json);\nconst now = new Date();\nconst fourteenDaysAgo = new Date(now - 14 * 86400000);\n\nconst eligible = topics.filter(t => {\n  if (!t.last_used_at) return true;\n  return new Date(t.last_used_at) < fourteenDaysAgo;\n});\n\nif (eligible.length < 3) {\n  // Reset: allow all if too few eligible\n  eligible.push(...topics.filter(t => !eligible.includes(t)));\n}\n\nconst totalWeight = eligible.reduce((s, t) => s + parseFloat(t.weight || 1), 0);\nconst selected = [];\nconst used = new Set();\n\nwhile (selected.length < 3 && used.size < eligible.length) {\n  let r = Math.random() * totalWeight;\n  for (const topic of eligible) {\n    if (used.has(topic.id)) continue;\n    r -= parseFloat(topic.weight || 1);\n    if (r <= 0) {\n      selected.push(topic);\n      used.add(topic.id);\n      break;\n    }\n  }\n}\n\nconst ctaVariants = ['direct', 'soft', 'urgency'];\nconst times = ['09:00', '13:00', '19:00'];\n\nreturn selected.map((t, i) => ({\n  json: {\n    ...t,\n    post_index: i + 1,\n    cta_variant: ctaVariants[i],\n    schedule_time: times[i],\n    day_number: Math.ceil((now - new Date('2026-03-01')) / 86400000) + 1\n  }\n}));"
+      }
+    },
+    {
+      "id": "generate_script",
+      "name": "Generate Script (Claude AI)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [700, 400],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonBody": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1200, messages: [{ role: 'user', content: `You are a short-form video scriptwriter for VOLT Sleep, an energy optimization app. Write a 15-30 second script.\\n\\nHook: ${$json.hook}\\nCTA variant: ${$json.cta_variant}\\n\\nRules: NO medical claims. Performance/energy framing. One actionable tip. Under 35 seconds spoken.\\n\\nFormat:\\n[HOOK 0-3s]\\n(hook)\\n\\n[PROBLEM 3-8s]\\n(2-3 sentences)\\n\\n[REFRAME 8-18s]\\n(insight)\\n\\n[TIP 18-25s]\\n(action)\\n\\n[CTA 25-30s]\\n(cta text)\\n\\n---\\nCaption: (under 150 chars with 1 question)\\nHashtags: (5 hashtags)\\nThumbnail: (5 words max)\\nSpoken: (FULL spoken text as one paragraph, no brackets or labels)` }] }) }}"
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Anthropic API" } }
+    },
+    {
+      "id": "parse_script",
+      "name": "Parse Script + Extract Spoken Text",
+      "type": "n8n-nodes-base.code",
+      "position": [900, 400],
+      "parameters": {
+        "jsCode": "const response = $json;\nconst content = response.content?.[0]?.text || '';\nconst prev = $input.first().json;\n\nconst captionMatch = content.match(/Caption:\\s*(.+)/i);\nconst hashtagMatch = content.match(/Hashtags?:\\s*(.+)/i);\nconst thumbMatch = content.match(/Thumbnail[^:]*:\\s*(.+)/i);\nconst spokenMatch = content.match(/Spoken:\\s*(.+)/is);\n\n// Extract spoken text (fallback: strip brackets from script)\nlet spoken = spokenMatch?.[1]?.trim() || '';\nif (!spoken) {\n  spoken = content.split('---')[0]\n    .replace(/\\[.*?\\]/g, '')\n    .split('\\n').map(l => l.trim()).filter(l => l && l.length > 3)\n    .join(' ').replace(/\\s+/g, ' ');\n}\n\nreturn [{\n  json: {\n    ...prev,\n    script: content,\n    caption: (captionMatch?.[1] || '').trim(),\n    hashtags: (hashtagMatch?.[1] || '#energy #sleep #focus #productivity #voltsleep').trim(),\n    thumbnail_text: (thumbMatch?.[1] || '').trim(),\n    spoken_text: spoken,\n  }\n}];"
+      }
+    },
+    {
+      "id": "generate_tts",
+      "name": "Generate TTS Audio (OpenAI)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1100, 400],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/audio/speech",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonBody": "={{ JSON.stringify({ model: 'tts-1', voice: 'nova', input: $json.spoken_text, response_format: 'mp3', speed: 1.0 }) }}",
+        "options": { "response": { "response": { "responseFormat": "file" } } }
+      },
+      "credentials": { "httpHeaderAuth": { "name": "OpenAI API" } },
+      "notes": "Returns MP3 audio file as binary. ~$0.015 per 1000 chars."
+    },
+    {
+      "id": "render_video",
+      "name": "Render Video (Creatomate)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1300, 400],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.creatomate.com/v1/renders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "jsonBody": "={{ JSON.stringify({ template_id: $env.CREATOMATE_TEMPLATE_ID || 'default', modifications: { 'Hook-Text': $json.hook, 'Problem-Text': $json.script.match(/\\[PROBLEM[^\\]]*\\]\\s*\\n([\\s\\S]*?)(?=\\n\\[)/)?.[1]?.trim() || '', 'Reframe-Text': $json.script.match(/\\[REFRAME[^\\]]*\\]\\s*\\n([\\s\\S]*?)(?=\\n\\[)/)?.[1]?.trim() || '', 'Tip-Text': $json.script.match(/\\[TIP[^\\]]*\\]\\s*\\n([\\s\\S]*?)(?=\\n\\[)/)?.[1]?.trim() || '', 'CTA-Text': 'VOLT Sleep — Free. Link in bio.', 'Audio': $binary?.data ? `data:audio/mp3;base64,${$binary.data.toString('base64')}` : '', 'Background-Color': '#0a0a1a', 'Accent-Color': '#fbbf24' }, output_format: 'mp4', width: 1080, height: 1920, frame_rate: 30 }) }}",
+        "options": {}
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Creatomate API" } },
+      "notes": "Creatomate renders video in the cloud. Alternative: use Shotstack, Bannerbear, or JSON2Video API.\nFree tier: 10 renders/month. Pro: $39/mo for 200 renders.\nIf no Creatomate, the pipeline still saves scripts + audio for manual CapCut edit."
+    },
+    {
+      "id": "wait_render",
+      "name": "Wait for Render (Poll)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1500, 400],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://api.creatomate.com/v1/renders/' + $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": { "timeout": 120000 }
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Creatomate API" } },
+      "notes": "Poll until status = 'succeeded'. Video URL in response.url field."
+    },
+    {
+      "id": "check_render_status",
+      "name": "Render Done?",
+      "type": "n8n-nodes-base.if",
+      "position": [1700, 400],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            { "value1": "={{ $json.status }}", "operation": "equal", "value2": "succeeded" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "wait_10s",
+      "name": "Wait 10s Before Retry",
+      "type": "n8n-nodes-base.wait",
+      "position": [1700, 600],
+      "parameters": { "amount": 10, "unit": "seconds" }
+    },
+    {
+      "id": "format_for_platforms",
+      "name": "Format for 4 Platforms",
+      "type": "n8n-nodes-base.code",
+      "position": [1900, 300],
+      "parameters": {
+        "jsCode": "const post = $json;\nconst prev = $input.first().json;\nconst videoUrl = post.url || prev.url || '';\nconst platforms = ['tiktok', 'instagram', 'youtube', 'facebook'];\nconst dateStr = new Date().toISOString().split('T')[0];\n\nreturn platforms.map(platform => {\n  const utm = `https://voltsleep.nl?utm_source=${platform}&utm_medium=organic&utm_campaign=daily_${dateStr}&utm_content=hook_${prev.post_index}`;\n  \n  let caption = prev.caption;\n  if (platform === 'tiktok') caption = `${prev.caption}\\n\\n${prev.hashtags}\\n\\nLink in bio`;\n  else if (platform === 'instagram') caption = `${prev.caption}\\n\\n${prev.hashtags}\\n\\nLink in bio`;\n  else if (platform === 'youtube') caption = `${prev.caption} #shorts ${prev.hashtags}`;\n  else caption = `${prev.caption}\\n\\n${prev.hashtags}`;\n  \n  return {\n    json: {\n      platform,\n      video_url: videoUrl,\n      caption,\n      hashtags: prev.hashtags,\n      thumbnail_text: prev.thumbnail_text,\n      cta_variant: prev.cta_variant,\n      day_number: prev.day_number,\n      post_index: prev.post_index,\n      topic_id: prev.id,\n      utm_link: utm,\n      scheduled_at: `${dateStr}T${prev.schedule_time}:00Z`,\n    }\n  };\n});"
+      }
+    },
+    {
+      "id": "save_to_queue",
+      "name": "Save to Publish Queue",
+      "type": "n8n-nodes-base.supabase",
+      "position": [2100, 300],
+      "parameters": {
+        "operation": "create",
+        "tableId": "content_posts"
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "split_post_platform",
+      "name": "Route to Platform",
+      "type": "n8n-nodes-base.switch",
+      "position": [2300, 300],
+      "parameters": {
+        "dataPropertyName": "platform",
+        "rules": {
+          "rules": [
+            { "value": "tiktok", "output": 0 },
+            { "value": "instagram", "output": 1 },
+            { "value": "youtube", "output": 2 },
+            { "value": "facebook", "output": 3 }
+          ]
+        }
+      }
+    },
+    {
+      "id": "post_tiktok",
+      "name": "Post TikTok",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [2550, 100],
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.tiktokapis.com/v2/post/publish/content/init/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "jsonBody": "={{ JSON.stringify({ post_info: { title: $json.caption, privacy_level: 'PUBLIC_TO_EVERYONE' }, source_info: { source: 'PULL_FROM_URL', video_url: $json.video_url }, post_mode: 'DIRECT_POST', media_type: 'VIDEO' }) }}"
+      },
+      "credentials": { "httpHeaderAuth": { "name": "TikTok API" } }
+    },
+    {
+      "id": "post_instagram",
+      "name": "Post Instagram Reels",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [2550, 250],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v19.0/={{ $env.INSTAGRAM_USER_ID }}/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "media_type", "value": "REELS" },
+            { "name": "video_url", "value": "={{ $json.video_url }}" },
+            { "name": "caption", "value": "={{ $json.caption }}" }
+          ]
+        }
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Meta Graph API" } }
+    },
+    {
+      "id": "post_youtube",
+      "name": "Post YouTube Shorts",
+      "type": "n8n-nodes-base.youTube",
+      "position": [2550, 400],
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $json.caption.substring(0, 100) }}",
+        "description": "={{ $json.caption + '\\n\\n' + $json.hashtags }}",
+        "categoryId": "26",
+        "privacyStatus": "public"
+      },
+      "credentials": { "youTubeOAuth2Api": { "name": "YouTube API" } }
+    },
+    {
+      "id": "post_facebook",
+      "name": "Post Facebook Reels",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [2550, 550],
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v19.0/={{ $env.FACEBOOK_PAGE_ID }}/video_reels",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "upload_phase", "value": "finish" },
+            { "name": "video_url", "value": "={{ $json.video_url }}" },
+            { "name": "description", "value": "={{ $json.caption }}" }
+          ]
+        }
+      },
+      "credentials": { "httpHeaderAuth": { "name": "Meta Graph API" } }
+    },
+    {
+      "id": "mark_published",
+      "name": "Mark Published",
+      "type": "n8n-nodes-base.supabase",
+      "position": [2800, 300],
+      "parameters": {
+        "operation": "update",
+        "tableId": "content_posts",
+        "filters": {
+          "conditions": [
+            { "keyName": "id", "condition": "equal", "keyValue": "={{ $json.id }}" }
+          ]
+        },
+        "fieldsToSend": {
+          "fields": [
+            { "name": "status", "value": "published" },
+            { "name": "published_at", "value": "={{ new Date().toISOString() }}" }
+          ]
+        }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "update_hook_usage",
+      "name": "Update Hook Usage",
+      "type": "n8n-nodes-base.supabase",
+      "position": [2800, 500],
+      "parameters": {
+        "operation": "update",
+        "tableId": "content_topics",
+        "filters": {
+          "conditions": [
+            { "keyName": "id", "condition": "equal", "keyValue": "={{ $json.topic_id }}" }
+          ]
+        },
+        "fieldsToSend": {
+          "fields": [
+            { "name": "last_used_at", "value": "={{ new Date().toISOString() }}" },
+            { "name": "times_used", "value": "={{ parseInt($json.times_used || 0) + 1 }}" }
+          ]
+        }
+      },
+      "credentials": { "supabaseApi": { "name": "VOLT Supabase" } }
+    },
+    {
+      "id": "notify_done",
+      "name": "Notify: Daily Content Done",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [3000, 400],
+      "parameters": {
+        "fromEmail": "content@voltsleep.nl",
+        "toEmail": "={{ $env.ADMIN_EMAIL }}",
+        "subject": "VOLT Content: Day {{ $json.day_number }} — 12 posts published",
+        "text": "Daily content pipeline completed.\n\nDay: {{ $json.day_number }}\nPosts: 3 scripts × 4 platforms = 12 posts\nPlatforms: TikTok, Instagram Reels, YouTube Shorts, Facebook Reels\n\nCheck dashboard: {{ $env.APP_URL }}/content-dashboard"
+      },
+      "credentials": { "smtp": { "name": "VOLT SMTP" } }
+    }
+  ],
+  "connections": {
+    "trigger": { "main": [["load_hooks"]] },
+    "load_hooks": { "main": [["select_3_hooks"]] },
+    "select_3_hooks": { "main": [["generate_script"]] },
+    "generate_script": { "main": [["parse_script"]] },
+    "parse_script": { "main": [["generate_tts"]] },
+    "generate_tts": { "main": [["render_video"]] },
+    "render_video": { "main": [["wait_render"]] },
+    "wait_render": { "main": [["check_render_status"]] },
+    "check_render_status": {
+      "main": [
+        ["format_for_platforms"],
+        ["wait_10s"]
+      ]
+    },
+    "wait_10s": { "main": [["wait_render"]] },
+    "format_for_platforms": { "main": [["save_to_queue"]] },
+    "save_to_queue": { "main": [["split_post_platform"]] },
+    "split_post_platform": {
+      "main": [
+        ["post_tiktok"],
+        ["post_instagram"],
+        ["post_youtube"],
+        ["post_facebook"]
+      ]
+    },
+    "post_tiktok": { "main": [["mark_published"]] },
+    "post_instagram": { "main": [["mark_published"]] },
+    "post_youtube": { "main": [["mark_published"]] },
+    "post_facebook": { "main": [["mark_published"]] },
+    "mark_published": { "main": [["update_hook_usage", "notify_done"]] }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  }
+}

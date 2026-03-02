@@ -1,25 +1,36 @@
 1
 00:00:00,000 --> 00:00:02,000
-Your alarm isn't the problem.
-Your light exposure is.
+Your alarm isn't the problem. Your light exposure is.
 
 2
-00:00:02,000 --> 00:00:06,000
-Waking up is hard. Every morning
-feels the same. Heavy. Slow. Painful.
+00:00:02,000 --> 00:00:04,000
+Waking up is hard. Every morning feels the same.
 
 3
-00:00:06,000 --> 00:00:16,000
-Your body wakes up to LIGHT, not sound. Indoor morning light is 50-100 lux. Outside,
-even cloudy, is 2,000-10,000 lux. Your brain needs the bright signal to fully wake up.
+00:00:04,000 --> 00:00:06,000
+Heavy. Slow. Painful.
 
 4
-00:00:16,000 --> 00:00:22,000
-First thing after waking: step outside. 10 minutes. Don't look
-at your phone first — look at the sky.
+00:00:06,000 --> 00:00:08,500
+Your body wakes up to LIGHT, not sound.
 
 5
-00:00:22,000 --> 00:00:28,000
-Link in bio — free
-energy profile in 30 seconds.
+00:00:08,500 --> 00:00:11,000
+Indoor morning light is 50-100 lux.
+
+6
+00:00:11,000 --> 00:00:13,500
+Outside, even cloudy, is 2,000-10,000 lux.
+
+7
+00:00:13,500 --> 00:00:16,000
+Your brain needs the bright signal to fully wake up.
+
+8
+00:00:16,000 --> 00:00:19,000
+First thing after waking: step outside. 10 minutes.
+
+9
+00:00:19,000 --> 00:00:22,000
+Don't look at your phone first — look at the sky.
 

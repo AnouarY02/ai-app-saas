@@ -1,25 +1,32 @@
 1
 00:00:00,000 --> 00:00:02,000
-There's a reason your coffee
-stops working at 3 PM.
+There's a reason your coffee stops working at 3 PM.
 
 2
-00:00:02,000 --> 00:00:06,000
-The coffee hits. You feel alert for
-20 minutes. Then you're back to dead.
+00:00:02,000 --> 00:00:04,000
+The coffee hits. You feel alert for 20 minutes.
 
 3
-00:00:06,000 --> 00:00:16,000
-By 3 PM, your adenosine buildup is winning. Caffeine blocks adenosine receptors, but they're
-overwhelmed. Adding more caffeine just delays the crash — and steals your sleep.
+00:00:04,000 --> 00:00:06,000
+Then you're back to dead.
 
 4
-00:00:16,000 --> 00:00:22,000
-Replace the 3 PM coffee with 10 minutes
-of movement. Walk. Stretch. The effect lasts longer.
+00:00:06,000 --> 00:00:09,333
+By 3 PM, your adenosine buildup is winning.
 
 5
-00:00:22,000 --> 00:00:28,000
-I built an app that gives you the
-right action at the right time. Free.
+00:00:09,333 --> 00:00:12,667
+Caffeine blocks adenosine receptors, but they're overwhelmed.
+
+6
+00:00:12,667 --> 00:00:16,000
+Adding more caffeine just delays the crash — and steals your sleep.
+
+7
+00:00:16,000 --> 00:00:19,000
+Replace the 3 PM coffee with 10 minutes of movement.
+
+8
+00:00:19,000 --> 00:00:22,000
+Walk. Stretch. The effect lasts longer.
 

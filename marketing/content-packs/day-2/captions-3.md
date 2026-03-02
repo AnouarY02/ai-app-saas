@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-What if your worst Monday was caused by your best Saturday? Try the 90-minute rule this weekend.
+** What if your worst Monday was caused by your best Saturday? Try the 90-minute rule this weekend.
 
-#mondaymotivation #brainfog #energy #productivity #voltsleep
+** #mondaymotivation #brainfog #energy #productivity #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-What if your worst Monday was caused by your best Saturday? Try the 90-minute rule this weekend.
+** What if your worst Monday was caused by your best Saturday? Try the 90-minute rule this weekend.
 
-#mondaymotivation #brainfog #energy #productivity #voltsleep
+** #mondaymotivation #brainfog #energy #productivity #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-What if your worst Monday was caused by your best Saturday? Try the 90-minute rule this weekend. #shorts #mondaymotivation #brainfog #energy #productivity #voltsleep
+** What if your worst Monday was caused by your best Saturday? Try the 90-minute rule this weekend. #shorts ** #mondaymotivation #brainfog #energy #productivity #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day2_2026-03-02&utm_content=hook_3
 
@@ -38,8 +38,8 @@ What if your worst Monday was caused by your best Saturday? Try the 90-minute ru
 ## FACEBOOK
 
 **Caption:**
-What if your worst Monday was caused by your best Saturday? Try the 90-minute rule this weekend.
+** What if your worst Monday was caused by your best Saturday? Try the 90-minute rule this weekend.
 
-#mondaymotivation #brainfog #energy #productivity #voltsleep
+** #mondaymotivation #brainfog #energy #productivity #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day2_2026-03-02&utm_content=hook_3

@@ -1,25 +1,36 @@
 1
 00:00:00,000 --> 00:00:02,000
-Your phone after 10 PM
-is borrowing energy from tomorrow.
+Your phone after 10 PM is borrowing energy from tomorrow.
 
 2
-00:00:02,000 --> 00:00:08,000
-You scroll for "just 5 minutes." That turns
-into 45 minutes. Your brain thinks it's daytime.
+00:00:02,000 --> 00:00:04,000
+You scroll for "just 5 minutes."
 
 3
-00:00:08,000 --> 00:00:18,000
-Blue light after dark suppresses melatonin for up to 90 minutes. That means
-even if you sleep at 11, your body doesn't start recovering until 12:30.
+00:00:04,000 --> 00:00:06,000
+That turns into 45 minutes.
 
 4
-00:00:18,000 --> 00:00:24,000
-Set a phone alarm for 60 minutes before your
-target bedtime. When it rings: phone goes face-down.
+00:00:06,000 --> 00:00:08,000
+Your brain thinks it's daytime.
 
 5
-00:00:24,000 --> 00:00:30,000
-VOLT Sleep sends you a wind-down
-reminder. Free. Link in bio.
+00:00:08,000 --> 00:00:11,333
+Blue light after dark suppresses melatonin for up to 90 minutes.
+
+6
+00:00:11,333 --> 00:00:14,667
+That means even if you sleep at 11, your body doesn't start
+
+7
+00:00:14,667 --> 00:00:18,000
+recovering until 12:30.
+
+8
+00:00:18,000 --> 00:00:21,000
+Set a phone alarm for 60 minutes before your target bedtime.
+
+9
+00:00:21,000 --> 00:00:24,000
+When it rings: phone goes face-down.
 

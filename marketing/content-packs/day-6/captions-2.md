@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-Athletes don't grind 8 hours straight. Why do we expect our brains to? What's your peak time?
+** Athletes don't grind 8 hours straight. Why do we expect our brains to? What's your peak time?
 
-#performance #timing #energy #athlete #voltsleep
+** #performance #timing #energy #athlete #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-Athletes don't grind 8 hours straight. Why do we expect our brains to? What's your peak time?
+** Athletes don't grind 8 hours straight. Why do we expect our brains to? What's your peak time?
 
-#performance #timing #energy #athlete #voltsleep
+** #performance #timing #energy #athlete #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-Athletes don't grind 8 hours straight. Why do we expect our brains to? What's your peak time? #shorts #performance #timing #energy #athlete #voltsleep
+** Athletes don't grind 8 hours straight. Why do we expect our brains to? What's your peak time? #shorts ** #performance #timing #energy #athlete #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day6_2026-03-02&utm_content=hook_2
 
@@ -38,8 +38,8 @@ Athletes don't grind 8 hours straight. Why do we expect our brains to? What's yo
 ## FACEBOOK
 
 **Caption:**
-Athletes don't grind 8 hours straight. Why do we expect our brains to? What's your peak time?
+** Athletes don't grind 8 hours straight. Why do we expect our brains to? What's your peak time?
 
-#performance #timing #energy #athlete #voltsleep
+** #performance #timing #energy #athlete #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day6_2026-03-02&utm_content=hook_2

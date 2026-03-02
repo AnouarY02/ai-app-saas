@@ -1,25 +1,32 @@
 1
 00:00:00,000 --> 00:00:02,000
-Your body doesn't
-know it's Saturday.
+Your body doesn't know it's Saturday.
 
 2
-00:00:02,000 --> 00:00:06,000
-You sleep until noon. You
-feel great... until Monday.
+00:00:02,000 --> 00:00:04,000
+You sleep until noon.
 
 3
-00:00:06,000 --> 00:00:16,000
-Your circadian clock runs on light and wake time. When you shift your schedule by
-3 hours on Saturday, your body spends Sunday and Monday trying to catch up.
+00:00:04,000 --> 00:00:06,000
+You feel great... until Monday.
 
 4
-00:00:16,000 --> 00:00:24,000
-The 90-minute rule: never wake more than 90 minutes
-later than your weekday alarm. Even on vacation.
+00:00:06,000 --> 00:00:09,333
+Your circadian clock runs on light and wake time.
 
 5
-00:00:24,000 --> 00:00:30,000
-Link in bio — free
-energy profile in 30 seconds.
+00:00:09,333 --> 00:00:12,667
+When you shift your schedule by 3 hours on Saturday,
+
+6
+00:00:12,667 --> 00:00:16,000
+your body spends Sunday and Monday trying to catch up.
+
+7
+00:00:16,000 --> 00:00:20,000
+The 90-minute rule: never wake more than 90 minutes later
+
+8
+00:00:20,000 --> 00:00:24,000
+than your weekday alarm. Even on vacation.
 

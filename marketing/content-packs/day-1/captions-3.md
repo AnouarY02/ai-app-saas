@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-I found my energy pattern in 7 days. It changed everything. Ready to find yours?
+** I found my energy pattern in 7 days. It changed everything. Ready to find yours?
 
-#energy #tracking #selfimprovement #biohacking #voltsleep
+** #energy #tracking #selfimprovement #biohacking #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-I found my energy pattern in 7 days. It changed everything. Ready to find yours?
+** I found my energy pattern in 7 days. It changed everything. Ready to find yours?
 
-#energy #tracking #selfimprovement #biohacking #voltsleep
+** #energy #tracking #selfimprovement #biohacking #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-I found my energy pattern in 7 days. It changed everything. Ready to find yours? #shorts #energy #tracking #selfimprovement #biohacking #voltsleep
+** I found my energy pattern in 7 days. It changed everything. Ready to find yours? #shorts ** #energy #tracking #selfimprovement #biohacking #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day1_2026-03-02&utm_content=hook_3
 
@@ -38,8 +38,8 @@ I found my energy pattern in 7 days. It changed everything. Ready to find yours?
 ## FACEBOOK
 
 **Caption:**
-I found my energy pattern in 7 days. It changed everything. Ready to find yours?
+** I found my energy pattern in 7 days. It changed everything. Ready to find yours?
 
-#energy #tracking #selfimprovement #biohacking #voltsleep
+** #energy #tracking #selfimprovement #biohacking #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day1_2026-03-02&utm_content=hook_3

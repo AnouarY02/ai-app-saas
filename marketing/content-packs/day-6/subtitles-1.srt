@@ -1,25 +1,36 @@
 1
 00:00:00,000 --> 00:00:02,000
-Your focus isn't broken.
-Your rhythm is.
+Your focus isn't broken. Your rhythm is.
 
 2
-00:00:02,000 --> 00:00:06,000
-You can't concentrate. You reach for
-coffee. You try another productivity app.
+00:00:02,000 --> 00:00:04,000
+You can't concentrate. You reach for coffee.
 
 3
-00:00:06,000 --> 00:00:16,000
-Focus follows energy. Energy follows rhythm. When you align
-your tasks with your biological peaks, focus happens naturally.
+00:00:04,000 --> 00:00:06,000
+You try another productivity app.
 
 4
-00:00:16,000 --> 00:00:24,000
-Peak focus: first 3-4 hours after waking. Low
-focus: 7-9 hours after waking. Schedule accordingly.
+00:00:06,000 --> 00:00:09,333
+Focus follows energy. Energy follows rhythm.
 
 5
-00:00:24,000 --> 00:00:30,000
-VOLT Sleep maps your rhythm.
-Free. Link in bio.
+00:00:09,333 --> 00:00:12,667
+When you align your tasks with your biological peaks,
+
+6
+00:00:12,667 --> 00:00:16,000
+focus happens naturally.
+
+7
+00:00:16,000 --> 00:00:18,667
+Peak focus: first 3-4 hours after waking.
+
+8
+00:00:18,667 --> 00:00:21,333
+Low focus: 7-9 hours after waking.
+
+9
+00:00:21,333 --> 00:00:24,000
+Schedule accordingly.
 

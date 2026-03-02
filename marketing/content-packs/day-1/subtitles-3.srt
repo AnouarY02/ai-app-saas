@@ -1,25 +1,28 @@
 1
 00:00:00,000 --> 00:00:02,000
-I tracked my energy for 7
-days. The pattern was obvious.
+I tracked my energy for 7 days. The pattern was obvious.
 
 2
-00:00:02,000 --> 00:00:08,000
-I always thought my energy was random. Good
-days, bad days, no rhyme or reason.
+00:00:02,000 --> 00:00:05,000
+I always thought my energy was random.
 
 3
-00:00:08,000 --> 00:00:18,000
-After 7 days of logging when I crashed, when I
-felt sharp, a clear pattern emerged: same time, every day.
+00:00:05,000 --> 00:00:08,000
+Good days, bad days, no rhyme or reason.
 
 4
-00:00:18,000 --> 00:00:22,000
-Track your energy at 10 AM, 2 PM, and
-6 PM for 7 days. You'll see it too.
+00:00:08,000 --> 00:00:13,000
+After 7 days of logging when I crashed, when I felt sharp,
 
 5
-00:00:22,000 --> 00:00:28,000
-I built an app that does this
-for you. 30 seconds to start. Free.
+00:00:13,000 --> 00:00:18,000
+a clear pattern emerged: same time, every day.
+
+6
+00:00:18,000 --> 00:00:20,000
+Track your energy at 10 AM, 2 PM, and 6 PM for 7 days.
+
+7
+00:00:20,000 --> 00:00:22,000
+You'll see it too.
 

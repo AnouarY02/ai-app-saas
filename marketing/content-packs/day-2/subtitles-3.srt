@@ -1,25 +1,28 @@
 1
 00:00:00,000 --> 00:00:02,000
-Your Monday brain fog
-starts on Saturday morning.
+Your Monday brain fog starts on Saturday morning.
 
 2
-00:00:02,000 --> 00:00:08,000
-Every Monday you're sluggish, unfocused, slow. You
-blame the alarm. Or the meeting.
+00:00:02,000 --> 00:00:05,000
+Every Monday you're sluggish, unfocused, slow.
 
 3
-00:00:08,000 --> 00:00:18,000
-But the damage happened 48 hours earlier when
-you slept 3 hours later than usual.
+00:00:05,000 --> 00:00:08,000
+You blame the alarm. Or the meeting.
 
 4
-00:00:18,000 --> 00:00:24,000
-This Saturday: set an alarm 90 minutes after your weekday
-time. Get up. Get light. Watch what Monday feels like.
+00:00:08,000 --> 00:00:13,000
+But the damage happened 48 hours earlier
 
 5
-00:00:24,000 --> 00:00:30,000
-I built an app that tracks
-this for you. 30 seconds. Free.
+00:00:13,000 --> 00:00:18,000
+when you slept 3 hours later than usual.
+
+6
+00:00:18,000 --> 00:00:21,000
+This Saturday: set an alarm 90 minutes after your weekday time.
+
+7
+00:00:21,000 --> 00:00:24,000
+Get up. Get light. Watch what Monday feels like.
 

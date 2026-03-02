@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-Focus isn't a skill problem. It's a timing problem. When are your peak hours?
+** Focus isn't a skill problem. It's a timing problem. When are your peak hours?
 
-#focus #rhythm #deepwork #productivity #voltsleep
+** #focus #rhythm #deepwork #productivity #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-Focus isn't a skill problem. It's a timing problem. When are your peak hours?
+** Focus isn't a skill problem. It's a timing problem. When are your peak hours?
 
-#focus #rhythm #deepwork #productivity #voltsleep
+** #focus #rhythm #deepwork #productivity #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-Focus isn't a skill problem. It's a timing problem. When are your peak hours? #shorts #focus #rhythm #deepwork #productivity #voltsleep
+** Focus isn't a skill problem. It's a timing problem. When are your peak hours? #shorts ** #focus #rhythm #deepwork #productivity #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day6_2026-03-02&utm_content=hook_1
 
@@ -38,8 +38,8 @@ Focus isn't a skill problem. It's a timing problem. When are your peak hours? #s
 ## FACEBOOK
 
 **Caption:**
-Focus isn't a skill problem. It's a timing problem. When are your peak hours?
+** Focus isn't a skill problem. It's a timing problem. When are your peak hours?
 
-#focus #rhythm #deepwork #productivity #voltsleep
+** #focus #rhythm #deepwork #productivity #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day6_2026-03-02&utm_content=hook_1

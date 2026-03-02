@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-It's not discipline. It's timing. When do you do your hardest work?
+** It's not discipline. It's timing. When do you do your hardest work?
 
-#productivity #deepwork #highperformance #energy #voltsleep
+** #productivity #deepwork #highperformance #energy #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-It's not discipline. It's timing. When do you do your hardest work?
+** It's not discipline. It's timing. When do you do your hardest work?
 
-#productivity #deepwork #highperformance #energy #voltsleep
+** #productivity #deepwork #highperformance #energy #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-It's not discipline. It's timing. When do you do your hardest work? #shorts #productivity #deepwork #highperformance #energy #voltsleep
+** It's not discipline. It's timing. When do you do your hardest work? #shorts ** #productivity #deepwork #highperformance #energy #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day4_2026-03-02&utm_content=hook_1
 
@@ -38,8 +38,8 @@ It's not discipline. It's timing. When do you do your hardest work? #shorts #pro
 ## FACEBOOK
 
 **Caption:**
-It's not discipline. It's timing. When do you do your hardest work?
+** It's not discipline. It's timing. When do you do your hardest work?
 
-#productivity #deepwork #highperformance #energy #voltsleep
+** #productivity #deepwork #highperformance #energy #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day4_2026-03-02&utm_content=hook_1

@@ -14,7 +14,8 @@
     "deploy": "npm run build && npx vercel --prod",
     "deploy:preview": "npm run build && npx vercel",
     "content:generate": "node marketing/scripts/generate-daily-content.mjs",
-    "content:split": "node marketing/scripts/split-master-scripts.mjs"
+    "content:split": "node marketing/scripts/split-master-scripts.mjs",
+    "content:pipeline": "node marketing/scripts/full-pipeline.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.0",

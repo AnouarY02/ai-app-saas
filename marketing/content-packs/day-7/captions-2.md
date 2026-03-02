@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-Sleep trackers give you data. VOLT gives you clarity. How many health apps do you have? (Be honest)
+** Sleep trackers give you data. VOLT gives you clarity. How many health apps do you have? (Be honest)
 
-#sleeptracker #healthapp #simplicity #clarity #voltsleep
+** #sleeptracker #healthapp #simplicity #clarity #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-Sleep trackers give you data. VOLT gives you clarity. How many health apps do you have? (Be honest)
+** Sleep trackers give you data. VOLT gives you clarity. How many health apps do you have? (Be honest)
 
-#sleeptracker #healthapp #simplicity #clarity #voltsleep
+** #sleeptracker #healthapp #simplicity #clarity #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-Sleep trackers give you data. VOLT gives you clarity. How many health apps do you have? (Be honest) #shorts #sleeptracker #healthapp #simplicity #clarity #voltsleep
+** Sleep trackers give you data. VOLT gives you clarity. How many health apps do you have? (Be honest) #shorts ** #sleeptracker #healthapp #simplicity #clarity #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day7_2026-03-02&utm_content=hook_2
 
@@ -38,8 +38,8 @@ Sleep trackers give you data. VOLT gives you clarity. How many health apps do yo
 ## FACEBOOK
 
 **Caption:**
-Sleep trackers give you data. VOLT gives you clarity. How many health apps do you have? (Be honest)
+** Sleep trackers give you data. VOLT gives you clarity. How many health apps do you have? (Be honest)
 
-#sleeptracker #healthapp #simplicity #clarity #voltsleep
+** #sleeptracker #healthapp #simplicity #clarity #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day7_2026-03-02&utm_content=hook_2

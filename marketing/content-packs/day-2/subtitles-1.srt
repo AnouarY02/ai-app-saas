@@ -1,25 +1,32 @@
 1
 00:00:00,000 --> 00:00:02,000
-Sleeping in on weekends
-is sabotaging your Monday.
+Sleeping in on weekends is sabotaging your Monday.
 
 2
-00:00:02,000 --> 00:00:08,000
-You think you're "catching up" on sleep. But
-your body clock just shifted 2 hours.
+00:00:02,000 --> 00:00:05,000
+You think you're "catching up" on sleep.
 
 3
-00:00:08,000 --> 00:00:18,000
-It's called social jetlag. Every 1 hour of weekend
-shift = flying 1 timezone. You're jet-lagged every Monday.
+00:00:05,000 --> 00:00:08,000
+But your body clock just shifted 2 hours.
 
 4
-00:00:18,000 --> 00:00:24,000
-Keep your wake time within 90
-minutes of weekday. Saturday included.
+00:00:08,000 --> 00:00:11,333
+It's called social jetlag.
 
 5
-00:00:24,000 --> 00:00:30,000
-VOLT Sleep gives you 1 action per day
-to fix this. Free. Link in bio.
+00:00:11,333 --> 00:00:14,667
+Every 1 hour of weekend shift = flying 1 timezone.
+
+6
+00:00:14,667 --> 00:00:18,000
+You're jet-lagged every Monday.
+
+7
+00:00:18,000 --> 00:00:21,000
+Keep your wake time within 90 minutes of weekday.
+
+8
+00:00:21,000 --> 00:00:24,000
+Saturday included.
 

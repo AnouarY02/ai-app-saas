@@ -3,9 +3,9 @@
 ## TIKTOK
 
 **Caption:**
-Your body runs on rhythm, not weekdays. What's your weekend wake time?
+** Your body runs on rhythm, not weekdays. What's your weekend wake time?
 
-#circadianrhythm #weekend #sleep #routine #voltsleep
+** #circadianrhythm #weekend #sleep #routine #voltsleep
 
 Link in bio
 
@@ -16,9 +16,9 @@ Link in bio
 ## INSTAGRAM
 
 **Caption:**
-Your body runs on rhythm, not weekdays. What's your weekend wake time?
+** Your body runs on rhythm, not weekdays. What's your weekend wake time?
 
-#circadianrhythm #weekend #sleep #routine #voltsleep
+** #circadianrhythm #weekend #sleep #routine #voltsleep
 
 Link in bio for free energy profile
 
@@ -29,7 +29,7 @@ Link in bio for free energy profile
 ## YOUTUBE
 
 **Caption:**
-Your body runs on rhythm, not weekdays. What's your weekend wake time? #shorts #circadianrhythm #weekend #sleep #routine #voltsleep
+** Your body runs on rhythm, not weekdays. What's your weekend wake time? #shorts ** #circadianrhythm #weekend #sleep #routine #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=youtube&utm_medium=organic&utm_campaign=day2_2026-03-02&utm_content=hook_2
 
@@ -38,8 +38,8 @@ Your body runs on rhythm, not weekdays. What's your weekend wake time? #shorts #
 ## FACEBOOK
 
 **Caption:**
-Your body runs on rhythm, not weekdays. What's your weekend wake time?
+** Your body runs on rhythm, not weekdays. What's your weekend wake time?
 
-#circadianrhythm #weekend #sleep #routine #voltsleep
+** #circadianrhythm #weekend #sleep #routine #voltsleep
 
 **UTM Link:** https://voltsleep.nl?utm_source=facebook&utm_medium=organic&utm_campaign=day2_2026-03-02&utm_content=hook_2
