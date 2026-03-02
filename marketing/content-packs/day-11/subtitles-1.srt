@@ -1,0 +1,25 @@
+1
+00:00:00,000 --> 00:00:02,000
+The #1 focus hack is
+free and takes 0 minutes.
+
+2
+00:00:02,000 --> 00:00:08,000
+This is a
+dry run placeholder.
+
+3
+00:00:08,000 --> 00:00:18,000
+Dry run — no
+API call made.
+
+4
+00:00:18,000 --> 00:00:25,000
+Run without --dry-run to
+generate real content.
+
+5
+00:00:25,000 --> 00:00:30,000
+VOLT Sleep gives you 1 action
+per day. Free. Link in bio.
+

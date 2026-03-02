@@ -12,7 +12,9 @@
     "setup": "node scripts/setup.mjs",
     "setup:env-only": "node scripts/setup.mjs --skip-deploy",
     "deploy": "npm run build && npx vercel --prod",
-    "deploy:preview": "npm run build && npx vercel"
+    "deploy:preview": "npm run build && npx vercel",
+    "content:generate": "node marketing/scripts/generate-daily-content.mjs",
+    "content:split": "node marketing/scripts/split-master-scripts.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.0",
